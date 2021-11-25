@@ -1,35 +1,25 @@
 import os
 import random
 import torch
-from torch import nn
 from torchvision.transforms import ToTensor
-from tqdm import tqdm
+from torchvision.datasets import FashionMNIST
 from torch.nn import MSELoss
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
 from eval.eval import eval_network
 from models.conv_ae import ConvAE
-from torchvision.datasets import FashionMNIST
-
 from procedures.channel_prune import find_channel_mask
 from procedures.test import test
 from procedures.train import train
-
-LR = 1e-3
-L2REG = 0
-SPARSITY_PENALTY = 1e-4
-BATCH_SIZE = 16
-SETTINGS = [6, 4, 6]
-
-# fractions of the network to keep
-RATIOS = [0.75, 0.5, 0.25, 0.15, 0.1, 0.05]
+from settings.train_settings import *
+from settings.prune_settings import *
 
 unique_id = hex(random.randint(16**8, 16**9))[2:]
 print(f"RUN ID: {unique_id}")
 folder = f"runs/{unique_id}"
 
-network = ConvAE(*SETTINGS)
+network = ConvAE(*TOPOLOGY)
 
 train_set = FashionMNIST("data/", train=True, download=True, transform=ToTensor())
 test_set = FashionMNIST("data/", train=False, download=True, transform=ToTensor())
@@ -43,18 +33,21 @@ criterion = MSELoss()
 
 if __name__ == '__main__':
     os.makedirs(folder, exist_ok=True)
-    torch.save(network.state_dict(), folder + f"/starting_params-{SETTINGS}.pth")
+    torch.save(network.state_dict(), folder + f"/starting_params-{TOPOLOGY}.pth")
 
-    for epoch in range(15):
+    for epoch in range(10):
         # save the current mask drawn based on channel pruning
-        for r in RATIOS:
-            torch.save(list(find_channel_mask(network, r).values()), f"{folder}/keep-{r}-epoch-{epoch}.pth")
 
-        train_loss = train(network, optimiser, criterion, train_loader)
+        def prune_snapshot(iter: int, epoch=epoch):
+            for r in PRUNE_RATIOS:
+                torch.save(list(find_channel_mask(network, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iter}.pth")
 
+        if epoch == 0:
+            prune_snapshot(0)
+
+        train_loss = train(network, optimiser, criterion, train_loader, prune_snapshot_method=prune_snapshot)
         test_loss = test(network, criterion, test_loader)
 
         eval_network(network, test_set[0][0].view(1, 1, 28, 28))
 
-        torch.save(network.state_dict(), "network.pth")
         print(train_loss, test_loss)
