@@ -48,10 +48,10 @@ def mask_to_png(mask):
 
 
 if __name__ == '__main__':
-    run_id = "8c6031ee8"
+    run_id = "withbn"
 
     masks = list(filter(lambda x: x.startswith("keep"), os.listdir(f"runs/{run_id}")))
     masks = [f"runs/{run_id}/{x}" for x in masks]
 
-    m = masks[150]
+    m = masks[0]
     mask_to_png(m)

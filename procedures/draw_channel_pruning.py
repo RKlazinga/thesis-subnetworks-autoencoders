@@ -2,6 +2,7 @@ from typing import Dict
 
 import torch
 from torch import nn
+from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
 
@@ -19,8 +20,8 @@ def find_channel_mask(network, fraction):
     :param fraction: The fraction of channels to KEEP after pruning
     :return: A mask for each BatchNorm layer
     """
-    bn_masks: Dict[nn.BatchNorm2d, torch.Tensor] = {
-        m: None for m in network.modules() if isinstance(m, nn.BatchNorm2d)
+    bn_masks: Dict[_BatchNorm, torch.Tensor] = {
+        m: None for m in network.modules() if isinstance(m, _BatchNorm)
     }
 
     if len(bn_masks) > 0:

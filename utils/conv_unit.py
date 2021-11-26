@@ -1,6 +1,5 @@
 from torch import nn
-
-from utils.batchnorm_filter import FilteredBatchNorm
+from torch.nn import BatchNorm2d
 
 
 class ConvUnit(nn.Module):
@@ -8,15 +7,15 @@ class ConvUnit(nn.Module):
     Basic combination of convolution, normalisation and activation.
     """
     def __init__(self, in_channels, out_channels, kernel_size, *args,
-                 activation=nn.ReLU, max_pool=False, bn_mask=None, **kwargs):
+                 activation=nn.ReLU, max_pool=False, bn=False, **kwargs):
         super().__init__()
 
         self.steps = [
             nn.Conv2d(in_channels, out_channels, kernel_size, *args, **kwargs),
         ]
 
-        if bn_mask is not False:
-            self.steps.append(FilteredBatchNorm(out_channels, bn_mask))
+        if bn:
+            self.steps.append(BatchNorm2d(out_channels))
 
         self.steps.append(activation())
 
@@ -34,15 +33,15 @@ class ConvTransposeUnit(nn.Module):
     Basic combination of convolution, normalisation and activation.
     """
     def __init__(self, in_channels, out_channels, kernel_size, *args,
-                 activation=nn.ReLU, max_pool=False, bn_mask=None, **kwargs):
+                 activation=nn.ReLU, max_pool=False, bn=False, **kwargs):
         super().__init__()
 
         self.steps = [
             nn.ConvTranspose2d(in_channels, out_channels, kernel_size, *args, **kwargs),
         ]
 
-        if bn_mask is not False:
-            self.steps.append(FilteredBatchNorm(out_channels, bn_mask))
+        if bn:
+            self.steps.append(BatchNorm2d(out_channels))
 
         self.steps.append(activation())
 

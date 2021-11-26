@@ -1,2 +1,8 @@
 seaborn
 matplotlib
+torch
+torchvision
+Pillow
+PyQt5
+tqdm
+torchsummary

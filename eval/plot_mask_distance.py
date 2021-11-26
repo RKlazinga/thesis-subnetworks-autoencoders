@@ -4,7 +4,7 @@ import torch
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from procedures.channel_prune import mask_dist
+from procedures.draw_channel_pruning import mask_dist
 from settings.prune_settings import *
 
 run_id = "lre3"

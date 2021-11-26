@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 
 from eval.eval import eval_network
 from models.conv_ae import ConvAE
-from procedures.channel_prune import find_channel_mask
+from procedures.draw_channel_pruning import find_channel_mask
 from procedures.test import test
 from procedures.train import train
 from settings.train_settings import *
