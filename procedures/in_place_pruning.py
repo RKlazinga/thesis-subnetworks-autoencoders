@@ -1,5 +1,4 @@
 import torch
-import torchsummary
 from torch.nn import Linear, Unflatten
 from torch.nn.modules.batchnorm import _BatchNorm
 from torch.nn.modules.conv import _ConvTransposeNd, _ConvNd

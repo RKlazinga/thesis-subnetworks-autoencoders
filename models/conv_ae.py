@@ -3,7 +3,7 @@ import os
 import torch
 from torch import nn
 
-from procedures.apply_channel_pruning_in_place import prune_model
+from procedures.in_place_pruning import prune_model
 from utils.conv_unit import ConvUnit, ConvTransposeUnit
 from utils.crop_module import Crop
 from utils.math import calculate_im_size
