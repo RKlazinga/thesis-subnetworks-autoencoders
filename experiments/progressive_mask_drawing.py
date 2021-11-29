@@ -15,23 +15,24 @@ from procedures.train import train
 from settings.train_settings import *
 from settings.prune_settings import *
 
-unique_id = hex(random.randint(16**8, 16**9))[2:]
-print(f"RUN ID: {unique_id}")
-folder = f"runs/{unique_id}"
-
 network = ConvAE(*TOPOLOGY)
 
 train_set = FashionMNIST("data/", train=True, download=True, transform=ToTensor())
 test_set = FashionMNIST("data/", train=False, download=True, transform=ToTensor())
 
-train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True)
-test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=True)
+train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
+test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
 
 optimiser = Adam(network.parameters(), lr=LR)
 criterion = MSELoss()
 
+# TODO look at learning rate scheduling
 
 if __name__ == '__main__':
+    unique_id = hex(random.randint(16**8, 16**9))[2:]
+    print(f"RUN ID: {unique_id}")
+    folder = f"runs/{unique_id}"
+
     os.makedirs(folder, exist_ok=True)
     torch.save(network.state_dict(), folder + f"/starting_params-{TOPOLOGY}.pth")
 
