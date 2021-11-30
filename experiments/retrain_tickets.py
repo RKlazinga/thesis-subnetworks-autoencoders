@@ -15,7 +15,7 @@ from settings.prune_settings import DRAW_PER_EPOCH, PRUNE_RATIOS
 
 from settings.train_settings import *
 from utils.ensure_correct_folder import change_working_dir
-
+from utils.training_setup import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
@@ -25,12 +25,7 @@ train_every = 4
 checkpoint_folder = f"runs/{run_id}/"
 graph_data_folder = f"graphs/graph_data/{run_id}"
 
-train_set = FashionMNIST("data/", train=True, download=True, transform=ToTensor())
-test_set = FashionMNIST("data/", train=False, download=True, transform=ToTensor())
-
-train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
-test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
-
+train_loader, test_loader = get_loaders()
 criterion = MSELoss()
 
 
