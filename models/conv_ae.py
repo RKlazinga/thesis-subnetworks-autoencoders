@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 import torch
 from torch import nn
@@ -62,18 +63,17 @@ class ConvAE(nn.Module):
         return self.decoder(x)
 
     @staticmethod
-    def init_from_checkpoint(checkpoint_id, ratio, epoch, sub_epoch=1):
+    def init_from_checkpoint(checkpoint_id, ratio: Union[float, None], epoch, sub_epoch=1):
         checkpoint_file = [x for x in os.listdir(f"runs/{checkpoint_id}") if x.startswith("starting_params-")][0]
         checkpoint_settings = checkpoint_file.removesuffix("].pth").removeprefix("starting_params-[")
         checkpoint_settings = [int(x) for x in checkpoint_settings.split(",")]
         network = ConvAE(*checkpoint_settings)
-
         network.load_state_dict(torch.load(f"runs/{checkpoint_id}/{checkpoint_file}"))
 
-        mask_file = f"runs/{checkpoint_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
-
-        masks = torch.load(mask_file)
-        prune_model(network, masks)
+        if ratio is not None:
+            mask_file = f"runs/{checkpoint_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
+            masks = torch.load(mask_file)
+            prune_model(network, masks)
 
         return network
 

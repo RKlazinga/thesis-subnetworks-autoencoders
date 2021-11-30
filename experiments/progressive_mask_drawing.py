@@ -14,9 +14,12 @@ from procedures.test import test
 from procedures.train import train
 from settings.train_settings import *
 from settings.prune_settings import *
+from utils.ensure_correct_folder import change_working_dir
 
-network = ConvAE(*TOPOLOGY)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+network = ConvAE(*TOPOLOGY).to(device)
 
+change_working_dir()
 train_set = FashionMNIST("data/", train=True, download=True, transform=ToTensor())
 test_set = FashionMNIST("data/", train=False, download=True, transform=ToTensor())
 
@@ -36,7 +39,7 @@ if __name__ == '__main__':
     os.makedirs(folder, exist_ok=True)
     torch.save(network.state_dict(), folder + f"/starting_params-{TOPOLOGY}.pth")
 
-    for epoch in range(10):
+    for epoch in range(DRAW_EPOCHS):
         # save the current mask drawn based on channel pruning
 
         def prune_snapshot(iter: int, epoch=epoch):
@@ -46,9 +49,7 @@ if __name__ == '__main__':
         if epoch == 0:
             prune_snapshot(0)
 
-        train_loss = train(network, optimiser, criterion, train_loader, prune_snapshot_method=prune_snapshot)
-        test_loss = test(network, criterion, test_loader)
-
-        eval_network(network, test_set[0][0].view(1, 1, 28, 28))
+        train_loss = train(network, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
+        test_loss = test(network, criterion, test_loader, device)
 
         print(train_loss, test_loss)

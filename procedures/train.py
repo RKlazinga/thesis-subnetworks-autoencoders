@@ -4,7 +4,7 @@ from utils.channel_sparsity_reg import updateBN
 from settings.prune_settings import DRAW_PER_EPOCH
 
 
-def train(network, opt, criterion, train_loader, prune_snapshot_method=None):
+def train(network, opt, criterion, train_loader, device, prune_snapshot_method=None):
     train_loss = 0
     network.train()
 
@@ -15,7 +15,7 @@ def train(network, opt, criterion, train_loader, prune_snapshot_method=None):
             if snapshot_counter / DRAW_PER_EPOCH <= (idx+1) / train_count:
                 prune_snapshot_method(snapshot_counter)
                 snapshot_counter += 1
-        img, _ = batch
+        img = batch[0].to(device)
         target = img.clone()
 
         opt.zero_grad()
