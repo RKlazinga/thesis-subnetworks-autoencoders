@@ -13,9 +13,9 @@ from procedures.train import train
 from settings.train_settings import LR, RETRAIN_EPOCHS
 from utils.training_setup import get_loaders
 
-run_id = "withbn"
+run_id = "d374677b9"
 ratio = 0.5
-draw_epoch = 4
+draw_epoch = 9
 draw_sub_epoch = 4
 mask = f"runs/{run_id}/keep-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -28,12 +28,12 @@ if __name__ == '__main__':
     settings = params.removesuffix(".pth").split("-")[-1].strip("[]")
     settings = [int(x) for x in settings.split(",")]
 
-    unpruned = ConvAE(*settings)
+    unpruned = ConvAE(*settings).to(device)
     unpruned.load_state_dict(torch.load(params))
 
-    pruned = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch)
+    pruned = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch).to(device)
 
-    pruned_reset = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch)
+    pruned_reset = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch).to(device)
     # reset weights
     for m in pruned_reset.modules():
         if isinstance(m, nn.ConvTranspose2d) or isinstance(m, nn.Conv2d):

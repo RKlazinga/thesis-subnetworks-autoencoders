@@ -3,11 +3,11 @@ from typing import Dict
 from matplotlib import cm
 import matplotlib.pyplot as plt
 
-from eval.plot_retrain_results import plot_single
+from evaluation.plot_retrain_results import plot_single
 from utils.ensure_correct_folder import change_working_dir
 
 
-def plot_acc_over_time_multiple_drawings(run_id, ratio):
+def plot_acc_over_time_with_without_reinit(run_id, ratio):
     graph_data_file = f"graphs/graph_data/reset-{run_id}-{ratio}.json"
 
     colors = {
@@ -31,4 +31,4 @@ if __name__ == '__main__':
     change_working_dir()
     _run_id = "d374677b9"
 
-    plot_acc_over_time_multiple_drawings(_run_id, 0.75)
+    plot_acc_over_time_with_without_reinit(_run_id, 0.5)
