@@ -20,9 +20,11 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
         graph_data: Dict = json.loads(read_file.read())
 
         for key, data in graph_data.items():
-            plot_single(data, colors[key])
+            label = key.replace("_", " ").title()
+            plot_single(data, colors[key], label)
 
         plt.gca().set_ylim([0.015, 0.035])
+        plt.legend()
         plt.savefig(f"graphs/reset-{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()
 

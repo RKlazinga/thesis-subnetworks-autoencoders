@@ -17,7 +17,7 @@ def get_square_coords(bn_idx, single_idx, im_height, bn_mask):
 
 
 def mask_to_png(mask):
-    mask = torch.load(mask)
+    mask = torch.load(mask, map_location=torch.device('cpu'))
     bn_count = len(mask)
     most_channels = max(map(len, mask))
 
@@ -51,10 +51,9 @@ def mask_to_png(mask):
 
 if __name__ == '__main__':
     change_working_dir()
-    run_id = "withbn"
 
-    mask_to_png("runs/withbn/keep-0.5-epoch-0-4.pth")
-    mask_to_png("runs/withbn/keep-0.5-epoch-4-4.pth")
+    # mask_to_png("runs/d374677b9/keep-0.5-epoch-0-4.pth")
+    mask_to_png("runs/d374677b9/keep-0.75-epoch-5-4.pth")
     # masks = list(filter(lambda x: x.startswith("keep"), os.listdir(f"runs/{run_id}")))
     # masks = [f"runs/{run_id}/{x}" for x in masks]
     #

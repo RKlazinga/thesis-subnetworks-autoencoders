@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from utils.ensure_correct_folder import change_working_dir
 
 
-def plot_single(data, color):
+def plot_single(data, color, label=None):
     xs = [x[0] for x in data]
     ys = [x[2] for x in data]
-    plt.plot(xs, ys, color=color)
+    plt.plot(xs, ys, color=color, label=label)
 
 
 def plot_acc_over_time_multiple_drawings(run_id, ratio):
@@ -22,19 +22,20 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
         # always plot the unpruned retraining run in grey
         unpruned_key = [x for x in graph_data.keys() if x.startswith("None")][0]
         unpruned_data = graph_data[unpruned_key]
-        plot_single(unpruned_data, "grey")
+        plot_single(unpruned_data, "grey", "Unpruned")
 
         # plot the various pruned runs of this ratio
         relevant_keys = [x for x in graph_data.keys() if x.startswith(f"{ratio}-")]
         for idx, key in enumerate(relevant_keys):
+            label = f"Drawn from epoch {key.split('-')[1]}"
             color = cmap(idx / len(relevant_keys))
             print(key, color)
-            plot_single(graph_data[key], color)
+            plot_single(graph_data[key], color, label)
 
         plt.gca().set_ylim([0.015, 0.035])
+        plt.legend()
         plt.savefig(f"graphs/{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()
-
 
 
 if __name__ == '__main__':

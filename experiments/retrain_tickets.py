@@ -4,9 +4,6 @@ import os
 import torch
 from torch.nn import MSELoss
 from torch.optim import Adam
-from torch.utils.data import DataLoader
-from torchvision.datasets import FashionMNIST
-from torchvision.transforms import ToTensor
 
 from models.conv_ae import ConvAE
 from procedures.test import test
