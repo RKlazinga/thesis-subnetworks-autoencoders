@@ -4,7 +4,7 @@ import torch
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from procedures.draw_channel_pruning import mask_dist
+from procedures.ticket_drawing.without_redist import mask_dist
 from settings.prune_settings import *
 from utils.ensure_correct_folder import change_working_dir
 

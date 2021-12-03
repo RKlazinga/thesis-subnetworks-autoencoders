@@ -1,10 +1,12 @@
-import os
+from typing import Union
+
 import torch
-from PIL import ImageDraw, Image
+from PIL import ImageDraw, ImageFont, Image
 
 from utils.ensure_correct_folder import change_working_dir
 
-SPACING = 200
+HEADER = 50
+SPACING = 150
 CHANNEL_SIZE = 40, 20
 ON_CHANNEL = (0, 200, 0)
 OFF_CHANNEL = (200, 0, 0)
@@ -12,17 +14,22 @@ OFF_CHANNEL = (200, 0, 0)
 
 def get_square_coords(bn_idx, single_idx, im_height, bn_mask):
     x = SPACING + bn_idx * (CHANNEL_SIZE[0] + SPACING)
-    y = im_height/2 + (SPACING + (single_idx - len(bn_mask) / 2) * (CHANNEL_SIZE[1]+2))
+    y = (im_height - HEADER)/2 + (single_idx - len(bn_mask) / 2) * (CHANNEL_SIZE[1]+2) + 1 + HEADER
     return x, y
 
 
-def mask_to_png(mask):
-    mask = torch.load(mask, map_location=torch.device('cpu'))
+def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None):
+    if type(mask) == str:
+        mask = torch.load(mask, map_location=torch.device('cpu'))
+    elif type(mask) != list:
+        raise TypeError(f"Input mask has unexpected type {type(mask)}")
+
     bn_count = len(mask)
     most_channels = max(map(len, mask))
+    print(most_channels)
 
-    im_width = bn_count * CHANNEL_SIZE[0] + (2 + bn_count) * SPACING
-    im_height = most_channels * (CHANNEL_SIZE[1] + 1) + 2 * SPACING
+    im_width = bn_count * CHANNEL_SIZE[0] + (1 + bn_count) * SPACING
+    im_height = most_channels * (CHANNEL_SIZE[1] + 2) + SPACING - 1 + HEADER
     bg: Image.Image = Image.new("RGB", (im_width, im_height), color=(255, 255, 255))
     draw = ImageDraw.ImageDraw(bg)
 
@@ -46,16 +53,14 @@ def mask_to_png(mask):
                             right_y += CHANNEL_SIZE[1] / 2
                             draw.line(((left_x, left_y), (right_x, right_y)), fill=ON_CHANNEL, width=2)
 
+    if caption:
+        font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", size=60)
+        fwidth = font.getsize(caption)[0]
+        draw.text(((im_width - fwidth) // 2, 30), caption, (0, 0, 0), font=font)
+
     bg.show()
 
 
 if __name__ == '__main__':
     change_working_dir()
 
-    # mask_to_png("runs/d374677b9/keep-0.5-epoch-0-4.pth")
-    mask_to_png("runs/d374677b9/keep-0.75-epoch-5-4.pth")
-    # masks = list(filter(lambda x: x.startswith("keep"), os.listdir(f"runs/{run_id}")))
-    # masks = [f"runs/{run_id}/{x}" for x in masks]
-    #
-    # m = masks[0]
-    # mask_to_png(m)

@@ -1,17 +1,14 @@
 from typing import Dict
 
 import torch
-from torch import nn
 from torch.nn.modules.batchnorm import _BatchNorm
-
-from models.conv_ae import ConvAE
 
 
 def mask_dist(masks_a, masks_b):
     return [torch.sum(torch.abs(a-b)).item() for a, b in zip(masks_a, masks_b)]
 
 
-def find_channel_mask(network, fraction):
+def find_channel_mask_no_redist(network, fraction):
     """
     Draw a critical subnetwork from a given trained network using channel pruning.
     Pruning is applied layer-by-layer.
@@ -57,20 +54,3 @@ def find_channel_mask(network, fraction):
             bn_masks[bn] = mask
 
     return bn_masks
-
-    # per batch layer:
-    #
-    # m.weight.data.mul_(mask)
-    # m.bias.data.mul_(mask)
-    #
-    # definitively remove channels with "channel_selection" module:
-    # https://github.com/RICE-EIC/Early-Bird-Tickets/blob/4a16ae0731edf288c48e000c1c2a51dc0433f4ef/models/channel_selection.py#L7
-
-
-if __name__ == '__main__':
-    network = ConvAE(6, 4, 6)
-    network.load_state_dict(torch.load("network.pth"))
-
-    masks = find_channel_mask(network, 0.5)
-    for m in masks.values():
-        print(f"{torch.count_nonzero(m)} of {m.numel()} layers kept ({round(float(torch.count_nonzero(m)/m.numel())*100, 1)}%))")
