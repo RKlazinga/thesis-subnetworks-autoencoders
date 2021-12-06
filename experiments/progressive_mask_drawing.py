@@ -26,19 +26,21 @@ criterion = MSELoss()
 # TODO look at learning rate scheduling
 
 if __name__ == '__main__':
-    unique_id = "prop_redist-" + hex(random.randint(16**8, 16**9))[2:]
+    unique_id = hex(random.randint(16**8, 16**9))[2:]
+    if PRUNE_WITH_REDIST:
+        unique_id = "prop_redist-" + unique_id
+
+    channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist()
+
     print(f"RUN ID: {unique_id}")
     folder = f"runs/{unique_id}"
-
-    os.makedirs(folder, exist_ok=True)
+    os.makedirs(folder)
     torch.save(network.state_dict(), folder + f"/starting_params-{TOPOLOGY}.pth")
 
-    for epoch in range(DRAW_EPOCHS):
-        # save the current mask drawn based on channel pruning
-
+    for epoch in range(1, DRAW_EPOCHS + 1):
         def prune_snapshot(iter: int, epoch=epoch):
             for r in PRUNE_RATIOS:
-                torch.save(list(find_channel_mask_redist(network, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iter}.pth")
+                torch.save(list(channel_mask_func(network, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iter}.pth")
 
         train_loss = train(network, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
         test_loss = test(network, criterion, test_loader, device)

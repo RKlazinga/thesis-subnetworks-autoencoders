@@ -9,8 +9,9 @@ from models.conv_ae import ConvAE
 from procedures.test import test
 from procedures.train import train
 from settings.prune_settings import DRAW_PER_EPOCH, PRUNE_RATIOS
+from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR, RETRAIN_RESUME_EPOCH
+from settings.train_settings import DRAW_EPOCHS
 
-from settings.train_settings import *
 from utils.ensure_correct_folder import change_working_dir
 from utils.training_setup import get_loaders
 
@@ -38,16 +39,16 @@ if __name__ == '__main__':
 
     for ratio in [None] + PRUNE_RATIOS:
         masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"keep-{ratio}-")]
-        for draw_epoch in range(DRAW_EPOCHS):
+        for draw_epoch in range(1, DRAW_EPOCHS + 1):
             for sub_epoch in range(1, DRAW_PER_EPOCH + 1):
-                if ratio is None and (draw_epoch != 0 or sub_epoch != train_every):
+                if ratio is None and (draw_epoch != 1 or sub_epoch != train_every):
                     continue
                 if sub_epoch % train_every == 0:
                     print(f"Retraining: ratio {ratio}, epoch {draw_epoch}, sub-epoch {sub_epoch}")
                     current_graph_data = []
                     graph_data[f"{ratio}-{draw_epoch}-{sub_epoch}"] = current_graph_data
-                    network = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch).to(device)
-                    optimiser = Adam(network.parameters(), lr=LR)
+                    network = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch, param_epoch=RETRAIN_RESUME_EPOCH).to(device)
+                    optimiser = Adam(network.parameters(), lr=RETRAIN_LR)
 
                     for epoch in range(RETRAIN_EPOCHS):
                         train_loss = train(network, optimiser, criterion, train_loader, device)
