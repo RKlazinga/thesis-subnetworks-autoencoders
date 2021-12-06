@@ -10,7 +10,7 @@ from utils.ensure_correct_folder import change_working_dir
 
 change_working_dir()
 
-run_id = "prop_redist-43484a442"
+run_id = "5924489e9"
 
 files = os.listdir(f"runs/{run_id}")
 

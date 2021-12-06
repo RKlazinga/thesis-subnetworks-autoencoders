@@ -9,7 +9,7 @@ from models.conv_ae import ConvAE
 from procedures.test import test
 from procedures.train import train
 from settings.prune_settings import DRAW_PER_EPOCH, PRUNE_RATIOS
-from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR, RETRAIN_RESUME_EPOCH
+from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR, RETRAIN_RESUME_EPOCH, RETRAIN_L2REG
 from settings.train_settings import DRAW_EPOCHS
 
 from utils.ensure_correct_folder import change_working_dir
@@ -17,7 +17,7 @@ from utils.training_setup import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
-run_id = "prop_redist-43484a442"
+run_id = "BIGBOI-febb214a4"
 train_every = 4
 checkpoint_folder = f"runs/{run_id}/"
 graph_data_folder = f"graphs/graph_data/{run_id}"
@@ -33,13 +33,16 @@ if __name__ == '__main__':
     else:
         graph_data = {}
 
+    DRAW_EPOCHS = 6
+    RETRAIN_EPOCHS = 16
+
     print(f"Retraining tickets of run {run_id}")
     print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * DRAW_EPOCHS * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
     print()
 
-    for ratio in [None] + PRUNE_RATIOS:
+    for ratio in [0.5, 0.25]: # [None] + PRUNE_RATIOS:
         masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"keep-{ratio}-")]
-        for draw_epoch in range(1, DRAW_EPOCHS + 1):
+        for draw_epoch in range(3, DRAW_EPOCHS + 1):
             for sub_epoch in range(1, DRAW_PER_EPOCH + 1):
                 if ratio is None and (draw_epoch != 1 or sub_epoch != train_every):
                     continue
@@ -48,7 +51,7 @@ if __name__ == '__main__':
                     current_graph_data = []
                     graph_data[f"{ratio}-{draw_epoch}-{sub_epoch}"] = current_graph_data
                     network = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch, param_epoch=RETRAIN_RESUME_EPOCH).to(device)
-                    optimiser = Adam(network.parameters(), lr=RETRAIN_LR)
+                    optimiser = Adam(network.parameters(), lr=RETRAIN_LR, weight_decay=RETRAIN_L2REG)
 
                     for epoch in range(RETRAIN_EPOCHS):
                         train_loss = train(network, optimiser, criterion, train_loader, device)
@@ -59,3 +62,7 @@ if __name__ == '__main__':
 
                         with open(f"graphs/graph_data/{run_id}.json", "w") as write_file:
                             write_file.write(json.dumps(graph_data))
+
+                        if test_loss - train_loss > 0.003 and train_loss < 0.017:
+                            print("Aborting due to overfit")
+                            break

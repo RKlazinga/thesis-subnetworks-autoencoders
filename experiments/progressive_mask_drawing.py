@@ -20,7 +20,7 @@ network = ConvAE(*TOPOLOGY).to(device)
 change_working_dir()
 train_loader, test_loader = get_loaders()
 
-optimiser = Adam(network.parameters(), lr=LR)
+optimiser = Adam(network.parameters(), lr=LR, weight_decay=L2REG)
 criterion = MSELoss()
 
 # TODO look at learning rate scheduling
@@ -30,7 +30,9 @@ if __name__ == '__main__':
     if PRUNE_WITH_REDIST:
         unique_id = "prop_redist-" + unique_id
 
-    channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist()
+    unique_id = "BIGBOI-" + unique_id
+
+    channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
 
     print(f"RUN ID: {unique_id}")
     folder = f"runs/{unique_id}"
