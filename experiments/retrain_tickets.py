@@ -16,8 +16,7 @@ from utils.training_setup import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
-run_id = "d374677b9"
-ratio = 0.75
+run_id = "prop_redist-43484a442"
 train_every = 4
 checkpoint_folder = f"runs/{run_id}/"
 graph_data_folder = f"graphs/graph_data/{run_id}"
@@ -34,12 +33,12 @@ if __name__ == '__main__':
         graph_data = {}
 
     print(f"Retraining tickets of run {run_id}")
-    print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * 6 * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
+    print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * DRAW_EPOCHS * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
     print()
 
     for ratio in [None] + PRUNE_RATIOS:
         masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"keep-{ratio}-")]
-        for draw_epoch in range(6):
+        for draw_epoch in range(DRAW_EPOCHS):
             for sub_epoch in range(1, DRAW_PER_EPOCH + 1):
                 if ratio is None and (draw_epoch != 0 or sub_epoch != train_every):
                     continue

@@ -47,6 +47,8 @@ def find_channel_mask_redist(network, fraction, redist_function="proportional"):
 
         # set the corresponding section of the all_weights tensor
         abs_weight = bn.weight.data.abs().clone()
+        if bn_size == 1:
+            abs_weight += 1e9
         all_weights[idx:idx+bn_size] = abs_weight
         idx += bn_size
 
@@ -71,7 +73,7 @@ def find_channel_mask_redist(network, fraction, redist_function="proportional"):
             # check if we accidentally caught any pruned (1e9) weights
             multiplier = 1 + min_weight / all_remaining_weights
             assert all_remaining_weights < 1e9
-            assert 1 < multiplier < 2, f"Multiplier {multiplier} has strange value"
+            assert 1 < multiplier < 2, f"Multiplier {multiplier} has strange value ({min_weight}, {all_weights[range_start:range_end]})"
             # scale range up proportionally
             all_weights[range_start:range_end] *= multiplier
 

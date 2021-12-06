@@ -10,12 +10,12 @@ from utils.ensure_correct_folder import change_working_dir
 
 change_working_dir()
 
-run_id = "d374677b9"
+run_id = "prop_redist-43484a442"
 
 files = os.listdir(f"runs/{run_id}")
 
-FIG_COUNT = 6
-ROW_SIZE = 3
+FIG_COUNT = 4
+ROW_SIZE = 2
 
 fig, axs = plt.subplots(FIG_COUNT // ROW_SIZE, ROW_SIZE)
 fig.tight_layout()

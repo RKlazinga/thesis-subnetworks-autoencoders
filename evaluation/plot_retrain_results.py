@@ -40,6 +40,6 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    _run_id = "d374677b9"
+    _run_id = "prop_redist-43484a442"
 
     plot_acc_over_time_multiple_drawings(_run_id, 0.75)

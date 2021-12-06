@@ -5,6 +5,7 @@ from torch.nn import MSELoss
 from torch.optim import Adam
 
 from models.conv_ae import ConvAE
+from procedures.ticket_drawing.with_redist import find_channel_mask_redist
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
 from procedures.test import test
 from procedures.train import train
@@ -25,7 +26,7 @@ criterion = MSELoss()
 # TODO look at learning rate scheduling
 
 if __name__ == '__main__':
-    unique_id = hex(random.randint(16**8, 16**9))[2:]
+    unique_id = "prop_redist-" + hex(random.randint(16**8, 16**9))[2:]
     print(f"RUN ID: {unique_id}")
     folder = f"runs/{unique_id}"
 
@@ -37,10 +38,7 @@ if __name__ == '__main__':
 
         def prune_snapshot(iter: int, epoch=epoch):
             for r in PRUNE_RATIOS:
-                torch.save(list(find_channel_mask_no_redist(network, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iter}.pth")
-
-        if epoch == 0:
-            prune_snapshot(0)
+                torch.save(list(find_channel_mask_redist(network, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iter}.pth")
 
         train_loss = train(network, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
         test_loss = test(network, criterion, test_loader, device)
