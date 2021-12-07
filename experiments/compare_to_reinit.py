@@ -10,7 +10,8 @@ from torch.optim import Adam
 from models.conv_ae import ConvAE
 from procedures.test import test
 from procedures.train import train
-from settings.train_settings import LR, RETRAIN_EPOCHS
+from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR
+from utils.file import get_topology_of_run, get_params_of_run
 from utils.training_setup import get_loaders
 
 run_id = "d374677b9"
@@ -23,13 +24,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 if __name__ == '__main__':
     train_loader, test_loader = get_loaders()
 
-    params = [x for x in os.listdir(dirname(mask)) if x.startswith("starting_params-")][0]
-    params = join(dirname(mask), params)
-    settings = params.removesuffix(".pth").split("-")[-1].strip("[]")
-    settings = [int(x) for x in settings.split(",")]
-
-    unpruned = ConvAE(*settings).to(device)
-    unpruned.load_state_dict(torch.load(params))
+    unpruned = ConvAE(*get_topology_of_run(run_id)).to(device)
+    unpruned.load_state_dict(torch.load(get_params_of_run(run_id, device=device)))
 
     pruned = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch).to(device)
 
@@ -52,7 +48,7 @@ if __name__ == '__main__':
         print(f"Retraining: {net_tag}")
         current_graph_data = []
         graph_data[net_tag] = current_graph_data
-        optimiser = Adam(net.parameters(), lr=LR)
+        optimiser = Adam(net.parameters(), lr=RETRAIN_LR)
         criterion = MSELoss()
 
         for epoch in range(RETRAIN_EPOCHS):

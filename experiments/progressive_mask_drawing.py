@@ -11,7 +11,7 @@ from procedures.test import test
 from procedures.train import train
 from settings.train_settings import *
 from settings.prune_settings import *
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 from utils.training_setup import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     if PRUNE_WITH_REDIST:
         unique_id = "prop_redist-" + unique_id
 
-    unique_id = "BIGBOI-" + unique_id
+    unique_id = f"{TOPOLOGY}-" + unique_id
 
     channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
 
@@ -47,5 +47,5 @@ if __name__ == '__main__':
         train_loss = train(network, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
         test_loss = test(network, criterion, test_loader, device)
 
-        print(train_loss, test_loss)
+        print(f"{epoch}/{DRAW_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
         torch.save(network.state_dict(), folder + f"/trained-{epoch}.pth")

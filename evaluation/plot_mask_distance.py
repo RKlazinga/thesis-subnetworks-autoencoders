@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from procedures.ticket_drawing.without_redist import mask_dist
 from settings.prune_settings import *
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 
 change_working_dir()
 
@@ -47,5 +47,7 @@ for idx_r, r in enumerate(PRUNE_RATIOS):
 
     ax = axs[idx_r // ROW_SIZE, idx_r % ROW_SIZE]
     ax.set_title(f"Ratio {r}")
-    sns.heatmap(dists, ax=ax, square=True, xticklabels=[x//DRAW_PER_EPOCH if x % DRAW_PER_EPOCH == 0 else None for x in range(len(ratio_files))], yticklabels=False)
+
+    xticklabels = [x//DRAW_PER_EPOCH if x % DRAW_PER_EPOCH == 0 else None for x in range(len(ratio_files))]
+    sns.heatmap(dists, ax=ax, square=True, xticklabels=xticklabels, yticklabels=False)
 plt.show()

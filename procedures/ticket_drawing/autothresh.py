@@ -4,7 +4,7 @@ import torch
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 
 
 def find_channel_mask_autothresh(network, thresh=0.1):

@@ -3,7 +3,7 @@ from torchvision.datasets import FashionMNIST
 from torchvision.transforms import ToTensor
 
 from settings.train_settings import BATCH_SIZE
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 
 
 def get_loaders():

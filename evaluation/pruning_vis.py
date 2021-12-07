@@ -3,7 +3,7 @@ from typing import Union
 import torch
 from PIL import ImageDraw, ImageFont, Image
 
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 
 HEADER = 50
 SPACING = 150
@@ -18,7 +18,7 @@ def get_square_coords(bn_idx, single_idx, im_height, bn_mask):
     return x, y
 
 
-def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None):
+def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=False):
     if type(mask) == str:
         mask = torch.load(mask, map_location=torch.device('cpu'))
     elif type(mask) != list:
@@ -26,7 +26,6 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None):
 
     bn_count = len(mask)
     most_channels = max(map(len, mask))
-    print(most_channels)
 
     im_width = bn_count * CHANNEL_SIZE[0] + (1 + bn_count) * SPACING
     im_height = most_channels * (CHANNEL_SIZE[1] + 2) + SPACING - 1 + HEADER
@@ -38,20 +37,21 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None):
             x, y = get_square_coords(bn_idx, single_idx, im_height, bn_mask)
             draw.rectangle((x, y, x + CHANNEL_SIZE[0], y + CHANNEL_SIZE[1]), fill=ON_CHANNEL if single_mask else OFF_CHANNEL)
 
-    # for bn_idx, bn_mask_left in enumerate(mask):
-    #     if bn_idx < bn_count - 1:
-    #         bn_mask_right = mask[bn_idx + 1]
-    #
-    #         for left_idx, left in enumerate(bn_mask_left):
-    #             if left:
-    #                 left_x, left_y = get_square_coords(bn_idx, left_idx, im_height, bn_mask_left)
-    #                 left_x += CHANNEL_SIZE[0]
-    #                 left_y += CHANNEL_SIZE[1] / 2
-    #                 for right_idx, right in enumerate(bn_mask_right):
-    #                     if right:
-    #                         right_x, right_y = get_square_coords(bn_idx + 1, right_idx, im_height, bn_mask_right)
-    #                         right_y += CHANNEL_SIZE[1] / 2
-    #                         draw.line(((left_x, left_y), (right_x, right_y)), fill=ON_CHANNEL, width=2)
+    if draw_conn:
+        for bn_idx, bn_mask_left in enumerate(mask):
+            if bn_idx < bn_count - 1:
+                bn_mask_right = mask[bn_idx + 1]
+
+                for left_idx, left in enumerate(bn_mask_left):
+                    if left:
+                        left_x, left_y = get_square_coords(bn_idx, left_idx, im_height, bn_mask_left)
+                        left_x += CHANNEL_SIZE[0]
+                        left_y += CHANNEL_SIZE[1] / 2
+                        for right_idx, right in enumerate(bn_mask_right):
+                            if right:
+                                right_x, right_y = get_square_coords(bn_idx + 1, right_idx, im_height, bn_mask_right)
+                                right_y += CHANNEL_SIZE[1] / 2
+                                draw.line(((left_x, left_y), (right_x, right_y)), fill=ON_CHANNEL, width=2)
 
     if caption:
         font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", size=60)

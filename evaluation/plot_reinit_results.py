@@ -1,10 +1,9 @@
 import json
 from typing import Dict
-from matplotlib import cm
 import matplotlib.pyplot as plt
 
 from evaluation.plot_retrain_results import plot_single
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 
 
 def plot_acc_over_time_with_without_reinit(run_id, ratio):

@@ -3,7 +3,7 @@ from typing import Dict
 from matplotlib import cm
 import matplotlib.pyplot as plt
 
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 
 
 def plot_single(data, color, label=None):

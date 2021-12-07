@@ -6,7 +6,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 
 
 def find_channel_mask_redist(network, fraction, redist_function="proportional"):

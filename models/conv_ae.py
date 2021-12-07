@@ -7,6 +7,7 @@ from torch import nn
 from procedures.in_place_pruning import prune_model
 from utils.conv_unit import ConvUnit, ConvTransposeUnit
 from utils.crop_module import Crop
+from utils.file import get_topology_of_run, get_params_of_run
 from utils.math import calculate_im_size
 
 
@@ -64,16 +65,10 @@ class ConvAE(nn.Module):
 
     @staticmethod
     def init_from_checkpoint(run_id, ratio: Union[float, None], epoch, sub_epoch=1, param_epoch=None):
-        checkpoint_file = [x for x in os.listdir(f"runs/{run_id}") if x.startswith("starting_params-")][0]
-        checkpoint_settings = checkpoint_file.removesuffix("].pth").removeprefix("starting_params-[")
-        checkpoint_settings = [int(x) for x in checkpoint_settings.split(",")]
+        topology = get_topology_of_run(run_id)
 
-        if param_epoch is None:
-            resume_file = f"runs/{run_id}/{checkpoint_file}"
-        else:
-            resume_file = f"runs/{run_id}/trained-{param_epoch}.pth"
-        network = ConvAE(*checkpoint_settings)
-        network.load_state_dict(torch.load(resume_file))
+        network = ConvAE(*topology)
+        network.load_state_dict(get_params_of_run(run_id, param_epoch))
 
         if ratio is not None:
             mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"

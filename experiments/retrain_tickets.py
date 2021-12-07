@@ -12,12 +12,12 @@ from settings.prune_settings import DRAW_PER_EPOCH, PRUNE_RATIOS
 from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR, RETRAIN_RESUME_EPOCH, RETRAIN_L2REG
 from settings.train_settings import DRAW_EPOCHS
 
-from utils.ensure_correct_folder import change_working_dir
+from utils.file import change_working_dir
 from utils.training_setup import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
-run_id = "BIGBOI-febb214a4"
+run_id = "febb214a4"
 train_every = 4
 checkpoint_folder = f"runs/{run_id}/"
 graph_data_folder = f"graphs/graph_data/{run_id}"
@@ -33,16 +33,13 @@ if __name__ == '__main__':
     else:
         graph_data = {}
 
-    DRAW_EPOCHS = 6
-    RETRAIN_EPOCHS = 16
-
     print(f"Retraining tickets of run {run_id}")
     print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * DRAW_EPOCHS * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
     print()
 
-    for ratio in [0.5, 0.25]: # [None] + PRUNE_RATIOS:
+    for ratio in [None] + PRUNE_RATIOS:
         masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"keep-{ratio}-")]
-        for draw_epoch in range(3, DRAW_EPOCHS + 1):
+        for draw_epoch in range(1, DRAW_EPOCHS + 1):
             for sub_epoch in range(1, DRAW_PER_EPOCH + 1):
                 if ratio is None and (draw_epoch != 1 or sub_epoch != train_every):
                     continue
@@ -57,7 +54,7 @@ if __name__ == '__main__':
                         train_loss = train(network, optimiser, criterion, train_loader, device)
                         test_loss = test(network, criterion, test_loader, device)
 
-                        print(train_loss, test_loss)
+                        print(f"{epoch}/{RETRAIN_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
                         current_graph_data.append((epoch, train_loss, test_loss))
 
                         with open(f"graphs/graph_data/{run_id}.json", "w") as write_file:
