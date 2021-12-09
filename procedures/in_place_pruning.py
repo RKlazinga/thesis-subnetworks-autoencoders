@@ -5,40 +5,50 @@ from torch.nn.modules.conv import _ConvTransposeNd, _ConvNd
 
 
 def prune_model(model, masks):
-    next_iter = model.modules()
-    next(next_iter)
-
     mask_idx = -1
     out_mask = None
 
-    for m, m_next in zip(model.modules(), next_iter):
-        if any([isinstance(m, x) for x in [_ConvNd, _ConvTransposeNd, Linear]]) and isinstance(m_next, _BatchNorm):
+    modules = list(model.modules())
+    modules = [x for x in modules if isinstance(x, (_ConvNd, _ConvTransposeNd, Linear, _BatchNorm, Unflatten))]
+
+    for i in range(len(modules)-2):
+        operator, b, c = modules[i:i+3]
+        if isinstance(operator, (_ConvNd, _ConvTransposeNd, Linear)):
+            if isinstance(b, _BatchNorm):
+                unflatten = None
+                bn = b
+            elif isinstance(b, Unflatten) and isinstance(c, _BatchNorm):
+                unflatten = b
+                bn = c
+            else:
+                continue
+
             mask_idx += 1
             in_mask = out_mask
             out_mask = masks[mask_idx].bool()
-            is_transpose = int(isinstance(m, _ConvTransposeNd))
+            is_transpose = int(isinstance(operator, _ConvTransposeNd))
 
             if in_mask is not None:
                 # prune expected input
-                prune_parameter(m, "weight", in_mask, axis=1-is_transpose)
+                prune_parameter(operator, "weight", in_mask, axis=1-is_transpose)
+
+            # adjust unflatten layer if present
+            if unflatten:
+                current_shape = unflatten.unflattened_size
+                unflatten.unflattened_size = (
+                    torch.count_nonzero(out_mask).item(),
+                    *current_shape[1:]
+                )
 
             # prune output
-            prune_parameter(m, "weight", out_mask, axis=is_transpose)
-            prune_parameter(m, "bias", out_mask, axis=0)
+            prune_parameter(operator, "weight", out_mask, axis=is_transpose)
+            prune_parameter(operator, "bias", out_mask, axis=0)
 
             # prune expected input of batchnorm (using out_mask, since batchnorm comes after)
-            prune_parameter(m_next, "weight", out_mask, axis=0)
-            prune_parameter(m_next, "bias", out_mask, axis=0)
-            prune_parameter(m_next, "running_mean", out_mask, axis=0)
-            prune_parameter(m_next, "running_var", out_mask, axis=0)
-
-        elif isinstance(m, Unflatten):
-            # if we encounter an unflatten layer, reset the expected input mask to all 1's of the appropriate size
-            out_mask = torch.ones(m.unflattened_size[0]).bool()
-
-        elif isinstance(m, Linear):
-            # unmasked linear layer still needs to account for pruning in previous layers
-            prune_parameter(m, "weight", out_mask, axis=1)
+            prune_parameter(bn, "weight", out_mask, axis=0)
+            prune_parameter(bn, "bias", out_mask, axis=0)
+            prune_parameter(bn, "running_mean", out_mask, axis=0)
+            prune_parameter(bn, "running_var", out_mask, axis=0)
 
 
 def prune_parameter(module, parameter_name, mask, axis=0):

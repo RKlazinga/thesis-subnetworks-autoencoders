@@ -63,5 +63,5 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
 
 if __name__ == '__main__':
     change_working_dir()
-    mask_to_png(torch.load("runs/BIGBOI-febb214a4/keep-0.5-epoch-3-4.pth"))
+    mask_to_png(torch.load("runs/testing-allbn-[6, 4, 6]-3217f1496/keep-0.5-epoch-6-4.pth"))
 

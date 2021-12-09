@@ -1,4 +1,3 @@
-import os
 from typing import Union
 
 import torch
@@ -34,10 +33,11 @@ class ConvAE(nn.Module):
         topology.reverse()
         decoder_steps = [
             nn.Linear(latent_size, prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2),
-            nn.ReLU(inplace=True),
             nn.Unflatten(dim=1, unflattened_size=(prev_step_size,
                                                   calculate_im_size(self.IMAGE_SIZE, hidden_layers),
-                                                  calculate_im_size(self.IMAGE_SIZE, hidden_layers)))
+                                                  calculate_im_size(self.IMAGE_SIZE, hidden_layers))),
+            nn.BatchNorm2d(prev_step_size),
+            nn.ReLU()
         ]
 
         for h in topology:

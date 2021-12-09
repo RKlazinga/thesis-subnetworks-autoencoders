@@ -17,7 +17,7 @@ from utils.training_setup import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
-run_id = "febb214a4"
+run_id = "testing-allbn-[6, 4, 6]-3217f1496"
 train_every = 4
 checkpoint_folder = f"runs/{run_id}/"
 graph_data_folder = f"graphs/graph_data/{run_id}"
