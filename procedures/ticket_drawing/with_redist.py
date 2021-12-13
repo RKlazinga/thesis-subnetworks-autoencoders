@@ -63,7 +63,6 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
 
     # until we reach the desired pruning ratio, remove one channel at a time and redistribute its weight proportionally
     desired_prune_count = int(total_channels * (1 - fraction))
-    # desired_prune_count = 3
 
     for i in range(desired_prune_count):
         # find the smallest weight

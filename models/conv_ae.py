@@ -76,4 +76,3 @@ class ConvAE(nn.Module):
             prune_model(network, masks)
 
         return network
-
