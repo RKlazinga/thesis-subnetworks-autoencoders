@@ -1,7 +1,4 @@
 import json
-import os
-from os.path import *
-
 import torch
 from torch import nn
 from torch.nn import MSELoss
@@ -14,7 +11,7 @@ from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR
 from utils.file import get_topology_of_run, get_params_of_run
 from utils.training_setup import get_loaders
 
-run_id = "d374677b9"
+run_id = "[6, 4, 6]-425222fd6"
 ratio = 0.5
 draw_epoch = 9
 draw_sub_epoch = 4
@@ -25,9 +22,15 @@ if __name__ == '__main__':
     train_loader, test_loader = get_loaders()
 
     unpruned = ConvAE(*get_topology_of_run(run_id)).to(device)
-    unpruned.load_state_dict(torch.load(get_params_of_run(run_id, device=device)))
+    unpruned.load_state_dict(get_params_of_run(run_id, device=device))
 
     pruned = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch).to(device)
+
+    pruned_1 = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=1).to(device)
+
+    pruned_2 = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=2).to(device)
+
+    pruned_continue = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=9).to(device)
 
     pruned_reset = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch).to(device)
     # reset weights
@@ -38,8 +41,11 @@ if __name__ == '__main__':
 
     networks = [
         ("unpruned", unpruned),
-        ("pruned", pruned),
-        ("pruned_reset", pruned_reset)
+        ("pruned_no_resume", pruned),
+        ("pruned_resume_1", pruned_1),
+        ("pruned_resume_2", pruned_2),
+        ("pruned_continue", pruned_continue),
+        ("pruned_random_init", pruned_reset)
     ]
 
     graph_data = {}

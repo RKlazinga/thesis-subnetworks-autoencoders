@@ -1,6 +1,7 @@
 import json
 from typing import Dict
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 from evaluation.plot_retrain_results import plot_single
 from utils.file import change_working_dir
@@ -9,10 +10,14 @@ from utils.file import change_working_dir
 def plot_acc_over_time_with_without_reinit(run_id, ratio):
     graph_data_file = f"graphs/graph_data/reset-{run_id}-{ratio}.json"
 
+    cmap = cm.get_cmap("plasma")
     colors = {
         "unpruned": "grey",
-        "pruned": "green",
-        "pruned_reset": "red"
+        "pruned_no_resume": cmap(0),
+        "pruned_resume_1": cmap(.2),
+        "pruned_resume_2": cmap(.4),
+        "pruned_continue": cmap(.99),
+        "pruned_random_init": "red"
     }
 
     with open(graph_data_file, "r") as read_file:
@@ -22,7 +27,7 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
             label = key.replace("_", " ").title()
             plot_single(data, colors[key], label)
 
-        plt.gca().set_ylim([0.015, 0.035])
+        plt.gca().set_ylim([0.015, 0.025])
         plt.legend()
         plt.savefig(f"graphs/reset-{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()
@@ -30,6 +35,6 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    _run_id = "prop_redist-43484a442"
+    _run_id = "[6, 4, 6]-425222fd6"
 
     plot_acc_over_time_with_without_reinit(_run_id, 0.5)
