@@ -12,7 +12,7 @@ from procedures.train import train
 from settings.train_settings import *
 from settings.prune_settings import *
 from utils.file import change_working_dir
-from utils.training_setup import get_loaders
+from datasets.get_loaders import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 network = ConvAE(*TOPOLOGY).to(device)

@@ -9,7 +9,7 @@ from procedures.test import test
 from procedures.train import train
 from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR
 from utils.file import get_topology_of_run, get_params_of_run
-from utils.training_setup import get_loaders
+from datasets.get_loaders import get_loaders
 
 run_id = "[6, 4, 6]-425222fd6"
 ratio = 0.5

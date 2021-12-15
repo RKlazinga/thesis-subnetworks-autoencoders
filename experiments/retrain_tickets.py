@@ -13,7 +13,7 @@ from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR, RETRAIN_RESUME
 from settings.train_settings import DRAW_EPOCHS
 
 from utils.file import change_working_dir
-from utils.training_setup import get_loaders
+from datasets.get_loaders import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
