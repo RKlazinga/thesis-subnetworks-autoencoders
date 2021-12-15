@@ -13,6 +13,7 @@ def plot_acc_over_time_pruning(run_id, ratio):
     colors = {
         "unpruned": "grey",
         "no_redist": "red",
+        "no_redist_lim": "orange",
         "prop_redist": "yellow",
         "similarity_redist": "green",
     }
