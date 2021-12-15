@@ -3,23 +3,30 @@ from typing import Dict
 import torch
 from torch.nn.modules.batchnorm import _BatchNorm
 
+from evaluation.pruning_vis import mask_to_png
+from models.conv_ae import ConvAE
+from utils.file import change_working_dir
+
 
 def mask_dist(masks_a, masks_b):
     return [torch.sum(torch.abs(a-b)).item() for a, b in zip(masks_a, masks_b)]
 
 
-def find_channel_mask_no_redist(network, fraction):
+def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.0):
     """
-    Draw a critical subnetwork from a given trained network using channel pruning.
-    Pruning is applied layer-by-layer.
+    Draw a critical subnetwork from a given trained network using (global) channel pruning.
 
     :param network: The trained network to draw from
     :param fraction: The fraction of channels to KEEP after pruning
+    :param per_layer_limit: Do not prune a single layer beyond this limit.
+                            Set equal to fraction to apply the pruning per-layer
     :return: A mask for each BatchNorm layer
     """
     bn_masks: Dict[_BatchNorm, torch.Tensor] = {
         m: None for m in network.modules() if isinstance(m, _BatchNorm)
     }
+
+    assert fraction >= per_layer_limit
 
     if len(bn_masks) > 0:
         total_channels = 0
@@ -34,6 +41,15 @@ def find_channel_mask_no_redist(network, fraction):
 
             # set the corresponding section of the all_weights tensor
             abs_weight = bn.weight.data.abs().clone()
+
+            if per_layer_limit > 0:
+                # find the per_layer_limit most important weights in the layer, and set them to ~inf
+                layer_weights_sorted = torch.sort(abs_weight).values
+                layer_threshold = layer_weights_sorted[round(bn_size * (1 - per_layer_limit))]
+
+                layer_mask = abs_weight.gt(layer_threshold)
+                abs_weight[layer_mask] = 1e9
+
             all_weights[idx:idx+bn_size] = abs_weight
             idx += bn_size
 
@@ -44,13 +60,32 @@ def find_channel_mask_no_redist(network, fraction):
         threshold = weights_sorted[int(total_channels * (1 - fraction))]
 
         for idx, bn in enumerate(bn_masks.keys()):
-            weight = bn.weight.data.clone().abs()
-            mask = weight.gt(threshold).float()
+            bn_size = bn.weight.data.shape[0]
+            abs_weight = bn.weight.data.clone().abs()
 
-            # if the mask is all empty, forcefully keep the most important channel to ensure some data can flow through
-            if torch.count_nonzero(mask) == 0:
-                mask[torch.argmax(weight)] = 1
+            if per_layer_limit > 0:
+                # find the per_layer_limit most important weights in the layer, and set them to ~inf
+                layer_weights_sorted = torch.sort(abs_weight).values
+                layer_threshold = layer_weights_sorted[round(bn_size * (1 - per_layer_limit))]
+                # print(layer_threshold)
+
+                layer_mask = abs_weight.gt(layer_threshold)
+                abs_weight[layer_mask] = 1e9
+
+            mask = abs_weight.gt(threshold).float()
 
             bn_masks[bn] = mask
 
     return bn_masks
+
+
+if __name__ == '__main__':
+    # test per_layer_limit
+    change_working_dir()
+    net = ConvAE(6, 4, 6)
+    net.load_state_dict(torch.load("runs/[6, 4, 6]-fe4bc8144/trained-10.pth"))
+
+    _masks = list(find_channel_mask_no_redist(net, 0.5, 0.5).values())
+    mask_to_png(_masks, "With lim")
+    _masks = list(find_channel_mask_no_redist(net, 0.5, 0.0).values())
+    mask_to_png(_masks, "Without lim")
