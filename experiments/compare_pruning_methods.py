@@ -4,6 +4,7 @@ from torch.nn import MSELoss
 from torch.optim import Adam
 
 from datasets.get_loaders import get_loaders
+from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
 from procedures.in_place_pruning import prune_model
 from procedures.test import test
@@ -26,22 +27,26 @@ if __name__ == '__main__':
     unpruned.load_state_dict(get_params_of_run(run_id, device=device))
 
     pruned_no_redist = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch)
-    mask = list(find_channel_mask_no_redist(pruned_no_redist, ratio).values())
+    mask = list(find_channel_mask_no_redist(pruned_no_redist, ratio, 0.0).values())
+    mask_to_png(mask, "No redistribution")
     pruned_no_redist.load_state_dict(get_params_of_run(run_id, RETRAIN_RESUME_EPOCH))
     prune_model(pruned_no_redist, mask)
 
     pruned_no_redist_with_lim = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch)
     mask = list(find_channel_mask_no_redist(pruned_no_redist_with_lim, ratio, 0.2).values())
+    mask_to_png(mask, "No redistribution (layer limit)")
     pruned_no_redist_with_lim.load_state_dict(get_params_of_run(run_id, RETRAIN_RESUME_EPOCH))
     prune_model(pruned_no_redist_with_lim, mask)
 
     pruned_prop_redist = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch)
     mask = list(find_channel_mask_redist(pruned_prop_redist, ratio, redist_function="proportional").values())
+    mask_to_png(mask, "Proportional redistribution")
     pruned_prop_redist.load_state_dict(get_params_of_run(run_id, RETRAIN_RESUME_EPOCH))
     prune_model(pruned_prop_redist, mask)
 
     pruned_similarity_redist = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch)
     mask = list(find_channel_mask_redist(pruned_similarity_redist, ratio, redist_function="weightsim").values())
+    mask_to_png(mask, "Sign-similarity redistribution")
     pruned_similarity_redist.load_state_dict(get_params_of_run(run_id, RETRAIN_RESUME_EPOCH))
     prune_model(pruned_similarity_redist, mask)
 

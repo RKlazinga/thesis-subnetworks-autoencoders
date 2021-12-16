@@ -12,7 +12,7 @@ def mask_dist(masks_a, masks_b):
     return [torch.sum(torch.abs(a-b)).item() for a, b in zip(masks_a, masks_b)]
 
 
-def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.0):
+def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.01):
     """
     Draw a critical subnetwork from a given trained network using (global) channel pruning.
 
@@ -45,9 +45,10 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.0):
             if per_layer_limit > 0:
                 # find the per_layer_limit most important weights in the layer, and set them to ~inf
                 layer_weights_sorted = torch.sort(abs_weight).values
-                layer_threshold = layer_weights_sorted[round(bn_size * (1 - per_layer_limit))]
+                cutoff_idx = min(bn_size-1, round(bn_size * (1 - per_layer_limit)))
+                layer_threshold = layer_weights_sorted[cutoff_idx]
 
-                layer_mask = abs_weight.gt(layer_threshold)
+                layer_mask = abs_weight.ge(layer_threshold)
                 abs_weight[layer_mask] = 1e9
 
             all_weights[idx:idx+bn_size] = abs_weight
@@ -66,14 +67,14 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.0):
             if per_layer_limit > 0:
                 # find the per_layer_limit most important weights in the layer, and set them to ~inf
                 layer_weights_sorted = torch.sort(abs_weight).values
-                layer_threshold = layer_weights_sorted[round(bn_size * (1 - per_layer_limit))]
+                cutoff_idx = min(bn_size-1, round(bn_size * (1 - per_layer_limit)))
+                layer_threshold = layer_weights_sorted[cutoff_idx]
                 # print(layer_threshold)
 
-                layer_mask = abs_weight.gt(layer_threshold)
+                layer_mask = abs_weight.ge(layer_threshold)
                 abs_weight[layer_mask] = 1e9
 
-            mask = abs_weight.gt(threshold).float()
-
+            mask = abs_weight.ge(threshold).float()
             bn_masks[bn] = mask
 
     return bn_masks
@@ -83,9 +84,9 @@ if __name__ == '__main__':
     # test per_layer_limit
     change_working_dir()
     net = ConvAE(6, 4, 6)
-    net.load_state_dict(torch.load("runs/[6, 4, 6]-fe4bc8144/trained-10.pth"))
+    net.load_state_dict(torch.load("runs/low_reg_[6, 4, 6]-45679fb09/trained-1.pth"))
 
-    _masks = list(find_channel_mask_no_redist(net, 0.5, 0.5).values())
-    mask_to_png(_masks, "With lim")
-    _masks = list(find_channel_mask_no_redist(net, 0.5, 0.0).values())
-    mask_to_png(_masks, "Without lim")
+    _masks = list(find_channel_mask_no_redist(net, 0.2, 0.1).values())
+    print(sum([torch.count_nonzero(m).item() for m in _masks]) / sum([torch.numel(m) for m in _masks]))
+    mask_to_png(_masks)
+

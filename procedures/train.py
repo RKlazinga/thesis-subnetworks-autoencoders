@@ -1,6 +1,7 @@
 from tqdm import tqdm
 
-from utils.channel_sparsity_reg import updateBN
+from settings.train_settings import SPARSITY_PENALTY
+from utils.channel_sparsity_reg import update_bn
 from settings.prune_settings import DRAW_PER_EPOCH
 
 
@@ -28,7 +29,7 @@ def train(network, opt, criterion, train_loader, device, prune_snapshot_method=N
 
         # only add the regularisation if we are in the prune-snapshotting phase
         if prune_snapshot_method:
-            updateBN(network)
+            update_bn(network, sparsity_penalty=SPARSITY_PENALTY)
 
         opt.step()
     train_loss /= train_count

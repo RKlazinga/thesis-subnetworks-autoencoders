@@ -10,7 +10,7 @@ from utils.file import change_working_dir
 
 change_working_dir()
 
-run_id = "5924489e9"
+run_id = "[6, 4, 6]-bbbac9959"
 
 files = os.listdir(f"runs/{run_id}")
 
@@ -22,7 +22,7 @@ fig.tight_layout()
 PRUNE_RATIOS.sort()
 
 for idx_r, r in enumerate(PRUNE_RATIOS):
-    ratio_files = [f for f in files if f.startswith(f"keep-{r}-")][:12*4]
+    ratio_files = [f for f in files if f.startswith(f"keep-{r}-")]
 
     def get_epoch_and_iter(x: str):
         x = x.removesuffix(".pth")

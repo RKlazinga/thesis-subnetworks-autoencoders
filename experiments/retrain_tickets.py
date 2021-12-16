@@ -17,14 +17,17 @@ from datasets.get_loaders import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
-run_id = "testing-allbn-[6, 4, 6]-3217f1496"
-train_every = 4
+run_id = "[6, 4, 6]-bbbac9959"
 checkpoint_folder = f"runs/{run_id}/"
 graph_data_folder = f"graphs/graph_data/{run_id}"
 
 train_loader, test_loader = get_loaders()
 criterion = MSELoss()
 
+skip_epochs = 2
+train_every = 4
+
+# overrides
 
 if __name__ == '__main__':
     if os.path.exists(f"graphs/graph_data/{run_id}.json"):
@@ -34,12 +37,12 @@ if __name__ == '__main__':
         graph_data = {}
 
     print(f"Retraining tickets of run {run_id}")
-    print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * DRAW_EPOCHS * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
+    print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * DRAW_EPOCHS / skip_epochs * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
     print()
 
     for ratio in [None] + PRUNE_RATIOS:
         masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"keep-{ratio}-")]
-        for draw_epoch in range(1, DRAW_EPOCHS + 1):
+        for draw_epoch in range(1, DRAW_EPOCHS + 1, skip_epochs):
             for sub_epoch in range(1, DRAW_PER_EPOCH + 1):
                 if ratio is None and (draw_epoch != 1 or sub_epoch != train_every):
                     continue
@@ -47,7 +50,8 @@ if __name__ == '__main__':
                     print(f"Retraining: ratio {ratio}, epoch {draw_epoch}, sub-epoch {sub_epoch}")
                     current_graph_data = []
                     graph_data[f"{ratio}-{draw_epoch}-{sub_epoch}"] = current_graph_data
-                    network = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch, param_epoch=RETRAIN_RESUME_EPOCH).to(device)
+                    resume = RETRAIN_RESUME_EPOCH if ratio is not None else None
+                    network = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch, param_epoch=resume).to(device)
                     optimiser = Adam(network.parameters(), lr=RETRAIN_LR, weight_decay=RETRAIN_L2REG)
 
                     for epoch in range(RETRAIN_EPOCHS):

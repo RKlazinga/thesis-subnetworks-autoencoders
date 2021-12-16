@@ -29,7 +29,6 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
         for idx, key in enumerate(relevant_keys):
             label = f"Drawn from epoch {key.split('-')[1]}"
             color = cmap(idx / len(relevant_keys))
-            print(key, color)
             plot_single(graph_data[key], color, label)
 
         plt.gca().set_ylim([0.015, 0.035])
@@ -40,6 +39,9 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    _run_id = "prop_redist-43484a442"
+    _run_id = "[6, 4, 6]-bbbac9959"
 
-    plot_acc_over_time_multiple_drawings(_run_id, 0.75)
+    # plot_acc_over_time_multiple_drawings(_run_id, 0.9)
+    # plot_acc_over_time_multiple_drawings(_run_id, 0.7)
+    plot_acc_over_time_multiple_drawings(_run_id, 0.5)
+    # plot_acc_over_time_multiple_drawings(_run_id, 0.3)

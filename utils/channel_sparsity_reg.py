@@ -3,9 +3,10 @@
 # "additional subgradient descent on the sparsity-induced penalty term"
 import torch
 from torch.nn.modules.batchnorm import _BatchNorm
+from settings.train_settings import SPARSITY_PENALTY
 
 
-def updateBN(model, sparsity_penalty=1e-4):
+def update_bn(model, sparsity_penalty=SPARSITY_PENALTY):
     for m in model.modules():
         if isinstance(m, _BatchNorm):
             m.weight.grad.data.add_(sparsity_penalty*torch.sign(m.weight.data))  # L1
