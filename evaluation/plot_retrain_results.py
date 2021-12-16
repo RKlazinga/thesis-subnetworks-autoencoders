@@ -8,8 +8,14 @@ from utils.get_run_id import last_run
 
 
 def plot_single(data, color, label=None):
-    xs = [x[0] for x in data]
-    ys = [x[2] for x in data]
+    if isinstance(data, list):
+        xs = [x[0] for x in data]
+        ys = [x[2] for x in data]
+    elif isinstance(data, dict):
+        xs = list(data.keys())
+        ys = [x[1] for x in data.values()]
+    else:
+        raise TypeError("Unknown data format")
     plt.plot(xs, ys, color=color, label=label)
 
 

@@ -15,8 +15,8 @@ def plot_acc_over_time_pruning(run_id, ratio):
         "unpruned": "grey",
         "no_redist": "red",
         "no_redist_lim": "orange",
-        "prop_redist": "yellow",
         "similarity_redist": "green",
+        "similarity_redist1": "purple",
     }
 
     with open(graph_data_file, "r") as read_file:
@@ -28,7 +28,7 @@ def plot_acc_over_time_pruning(run_id, ratio):
 
         plt.gca().set_ylim([0.015, 0.025])
         plt.legend()
-        plt.savefig(f"graphs/reset-{run_id}-{ratio}.png", bbox_inches="tight")
+        plt.savefig(f"graphs/prune_compare-{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()
 
 

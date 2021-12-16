@@ -86,7 +86,7 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
             assert 1 < multiplier < 2, f"Multiplier {multiplier} has strange value ({min_weight}, {all_weights[range_start:range_end]})"
             # scale range up proportionally
             all_weights[range_start:range_end] *= multiplier
-        elif redist_function == "weightsim":
+        elif redist_function.startswith("weightsim"):
             range_start, range_end = range_of_index[min_idx]
             # scale all_weights[range_start:range_end] in some way
 
@@ -108,6 +108,11 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
                 else:
                     weights = operator.weight.data[:, j - range_start, :, :].clone()
                 # weights *= 1  / torch.sum(weights)
+
+                if "-" in redist_function:
+                    eps = float(redist_function.split("-")[-1])
+                    mask = torch.lt(torch.abs(weights), eps)
+                    weights[mask] = 0
                 weights = torch.sign(weights)
                 weights_per_channel[j - range_start] = weights
             min_channel_weights = weights_per_channel[min_channel]
@@ -154,9 +159,11 @@ if __name__ == '__main__':
     _network = ConvAE(6, 4, 6)
     _network.load_state_dict(torch.load(f"runs/{last_run()}/trained-8.pth"))
 
-    redist_prop_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="proportional").values())
+    # redist_prop_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="proportional").values())
     redist_sim_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="weightsim").values())
+    redist_sim_masks2 = list(find_channel_mask_redist(_network, 0.5, redist_function="weightsim-0.001").values())
     no_redist_masks = list(find_channel_mask_no_redist(_network, 0.5).values())
-    mask_to_png(redist_prop_masks, "Proportionally redistributed weights")
+    # mask_to_png(redist_prop_masks, "Proportionally redistributed weights")
     mask_to_png(redist_sim_masks, "Similarity-based redistributed weights")
+    mask_to_png(redist_sim_masks2, "Similarity-based 0.001")
     mask_to_png(no_redist_masks, "No weight redistribution")
