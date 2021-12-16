@@ -5,6 +5,7 @@ from matplotlib import cm
 
 from evaluation.plot_retrain_results import plot_single
 from utils.file import change_working_dir
+from utils.get_run_id import last_run
 
 
 def plot_acc_over_time_pruning(run_id, ratio):
@@ -33,6 +34,6 @@ def plot_acc_over_time_pruning(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    _run_id = "[6, 4, 6]-425222fd6"
+    _run_id = last_run()
 
     plot_acc_over_time_pruning(_run_id, 0.5)

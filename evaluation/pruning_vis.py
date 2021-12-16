@@ -4,6 +4,7 @@ import torch
 from PIL import ImageDraw, ImageFont, Image
 
 from utils.file import change_working_dir
+from utils.get_run_id import last_run
 
 HEADER = 50
 SPACING = 150
@@ -63,5 +64,5 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
 
 if __name__ == '__main__':
     change_working_dir()
-    mask_to_png(torch.load("runs/[6, 4, 6]-bbbac9959/keep-0.7-epoch-8-4.pth"))
+    mask_to_png(torch.load(f"runs/{last_run()}/keep-0.7-epoch-8-4.pth"))
 

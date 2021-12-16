@@ -6,6 +6,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
 from utils.file import change_working_dir
+from utils.get_run_id import last_run
 
 
 def mask_dist(masks_a, masks_b):
@@ -84,7 +85,7 @@ if __name__ == '__main__':
     # test per_layer_limit
     change_working_dir()
     net = ConvAE(6, 4, 6)
-    net.load_state_dict(torch.load("runs/low_reg_[6, 4, 6]-45679fb09/trained-1.pth"))
+    net.load_state_dict(torch.load(f"runs/{last_run()}/trained-1.pth"))
 
     _masks = list(find_channel_mask_no_redist(net, 0.2, 0.1).values())
     print(sum([torch.count_nonzero(m).item() for m in _masks]) / sum([torch.numel(m) for m in _masks]))

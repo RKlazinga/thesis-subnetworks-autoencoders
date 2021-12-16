@@ -14,10 +14,11 @@ from settings.train_settings import DRAW_EPOCHS
 
 from utils.file import change_working_dir
 from datasets.get_loaders import get_loaders
+from utils.get_run_id import last_run
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 change_working_dir()
-run_id = "[6, 4, 6]-bbbac9959"
+run_id = last_run()
 checkpoint_folder = f"runs/{run_id}/"
 graph_data_folder = f"graphs/graph_data/{run_id}"
 

@@ -10,6 +10,7 @@ from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
 from utils.file import change_working_dir
+from utils.get_run_id import last_run
 
 
 def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
@@ -151,7 +152,7 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
 if __name__ == '__main__':
     change_working_dir()
     _network = ConvAE(6, 4, 6)
-    _network.load_state_dict(torch.load("runs/[6, 4, 6]-fe4bc8144/trained-8.pth"))
+    _network.load_state_dict(torch.load(f"runs/{last_run()}/trained-8.pth"))
 
     redist_prop_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="proportional").values())
     redist_sim_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="weightsim").values())

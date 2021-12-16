@@ -13,8 +13,9 @@ from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
 from procedures.train import train
 from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR, RETRAIN_RESUME_EPOCH
 from utils.file import get_topology_of_run, get_params_of_run
+from utils.get_run_id import last_run
 
-run_id = "[6, 4, 6]-425222fd6"
+run_id = last_run()
 ratio = 0.5
 draw_epoch = 9
 draw_sub_epoch = 4
