@@ -70,7 +70,6 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.01):
                 layer_weights_sorted = torch.sort(abs_weight).values
                 cutoff_idx = min(bn_size-1, round(bn_size * (1 - per_layer_limit)))
                 layer_threshold = layer_weights_sorted[cutoff_idx]
-                # print(layer_threshold)
 
                 layer_mask = abs_weight.ge(layer_threshold)
                 abs_weight[layer_mask] = 1e9

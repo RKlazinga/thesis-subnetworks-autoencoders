@@ -4,7 +4,9 @@ import torch
 from torch.nn import MSELoss
 from torch.optim import Adam
 
+from datasets.dataset_options import DatasetOption
 from models.conv_ae import ConvAE
+from models.ff_ae import FeedforwardAE
 from procedures.ticket_drawing.with_redist import find_channel_mask_redist
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
 from procedures.test import test
@@ -15,7 +17,7 @@ from utils.file import change_working_dir
 from datasets.get_loaders import get_loaders
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-network = ConvAE(*TOPOLOGY).to(device)
+network = NETWORK(*TOPOLOGY).to(device)
 
 change_working_dir()
 train_loader, test_loader = get_loaders()
@@ -30,7 +32,7 @@ if __name__ == '__main__':
     if PRUNE_WITH_REDIST:
         unique_id = "prop_redist-" + unique_id
 
-    unique_id = f"{TOPOLOGY}-" + unique_id
+    unique_id = f"flat-{TOPOLOGY}-" + unique_id
 
     channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
 

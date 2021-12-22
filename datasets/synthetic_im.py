@@ -8,7 +8,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision.transforms import ToTensor
 
-from datasets.synth_generators import dummy_gen
+from datasets.im_generators import dummy_gen
 from utils.file import change_working_dir
 
 
@@ -48,6 +48,10 @@ class Synthetic(Dataset):
 
     def __getitem__(self, index):
         return ToTensor()(Image.open(f"{self.imgs[index]}.png"))
+
+    def __len__(self):
+        return len(self.imgs)
+
 
 if __name__ == '__main__':
     Synthetic("trial", dummy_gen, 10)

@@ -6,7 +6,9 @@ def test(network, criterion, test_loader, device):
     test_loss = 0
     network.eval()
     for idx, batch in enumerate(tqdm(test_loader)):
-        img = batch[0].to(device)
+        if isinstance(batch, dict):
+            batch = batch[0]
+        img = batch.to(device)
 
         target = img.clone()
         with torch.no_grad():
