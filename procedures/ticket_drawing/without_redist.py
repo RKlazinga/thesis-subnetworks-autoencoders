@@ -1,10 +1,13 @@
 from typing import Dict
 
 import torch
+import torchsummary
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
+from procedures.in_place_pruning import prune_model
+from settings.train_settings import NETWORK, TOPOLOGY
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
 
@@ -32,6 +35,7 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.01):
     if len(bn_masks) > 0:
         total_channels = 0
         for bn in bn_masks.keys():
+            # print(bn.weight.data)
             total_channels += bn.weight.data.shape[0]
 
         # load all batch_norm weights into a single tensor
@@ -81,12 +85,24 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.01):
 
 
 if __name__ == '__main__':
-    # test per_layer_limit
-    change_working_dir()
-    net = ConvAE(6, 4, 6)
-    net.load_state_dict(torch.load(f"runs/{last_run()}/trained-1.pth"))
+    # test conv
+    # change_working_dir()
+    # net = ConvAE(6, 4, 6)
+    # net.load_state_dict(torch.load("runs/[6, 4, 6]-fe4bc8144/trained-6.pth"))
+    # _masks = list(find_channel_mask_no_redist(net, 0.01).values())
+    # prune_model(net, _masks)
+    # torchsummary.summary(net, (1, 28, 28))
 
-    _masks = list(find_channel_mask_no_redist(net, 0.2, 0.1).values())
+    # test ff
+    net = NETWORK(*TOPOLOGY)
+    print(last_run())
+    net.load_state_dict(torch.load(f"runs/{last_run()}/trained-15.pth"))
+
+    _masks = list(find_channel_mask_no_redist(net, 0.9, 0.01).values())
+    # _masks2 = list(find_channel_mask_no_redist(net, 0.8, 0.01).values())
     print(sum([torch.count_nonzero(m).item() for m in _masks]) / sum([torch.numel(m) for m in _masks]))
-    mask_to_png(_masks)
+    # mask_to_png(_masks)
+    # mask_to_png(_masks2)
+    # prune_model(net, _masks2)
+    # torchsummary.summary(net, (16,))
 

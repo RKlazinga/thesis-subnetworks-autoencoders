@@ -25,7 +25,7 @@ graph_data_folder = f"graphs/graph_data/{run_id}"
 train_loader, test_loader = get_loaders()
 criterion = MSELoss()
 
-skip_epochs = 2
+skip_epochs = 4
 train_every = 4
 
 # overrides
@@ -41,8 +41,7 @@ if __name__ == '__main__':
     print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * DRAW_EPOCHS / skip_epochs * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
     print()
 
-    # for ratio in [None] + PRUNE_RATIOS:
-    for ratio in PRUNE_RATIOS:
+    for ratio in [None] + PRUNE_RATIOS:
         masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"keep-{ratio}-")]
         for draw_epoch in range(1, DRAW_EPOCHS + 1, skip_epochs):
             for sub_epoch in range(1, DRAW_PER_EPOCH + 1):
@@ -61,7 +60,7 @@ if __name__ == '__main__':
                         test_loss = test(network, criterion, test_loader, device)
 
                         print(f"{epoch}/{RETRAIN_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
-                        current_graph_data.append((epoch, train_loss, test_loss))
+                        current_graph_data.append((epoch + (resume if resume else 0), train_loss, test_loss))
 
                         with open(f"graphs/graph_data/{run_id}.json", "w") as write_file:
                             write_file.write(json.dumps(graph_data))

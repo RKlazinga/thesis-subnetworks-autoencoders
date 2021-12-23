@@ -33,9 +33,19 @@ class FeedforwardAE(nn.Module):
         topology.reverse()
         for i in range(len(topology) - 1):
             decoder_steps.append(nn.Linear(topology[i], topology[i+1]))
-            decoder_steps.append(nn.BatchNorm1d(topology[i+1]))
+            if i < len(topology) - 2:
+                print(f"BN layer {i}")
+                decoder_steps.append(nn.BatchNorm1d(topology[i+1]))
+            else:
+                print(f"Skipped layer {i}")
             decoder_steps.append(nn.ReLU())
         self.decoder = nn.Sequential(*decoder_steps)
+
+        # Initialise weights
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight.data, 0, 0.01)
+                m.bias.data.zero_()
 
     def forward(self, x):
         x = self.encoder(x)

@@ -38,7 +38,11 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
             color = cmap(idx / len(relevant_keys))
             plot_single(graph_data[key], color, label)
 
-        plt.gca().set_ylim([0.015, 0.035])
+        # CONV
+        # plt.gca().set_ylim([0.015, 0.035])
+        # FF
+        plt.gca().set_ylim([0.20, 0.30])
+
         plt.legend()
         plt.savefig(f"graphs/{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()

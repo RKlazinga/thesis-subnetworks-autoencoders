@@ -12,10 +12,10 @@ from models.ff_ae import FeedforwardAE
 
 # FF
 NETWORK = FeedforwardAE
-L2REG = 1e-4
-SPARSITY_PENALTY = 1e-4
+L2REG = 1e-3
+SPARSITY_PENALTY = 1e-2
 BATCH_SIZE = 32
 LR = 1e-3 * (BATCH_SIZE ** 0.5)
 # latent_size, hidden_layers, multiplier
-TOPOLOGY = [2, 2, 1]
-DRAW_EPOCHS = 30
+TOPOLOGY = [4, 2, 1]
+DRAW_EPOCHS = 16

@@ -6,10 +6,12 @@ from torch.nn.modules.conv import _ConvTransposeNd, _ConvNd
 
 def prune_model(model, masks):
     mask_idx = -1
+    in_mask = None
     out_mask = None
 
     modules = list(model.modules())
     modules = [x for x in modules if isinstance(x, (_ConvNd, _ConvTransposeNd, Linear, _BatchNorm, Unflatten))]
+    modules = modules + [None, None, None]
 
     for i in range(len(modules)-2):
         operator, b, c = modules[i:i+3]
@@ -21,16 +23,32 @@ def prune_model(model, masks):
                 unflatten = b
                 bn = c
             else:
-                continue
+                unflatten = None
+                bn = None
+
+            is_transpose = int(isinstance(operator, _ConvTransposeNd))
 
             mask_idx += 1
             in_mask = out_mask
-            out_mask = masks[mask_idx].bool()
-            is_transpose = int(isinstance(operator, _ConvTransposeNd))
+            if mask_idx < len(masks):
+                out_mask = masks[mask_idx].bool()
+            else:
+                out_mask = None
 
             if in_mask is not None:
                 # prune expected input
                 prune_parameter(operator, "weight", in_mask, axis=1-is_transpose)
+
+            if out_mask is not None:
+                # prune output
+                prune_parameter(operator, "weight", out_mask, axis=is_transpose)
+                prune_parameter(operator, "bias", out_mask, axis=0)
+
+                # prune expected input of batchnorm (using out_mask, since batchnorm comes after)
+                prune_parameter(bn, "weight", out_mask, axis=0)
+                prune_parameter(bn, "bias", out_mask, axis=0)
+                prune_parameter(bn, "running_mean", out_mask, axis=0)
+                prune_parameter(bn, "running_var", out_mask, axis=0)
 
             # adjust unflatten layer if present
             if unflatten:
@@ -39,16 +57,6 @@ def prune_model(model, masks):
                     torch.count_nonzero(out_mask).item(),
                     *current_shape[1:]
                 )
-
-            # prune output
-            prune_parameter(operator, "weight", out_mask, axis=is_transpose)
-            prune_parameter(operator, "bias", out_mask, axis=0)
-
-            # prune expected input of batchnorm (using out_mask, since batchnorm comes after)
-            prune_parameter(bn, "weight", out_mask, axis=0)
-            prune_parameter(bn, "bias", out_mask, axis=0)
-            prune_parameter(bn, "running_mean", out_mask, axis=0)
-            prune_parameter(bn, "running_var", out_mask, axis=0)
 
 
 def prune_parameter(module, parameter_name, mask, axis=0):

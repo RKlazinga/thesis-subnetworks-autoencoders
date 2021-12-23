@@ -20,6 +20,7 @@ def get_square_coords(bn_idx, single_idx, im_height, bn_mask):
 
 
 def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=False):
+    print(mask)
     if type(mask) == str:
         mask = torch.load(mask, map_location=torch.device('cpu'))
     elif type(mask) != list:
@@ -64,5 +65,5 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
 
 if __name__ == '__main__':
     change_working_dir()
-    mask_to_png(torch.load(f"runs/{last_run()}/keep-0.7-epoch-8-4.pth"))
+    mask_to_png(torch.load(f"runs/{last_run()}/keep-0.5-epoch-15-4.pth"))
 
