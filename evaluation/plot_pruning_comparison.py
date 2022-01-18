@@ -1,7 +1,6 @@
 import json
 from typing import Dict
 import matplotlib.pyplot as plt
-from matplotlib import cm
 
 from evaluation.plot_retrain_results import plot_single
 from utils.file import change_working_dir
@@ -26,7 +25,7 @@ def plot_acc_over_time_pruning(run_id, ratio):
             label = key.replace("_", " ").title()
             plot_single(data, colors[key], label)
 
-        plt.gca().set_ylim([0.015, 0.025])
+        plt.gca().set_ylim([0.016, 0.022])
         plt.legend()
         plt.savefig(f"graphs/prune_compare-{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()

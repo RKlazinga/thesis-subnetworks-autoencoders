@@ -7,7 +7,7 @@ from utils.file import change_working_dir
 from utils.get_run_id import last_run
 
 
-def plot_single(data, color, label=None):
+def plot_single(data, color, label=None, **kwargs):
     if isinstance(data, list):
         xs = [x[0] for x in data]
         ys = [x[2] for x in data]
@@ -16,7 +16,7 @@ def plot_single(data, color, label=None):
         ys = [x[1] for x in data.values()]
     else:
         raise TypeError("Unknown data format")
-    plt.plot(xs, ys, color=color, label=label)
+    plt.plot(xs, ys, color=color, label=label, **kwargs)
 
 
 def plot_acc_over_time_multiple_drawings(run_id, ratio):
@@ -26,11 +26,6 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
     with open(graph_data_file, "r") as read_file:
         graph_data: Dict = json.loads(read_file.read())
 
-        # always plot the unpruned retraining run in grey
-        unpruned_key = [x for x in graph_data.keys() if x.startswith("None")][0]
-        unpruned_data = graph_data[unpruned_key]
-        plot_single(unpruned_data, "grey", "Unpruned")
-
         # plot the various pruned runs of this ratio
         relevant_keys = [x for x in graph_data.keys() if x.startswith(f"{ratio}-")]
         for idx, key in enumerate(relevant_keys):
@@ -39,9 +34,14 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
             plot_single(graph_data[key], color, label)
 
         # CONV
-        # plt.gca().set_ylim([0.015, 0.035])
+        plt.gca().set_ylim([0.015, 0.035])
         # FF
-        plt.gca().set_ylim([0.20, 0.30])
+        # plt.gca().set_ylim([0.20, 0.30])
+
+        # always plot the unpruned retraining run in grey
+        unpruned_key = [x for x in graph_data.keys() if x.startswith("None")][0]
+        unpruned_data = graph_data[unpruned_key]
+        plot_single(unpruned_data, "grey", "Unpruned", linewidth=2)
 
         plt.legend()
         plt.savefig(f"graphs/{run_id}-{ratio}.png", bbox_inches="tight")
@@ -53,6 +53,6 @@ if __name__ == '__main__':
     _run_id = last_run()
 
     plot_acc_over_time_multiple_drawings(_run_id, 0.9)
-    plot_acc_over_time_multiple_drawings(_run_id, 0.7)
-    plot_acc_over_time_multiple_drawings(_run_id, 0.5)
-    plot_acc_over_time_multiple_drawings(_run_id, 0.3)
+    # plot_acc_over_time_multiple_drawings(_run_id, 0.7)
+    # plot_acc_over_time_multiple_drawings(_run_id, 0.5)
+    # plot_acc_over_time_multiple_drawings(_run_id, 0.3)
