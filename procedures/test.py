@@ -6,7 +6,7 @@ def test(network, criterion, test_loader, device):
     test_loss = 0
     network.eval()
     for idx, batch in enumerate(tqdm(test_loader)):
-        if isinstance(batch, dict):
+        if isinstance(batch, list):
             batch = batch[0]
         img = batch.to(device)
 

@@ -16,7 +16,7 @@ def train(network, opt, criterion, train_loader, device, prune_snapshot_method=N
             if snapshot_counter / DRAW_PER_EPOCH <= (idx+1) / train_count:
                 prune_snapshot_method(snapshot_counter)
                 snapshot_counter += 1
-        if isinstance(batch, dict):
+        if isinstance(batch, list):
             batch = batch[0]
         img = batch.to(device)
         target = img.clone()

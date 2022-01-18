@@ -7,6 +7,7 @@ from settings.train_settings import SPARSITY_PENALTY
 
 
 def update_bn(model, sparsity_penalty=SPARSITY_PENALTY):
-    for m in model.modules():
-        if isinstance(m, _BatchNorm):
-            m.weight.grad.data.add_(sparsity_penalty*torch.sign(m.weight.data))  # L1
+    if sparsity_penalty > 0:
+        for m in model.modules():
+            if isinstance(m, _BatchNorm):
+                m.weight.grad.data.add_(sparsity_penalty*torch.sign(m.weight.data))  # L1
