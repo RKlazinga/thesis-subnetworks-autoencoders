@@ -6,6 +6,7 @@ from matplotlib import cm
 from evaluation.plot_retrain_results import plot_single
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
+plt.rcParams["font.family"] = "serif"
 
 
 def plot_acc_over_time_with_without_reinit(run_id, ratio):

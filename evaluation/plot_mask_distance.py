@@ -8,6 +8,7 @@ from procedures.ticket_drawing.without_redist import mask_dist
 from settings.prune_settings import *
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
+plt.rcParams["font.family"] = "serif"
 
 change_working_dir()
 
