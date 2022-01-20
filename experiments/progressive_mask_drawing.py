@@ -12,12 +12,12 @@ from settings.train_settings import *
 from settings.prune_settings import *
 from utils.file import change_working_dir
 from datasets.get_loaders import get_loaders
-from utils.misc import generate_random_str
+from utils.misc import generate_random_str, get_device
 
 
 def train_and_draw_tickets(net, uid, folder_root="runs"):
     channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
 
     train_loader, test_loader = get_loaders()
     optimiser = Adam(net.parameters(), lr=LR, weight_decay=L2REG)
@@ -29,9 +29,9 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
     torch.save(net.state_dict(), folder + f"/starting_params-{TOPOLOGY}.pth")
 
     for epoch in range(1, DRAW_EPOCHS + 1):
-        def prune_snapshot(iter: int, epoch=epoch):
+        def prune_snapshot(iteration: int, epoch=epoch):
             for r in PRUNE_RATIOS:
-                torch.save(list(channel_mask_func(net, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iter}.pth")
+                torch.save(list(channel_mask_func(net, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iteration}.pth")
 
         train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
         test_loss = test(net, criterion, test_loader, device)
@@ -44,7 +44,7 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
 
 if __name__ == '__main__':
     unique_id = generate_random_str()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     _network = NETWORK(*TOPOLOGY).to(device)
 
     change_working_dir()

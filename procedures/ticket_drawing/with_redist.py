@@ -4,7 +4,7 @@ import torch
 from torch.nn import Linear
 from torch.nn.modules.batchnorm import _BatchNorm
 from torch.nn.modules.conv import _ConvNd, _ConvTransposeNd
-from torch.nn import functional as F
+from torch.nn import functional
 
 from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
@@ -83,7 +83,8 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
             # check if we accidentally caught any pruned (1e9) weights
             multiplier = 1 + min_weight / all_remaining_weights
             assert all_remaining_weights < 1e7
-            assert 1 < multiplier < 2, f"Multiplier {multiplier} has strange value ({min_weight}, {all_weights[range_start:range_end]})"
+            assert 1 < multiplier < 2, f"Multiplier {multiplier} has strange value " \
+                                       f"({min_weight}, {all_weights[range_start:range_end]})"
             # scale range up proportionally
             all_weights[range_start:range_end] *= multiplier
         elif redist_function.startswith("weightsim"):
@@ -125,7 +126,7 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
                     comparison_weights = weights_per_channel[comparison_channel]
 
                     # compare weights using mean-squared
-                    difference = (F.mse_loss(min_channel_weights, comparison_weights).item() + 1e-5) ** 3
+                    difference = (functional.mse_loss(min_channel_weights, comparison_weights).item() + 1e-5) ** 3
                     similarities[j] = 1 / difference
 
             # assign the remaining channels a portion of this weight, proportional to similarity

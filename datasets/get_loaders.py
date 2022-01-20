@@ -26,7 +26,9 @@ def get_loaders(dataset=ds):
     else:
         raise ValueError(f"Unknown dataset enum value: {dataset}")
 
-    train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4 if dataset == DatasetOption.FASHION_MNIST else 0)
-    test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=True, num_workers=4 if dataset == DatasetOption.FASHION_MNIST else 0)
+    train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, shuffle=True,
+                              num_workers=4 if dataset == DatasetOption.FASHION_MNIST else 0)
+    test_loader = DataLoader(test_set, batch_size=BATCH_SIZE, shuffle=True,
+                             num_workers=4 if dataset == DatasetOption.FASHION_MNIST else 0)
 
     return train_loader, test_loader

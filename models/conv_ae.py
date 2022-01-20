@@ -25,7 +25,8 @@ class ConvAE(nn.Module):
             encoder_steps.append(ConvUnit(prev_step_size, h, 3, max_pool=True, bn=True, padding=1))
             prev_step_size = h
         encoder_steps.append(nn.Flatten())
-        encoder_steps.append(nn.Linear(prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2, latent_size))
+        encoder_steps.append(nn.Linear(prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2,
+                                       latent_size))
         encoder_steps.append(nn.BatchNorm1d(latent_size))
         encoder_steps.append(nn.ReLU())
         self.encoder = nn.Sequential(*encoder_steps)

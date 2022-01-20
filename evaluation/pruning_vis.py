@@ -37,7 +37,8 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
     for bn_idx, bn_mask in enumerate(mask):
         for single_idx, single_mask in enumerate(bn_mask):
             x, y = get_square_coords(bn_idx, single_idx, im_height, bn_mask)
-            draw.rectangle((x, y, x + CHANNEL_SIZE[0], y + CHANNEL_SIZE[1]), fill=ON_CHANNEL if single_mask else OFF_CHANNEL)
+            draw.rectangle((x, y, x + CHANNEL_SIZE[0], y + CHANNEL_SIZE[1]),
+                           fill=ON_CHANNEL if single_mask else OFF_CHANNEL)
 
     if draw_conn:
         for bn_idx, bn_mask_left in enumerate(mask):

@@ -26,7 +26,8 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
         graph_data: Dict = json.loads(read_file.read())
 
         for key, data in graph_data.items():
-            if key == "pruned_continue": continue
+            if key == "pruned_continue":
+                continue
             label = key.replace("_", " ").title()
             plot_single(data, colors[key], label)
 
@@ -38,6 +39,6 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    _run_id = "[6, 4, 6]-425222fd6" #last_run()
+    _run_id = last_run()
 
     plot_acc_over_time_with_without_reinit(_run_id, 0.5)

@@ -4,11 +4,13 @@ from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
 from utils.file import change_working_dir, get_topology_of_run, get_params_of_run
+from utils.misc import get_device
+
 plt.rcParams["font.family"] = "serif"
 
 
 def histogram_of_weights(run_id, epoch):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     net = ConvAE(*get_topology_of_run(run_id)).to(device)
     net.load_state_dict(get_params_of_run(run_id, epoch=epoch, device=device))
 

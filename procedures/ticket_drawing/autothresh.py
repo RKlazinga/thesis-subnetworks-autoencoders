@@ -43,9 +43,9 @@ if __name__ == '__main__':
     masks = find_channel_mask_autothresh(net)
     remaining_channels = 0
     total_channels = 0
-    for m in masks.values():
-        remaining_channels += torch.count_nonzero(m).item()
-        total_channels += torch.numel(m)
-        print(f"{torch.count_nonzero(m)}/{torch.numel(m)} channels retained")
+    for mask in masks.values():
+        remaining_channels += torch.count_nonzero(mask).item()
+        total_channels += torch.numel(mask)
+        print(f"{torch.count_nonzero(mask)}/{torch.numel(mask)} channels retained")
 
     print(f"Effective pruning ratio {round(remaining_channels/total_channels, 2)}")

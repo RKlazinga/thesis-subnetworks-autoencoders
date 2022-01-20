@@ -15,8 +15,9 @@ from settings.train_settings import DRAW_EPOCHS, NETWORK
 from utils.file import change_working_dir
 from datasets.get_loaders import get_loaders
 from utils.get_run_id import last_run
+from utils.misc import get_device
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = get_device()
 change_working_dir()
 run_id = last_run()
 checkpoint_folder = f"runs/{run_id}/"
@@ -38,7 +39,9 @@ if __name__ == '__main__':
         graph_data = {}
 
     print(f"Retraining tickets of run {run_id}")
-    print(f"Estimated time to complete: {round((len(PRUNE_RATIOS) * DRAW_EPOCHS / skip_epochs * DRAW_PER_EPOCH / train_every + 1)*RETRAIN_EPOCHS*14/60, 1)} minutes")
+    eta = round((len(PRUNE_RATIOS) * DRAW_EPOCHS / skip_epochs * DRAW_PER_EPOCH / train_every + 1)
+                * RETRAIN_EPOCHS * 14 / 60, 1)
+    print(f"Estimated time to complete: {eta} minutes")
     print()
 
     for ratio in [None] + PRUNE_RATIOS:
@@ -52,7 +55,8 @@ if __name__ == '__main__':
                     current_graph_data = []
                     graph_data[f"{ratio}-{draw_epoch}-{sub_epoch}"] = current_graph_data
                     resume = RETRAIN_RESUME_EPOCH if ratio is not None else None
-                    network = NETWORK.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch, param_epoch=resume).to(device)
+                    network = NETWORK.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch,
+                                                           param_epoch=resume).to(device)
                     optimiser = Adam(network.parameters(), lr=RETRAIN_LR, weight_decay=RETRAIN_L2REG)
 
                     for epoch in range(RETRAIN_EPOCHS):
