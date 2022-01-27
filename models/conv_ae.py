@@ -53,8 +53,9 @@ class ConvAE(nn.Module):
         decoder_steps.append(Crop(self.IMAGE_SIZE))
 
         self.decoder = nn.Sequential(*decoder_steps)
+        self.reset_weights()
 
-        # Initialise weights
+    def reset_weights(self):
         for m in self.modules():
             if isinstance(m, nn.ConvTranspose2d) or isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight.data)

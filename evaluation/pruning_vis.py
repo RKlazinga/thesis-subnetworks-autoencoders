@@ -19,7 +19,7 @@ def get_square_coords(bn_idx, single_idx, im_height, bn_mask):
     return x, y
 
 
-def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=False):
+def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=False, show=False, save=True):
     if type(mask) == str:
         mask = torch.load(mask, map_location=torch.device('cpu'))
     elif type(mask) != list:
@@ -60,8 +60,10 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
         fwidth = font.getsize(caption)[0]
         draw.text(((im_width - fwidth) // 2, 30), caption, (0, 0, 0), font=font)
 
-    # bg.show()
-    bg.save(f"figures/mask_visualisation/pruning-vis-{caption}.png")
+    if show:
+        bg.show()
+    if save:
+        bg.save(f"figures/mask_visualisation/pruning-vis-{caption}.png")
 
 
 if __name__ == '__main__':
