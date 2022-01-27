@@ -25,7 +25,7 @@ def plot_acc_over_time(run_id, ratio):
 
         plt.gca().set_ylim([0.015, 0.025])
         plt.legend()
-        plt.savefig(f"graphs/bnreg-retrain-{run_id}-{ratio}.png", bbox_inches="tight")
+        plt.savefig(f"figures/retraining/bnreg-retrain-{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()
 
 

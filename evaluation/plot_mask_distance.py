@@ -12,7 +12,8 @@ plt.rcParams["font.family"] = "serif"
 
 change_working_dir()
 
-run_id = last_run()
+run_id = "BNREG_GROUP-374c90fa7/0"
+# run_id = last_run()
 files = os.listdir(f"runs/{run_id}")
 
 FIG_COUNT = 4
@@ -51,4 +52,6 @@ for idx_r, r in enumerate(PRUNE_RATIOS):
 
     xticklabels = [x//DRAW_PER_EPOCH if x % DRAW_PER_EPOCH == 0 else None for x in range(len(ratio_files))]
     sns.heatmap(dists, ax=ax, square=True, xticklabels=xticklabels, yticklabels=False)
+
+plt.savefig(f"figures/mask_distance/{run_id.replace('/', ' X ')}.png")
 plt.show()

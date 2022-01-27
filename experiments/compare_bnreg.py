@@ -14,7 +14,7 @@ from os.path import *
 
 if __name__ == '__main__':
     change_working_dir()
-    draw_epoch = 4
+    draw_epoch = 8
     draw_sub_epoch = 4
     ratio = 0.7
     device = get_device()

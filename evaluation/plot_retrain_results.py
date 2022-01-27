@@ -28,14 +28,14 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
         graph_data: Dict = json.loads(read_file.read())
 
         # plot the various pruned runs of this ratio
-        relevant_keys = [x for x in graph_data.keys() if x.startswith(f"{ratio}-")]
+        relevant_keys = [x for x in graph_data.keys() if x.startswith(f"{ratio}-")][::3]
         for idx, key in enumerate(relevant_keys):
-            label = f"Drawn from epoch {key.split('-')[1]}"
+            label = f"Pruned, drawn from epoch {key.split('-')[1]}"
             color = cmap(idx / len(relevant_keys))
             plot_single(graph_data[key], color, label)
 
         # CONV
-        plt.gca().set_ylim([0.015, 0.035])
+        plt.gca().set_ylim([0.016, 0.028])
         # FF
         # plt.gca().set_ylim([0.20, 0.30])
 
@@ -44,16 +44,21 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
         unpruned_data = graph_data[unpruned_key]
         plot_single(unpruned_data, "grey", "Unpruned", linewidth=2)
 
-        plt.legend()
+        plt.title("Training of lottery tickets vs unpruned network\n"
+                  f"({round(100*(1-ratio))}% of channels pruned)")
+        plt.ylabel("Test loss")
+        plt.xlabel("Epoch")
+        plt.legend(loc="lower left")
         plt.savefig(f"graphs/{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()
 
 
 if __name__ == '__main__':
     change_working_dir()
-    _run_id = last_run()
+    _run_id = "[6, 4, 6]-bbbac9959"
+    # _run_id = last_run()
 
-    plot_acc_over_time_multiple_drawings(_run_id, 0.9)
     # plot_acc_over_time_multiple_drawings(_run_id, 0.7)
-    # plot_acc_over_time_multiple_drawings(_run_id, 0.5)
+    # plot_acc_over_time_multiple_drawings(_run_id, 0.7)
+    plot_acc_over_time_multiple_drawings(_run_id, 0.5)
     # plot_acc_over_time_multiple_drawings(_run_id, 0.3)

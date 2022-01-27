@@ -13,6 +13,11 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
     graph_data_file = f"graphs/graph_data/reset-{run_id}-{ratio}.json"
 
     cmap = cm.get_cmap("plasma")
+    # colors = {
+    #     "pruned": cmap(0.8),
+    #     "pruned_reset": cmap(0.2),
+    #     "unpruned": "grey",
+    # }
     colors = {
         "unpruned": "grey",
         "pruned_no_resume": cmap(0),
@@ -31,6 +36,11 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
             label = key.replace("_", " ").title()
             plot_single(data, colors[key], label)
 
+        plt.title("Validating the importance of initialisation\n"
+                  f"({round(100*(1-ratio))}% of channels pruned)")
+        plt.ylabel("Test loss")
+        plt.xlabel("Epoch")
+
         plt.gca().set_ylim([0.015, 0.025])
         plt.legend()
         plt.savefig(f"graphs/reset-{run_id}-{ratio}.png", bbox_inches="tight")
@@ -39,6 +49,7 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    _run_id = last_run()
+    _run_id = "[6, 4, 6]-bbbac9959"
+    # _run_id = last_run()
 
     plot_acc_over_time_with_without_reinit(_run_id, 0.5)

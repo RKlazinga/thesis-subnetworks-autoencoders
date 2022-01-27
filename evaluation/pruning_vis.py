@@ -20,7 +20,6 @@ def get_square_coords(bn_idx, single_idx, im_height, bn_mask):
 
 
 def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=False):
-    print(mask)
     if type(mask) == str:
         mask = torch.load(mask, map_location=torch.device('cpu'))
     elif type(mask) != list:
@@ -62,13 +61,14 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
         draw.text(((im_width - fwidth) // 2, 30), caption, (0, 0, 0), font=font)
 
     # bg.show()
-    bg.save(f"graphs/pruning-vis-{caption}.png")
+    bg.save(f"figures/mask_visualisation/pruning-vis-{caption}.png")
 
 
 if __name__ == '__main__':
     change_working_dir()
-    mask_to_png(torch.load(f"runs/bnreg0-[6, 4, 6]-b3d0a0d4c/keep-0.7-epoch-4-4.pth"), "No BN regularisation")
-    mask_to_png(torch.load(f"runs/bnreg0.0001-[6, 4, 6]-9e2153967/keep-0.7-epoch-4-4.pth"), "Reg=1e-4 (EB default)")
-    mask_to_png(torch.load(f"runs/bnreg0.001-[6, 4, 6]-eed07da1d/keep-0.7-epoch-4-4.pth"), "Reg=1e-3")
+    mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0/keep-0.7-epoch-4-4.pth"), "No BN regularisation")
+    mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0.0001/keep-0.7-epoch-4-4.pth"), "Reg=1e-4 (EB default)")
+    mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0.001/keep-0.7-epoch-4-4.pth"), "Reg=1e-3")
+    mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0.01/keep-0.7-epoch-4-4.pth"), "Reg=1e-2")
     # mask_to_png(torch.load(f"runs/{last_run()}/keep-0.5-epoch-15-4.pth"))
 

@@ -5,7 +5,7 @@ from utils.file import change_working_dir
 
 def last_group():
     change_working_dir()
-    groups = [x for x in os.listdir("runs") if os.path.isdir(os.path.join("runs", x)) and x.startswith("GROUP")]
+    groups = [x for x in os.listdir("runs") if os.path.isdir(os.path.join("runs", x)) and "GROUP" in x.split("-")[0]]
     groups.sort(key=lambda x: os.path.getmtime(os.path.join("runs", x)), reverse=True)
     if len(groups) == 0:
         raise IndexError("Could not get last group: no groups saved")
