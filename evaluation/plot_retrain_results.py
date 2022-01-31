@@ -8,12 +8,12 @@ from utils.get_run_id import last_run
 plt.rcParams["font.family"] = "serif"
 
 
-def plot_single(data, color, label=None, **kwargs):
+def plot_single(data, color, label=None, offset=0, **kwargs):
     if isinstance(data, list):
-        xs = [x[0] for x in data]
+        xs = [x[0]+offset for x in data]
         ys = [x[2] for x in data]
     elif isinstance(data, dict):
-        xs = list(data.keys())
+        xs = [int(x)+offset for x in data.keys()]
         ys = [x[1] for x in data.values()]
     else:
         raise TypeError("Unknown data format")

@@ -33,15 +33,14 @@ def retrain_tagged_networks(networks, json_filename):
                 write_file.write(json.dumps(graph_data))
 
 
-def retrain_with_shots(get_networks, draw_epoch, json_filename):
+def retrain_with_shots(get_networks, json_filename, shots=3):
     graph_data = {}
     train_loader, test_loader = get_loaders()
     device = get_device()
 
     # multiple shots
-    shots = 3
     for shot in range(shots):
-        nets = get_networks(draw_epoch + shot)
+        nets = get_networks()
         for net_tag, net in nets:
             net.to(device)
             print(f"Retraining: {net_tag}")

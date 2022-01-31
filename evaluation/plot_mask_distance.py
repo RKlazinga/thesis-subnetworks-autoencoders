@@ -12,8 +12,8 @@ plt.rcParams["font.family"] = "serif"
 
 change_working_dir()
 
-run_id = "BNREG_GROUP-374c90fa7/0"
-# run_id = last_run()
+# run_id = "BNREG_GROUP-374c90fa7/0"
+run_id = last_run()
 files = os.listdir(f"runs/{run_id}")
 
 FIG_COUNT = 4

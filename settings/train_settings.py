@@ -5,7 +5,7 @@ from settings.global_settings import *
 if ds == DatasetOption.FASHION_MNIST:
     # CONV
     NETWORK = ConvAE
-    L2REG = 1e-4
+    L2REG = 0  # 1e-4
     SPARSITY_PENALTY = 1e-4
     BATCH_SIZE = 32
     LR = 1e-4 * (BATCH_SIZE ** 0.5)
@@ -14,7 +14,7 @@ if ds == DatasetOption.FASHION_MNIST:
 elif ds == DatasetOption.SYNTHETIC_FLAT:
     # FF
     NETWORK = FeedforwardAE
-    L2REG = 1e-3
+    L2REG = 0  # 1e-3
     SPARSITY_PENALTY = 1e-2
     BATCH_SIZE = 32
     LR = 1e-3 * (BATCH_SIZE ** 0.5)

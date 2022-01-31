@@ -14,7 +14,7 @@ def last_group():
 
 def last_run():
     change_working_dir()
-    runs = [x for x in os.listdir("runs") if os.path.isdir(os.path.join("runs", x))]
+    runs = [x for x in os.listdir("runs") if os.path.isdir(os.path.join("runs", x)) and "GROUP" not in x.split("-")[0]]
     runs.sort(key=lambda x: os.path.getmtime(os.path.join("runs", x)), reverse=True)
     if len(runs) == 0:
         raise IndexError("Could not get last run: no runs saved")
