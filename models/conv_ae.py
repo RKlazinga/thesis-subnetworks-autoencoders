@@ -4,6 +4,9 @@ import torch
 from torch import nn
 
 from procedures.in_place_pruning import prune_model
+from procedures.ticket_drawing.with_redist import find_channel_mask_redist
+from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
+from settings.prune_settings import PRUNE_WITH_REDIST
 from utils.conv_unit import ConvUnit, ConvTransposeUnit
 from utils.crop_module import Crop
 from utils.file import get_topology_of_run, get_params_of_run
@@ -66,15 +69,18 @@ class ConvAE(nn.Module):
         return self.decoder(x)
 
     @staticmethod
-    def init_from_checkpoint(run_id, ratio: Union[float, None], epoch, sub_epoch=1, param_epoch=None):
+    def init_from_checkpoint(run_id, ratio: Union[float, None], epoch, sub_epoch=1, param_epoch=None, from_disk=False):
         topology = get_topology_of_run(run_id)
 
         network = ConvAE(*topology)
         network.load_state_dict(get_params_of_run(run_id, param_epoch))
 
         if ratio is not None:
-            mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
-            masks = torch.load(mask_file)
+            if from_disk:
+                mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
+                masks = torch.load(mask_file)
+            else:
+                channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
+                masks = list(channel_mask_func(network, ratio).values())
             prune_model(network, masks)
-
         return network
