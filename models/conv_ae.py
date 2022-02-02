@@ -68,6 +68,10 @@ class ConvAE(nn.Module):
         x = self.encoder(x)
         return self.decoder(x)
 
+    def get_mask_of_current_network_state(self, ratio):
+        channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
+        return list(channel_mask_func(self, ratio).values())
+
     @staticmethod
     def init_from_checkpoint(run_id, ratio: Union[float, None], epoch, sub_epoch=1, param_epoch=None, from_disk=False):
         topology = get_topology_of_run(run_id)
@@ -80,7 +84,6 @@ class ConvAE(nn.Module):
                 mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
                 masks = torch.load(mask_file)
             else:
-                channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
-                masks = list(channel_mask_func(network, ratio).values())
+                masks = network.get_mask_of_current_network_state(ratio)
             prune_model(network, masks)
         return network

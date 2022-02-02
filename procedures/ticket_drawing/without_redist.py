@@ -1,22 +1,15 @@
 from typing import Dict
 
 import torch
-import torchsummary
 from torch.nn.modules.batchnorm import _BatchNorm
-
-from evaluation.pruning_vis import mask_to_png
-from models.conv_ae import ConvAE
-from procedures.in_place_pruning import prune_model
-from settings.train_settings import NETWORK, TOPOLOGY
-from utils.file import change_working_dir
-from utils.get_run_id import last_run
+from settings.prune_settings import PRUNE_LIMIT
 
 
 def mask_dist(masks_a, masks_b):
     return [torch.sum(torch.abs(a-b)).item() for a, b in zip(masks_a, masks_b)]
 
 
-def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.01):
+def find_channel_mask_no_redist(network, fraction, per_layer_limit=PRUNE_LIMIT):
     """
     Draw a critical subnetwork from a given trained network using (global) channel pruning.
 
@@ -84,25 +77,25 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=0.01):
     return bn_masks
 
 
-if __name__ == '__main__':
-    # test conv
-    # change_working_dir()
-    # net = ConvAE(6, 4, 6)
-    # net.load_state_dict(torch.load("runs/[6, 4, 6]-fe4bc8144/trained-6.pth"))
-    # _masks = list(find_channel_mask_no_redist(net, 0.01).values())
-    # prune_model(net, _masks)
-    # torchsummary.summary(net, (1, 28, 28))
-
-    # test ff
-    net = NETWORK(*TOPOLOGY)
-    print(last_run())
-    net.load_state_dict(torch.load(f"runs/{last_run()}/trained-15.pth"))
-
-    _masks = list(find_channel_mask_no_redist(net, 0.9, 0.01).values())
-    # _masks2 = list(find_channel_mask_no_redist(net, 0.8, 0.01).values())
-    print(sum([torch.count_nonzero(m).item() for m in _masks]) / sum([torch.numel(m) for m in _masks]))
-    # mask_to_png(_masks)
-    # mask_to_png(_masks2)
-    # prune_model(net, _masks2)
-    # torchsummary.summary(net, (16,))
+# if __name__ == '__main__':
+#     # test conv
+#     # change_working_dir()
+#     # net = ConvAE(6, 4, 6)
+#     # net.load_state_dict(torch.load("runs/[6, 4, 6]-fe4bc8144/trained-6.pth"))
+#     # _masks = list(find_channel_mask_no_redist(net, 0.01).values())
+#     # prune_model(net, _masks)
+#     # torchsummary.summary(net, (1, 28, 28))
+#
+#     # test ff
+#     net = NETWORK(*TOPOLOGY)
+#     print(last_run())
+#     net.load_state_dict(torch.load(f"runs/{last_run()}/trained-15.pth"))
+#
+#     _masks = list(find_channel_mask_no_redist(net, 0.9, 0.01).values())
+#     # _masks2 = list(find_channel_mask_no_redist(net, 0.8, 0.01).values())
+#     print(sum([torch.count_nonzero(m).item() for m in _masks]) / sum([torch.numel(m) for m in _masks]))
+#     # mask_to_png(_masks)
+#     # mask_to_png(_masks2)
+#     # prune_model(net, _masks2)
+#     # torchsummary.summary(net, (16,))
 

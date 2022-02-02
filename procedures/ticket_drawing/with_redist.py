@@ -6,12 +6,6 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from torch.nn.modules.conv import _ConvNd, _ConvTransposeNd
 from torch.nn import functional
 
-from evaluation.pruning_vis import mask_to_png
-from models.conv_ae import ConvAE
-from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
-from utils.file import change_working_dir
-from utils.get_run_id import last_run
-
 
 def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
     """
@@ -155,16 +149,16 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
     return bn_masks
 
 
-if __name__ == '__main__':
-    change_working_dir()
-    _network = ConvAE(6, 4, 6)
-    _network.load_state_dict(torch.load(f"runs/{last_run()}/trained-8.pth"))
-
-    # redist_prop_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="proportional").values())
-    redist_sim_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="weightsim").values())
-    redist_sim_masks2 = list(find_channel_mask_redist(_network, 0.5, redist_function="weightsim-0.001").values())
-    no_redist_masks = list(find_channel_mask_no_redist(_network, 0.5).values())
-    # mask_to_png(redist_prop_masks, "Proportionally redistributed weights")
-    mask_to_png(redist_sim_masks, "Similarity-based redistributed weights")
-    mask_to_png(redist_sim_masks2, "Similarity-based 0.001")
-    mask_to_png(no_redist_masks, "No weight redistribution")
+# if __name__ == '__main__':
+#     change_working_dir()
+#     _network = ConvAE(6, 4, 6)
+#     _network.load_state_dict(torch.load(f"runs/{last_run()}/trained-8.pth"))
+#
+#     # redist_prop_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="proportional").values())
+#     redist_sim_masks = list(find_channel_mask_redist(_network, 0.5, redist_function="weightsim").values())
+#     redist_sim_masks2 = list(find_channel_mask_redist(_network, 0.5, redist_function="weightsim-0.001").values())
+#     no_redist_masks = list(find_channel_mask_no_redist(_network, 0.5).values())
+#     # mask_to_png(redist_prop_masks, "Proportionally redistributed weights")
+#     mask_to_png(redist_sim_masks, "Similarity-based redistributed weights")
+#     mask_to_png(redist_sim_masks2, "Similarity-based 0.001")
+#     mask_to_png(no_redist_masks, "No weight redistribution")

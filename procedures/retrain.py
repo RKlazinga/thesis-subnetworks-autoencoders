@@ -43,7 +43,7 @@ def retrain_with_shots(get_networks, json_filename, shots=3):
         nets = get_networks()
         for net_tag, net in nets:
             net.to(device)
-            print(f"Retraining: {net_tag}")
+            print(f"Shot {shot+1}/{shots}, retraining: {net_tag}")
             if net_tag not in graph_data:
                 current_graph_data = {}
                 graph_data[net_tag] = current_graph_data
@@ -56,11 +56,11 @@ def retrain_with_shots(get_networks, json_filename, shots=3):
                 train_loss = train(net, optimiser, criterion, train_loader, device)
                 test_loss = test(net, criterion, test_loader, device)
 
-                print(train_loss, test_loss)
+                print(f"{epoch}/{RETRAIN_EPOCHS}: {train_loss}, {test_loss}")
                 if epoch not in current_graph_data:
-                    current_graph_data[epoch] = [0, 0]
-                current_graph_data[epoch][0] += train_loss / shots
-                current_graph_data[epoch][1] += test_loss / shots
+                    current_graph_data[epoch] = [[], []]
+                current_graph_data[epoch][0].append(train_loss)
+                current_graph_data[epoch][1].append(test_loss)
 
                 with open(json_filename, "w") as write_file:
                     write_file.write(json.dumps(graph_data))
