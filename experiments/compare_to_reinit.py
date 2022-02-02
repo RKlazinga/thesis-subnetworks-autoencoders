@@ -46,4 +46,4 @@ if __name__ == '__main__':
 
     graph_data = {}
 
-    retrain_tagged_networks(networks, f"graphs/graph_data/reset-{run_id}-{ratio}.json")
+    retrain_tagged_networks(networks, f"graph_data/retraining/reset-{run_id}-{ratio}.json")

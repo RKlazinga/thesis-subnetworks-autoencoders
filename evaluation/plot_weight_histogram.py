@@ -49,6 +49,7 @@ def histogram_of_weights(run_id, epoch):
     plt.ylabel('Cumulative Density')
     plt.title('Histogram of BatchNorm weight parameters')
     plt.grid(True, linestyle="dashed")
+    plt.savefig(f"figures/weight_histogram/{run_id}-E{epoch}.png")
 
     plt.show()
 

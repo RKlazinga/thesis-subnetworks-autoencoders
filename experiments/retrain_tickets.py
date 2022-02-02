@@ -1,11 +1,9 @@
 import json
 import os
 
-import torch
 from torch.nn import MSELoss
 from torch.optim import Adam
 
-from models.conv_ae import ConvAE
 from procedures.test import test
 from procedures.train import train
 from settings.prune_settings import DRAW_PER_EPOCH, PRUNE_RATIOS
@@ -21,7 +19,6 @@ device = get_device()
 change_working_dir()
 run_id = last_run()
 checkpoint_folder = f"runs/{run_id}/"
-graph_data_folder = f"graphs/graph_data/{run_id}"
 
 train_loader, test_loader = get_loaders()
 criterion = MSELoss()
@@ -32,8 +29,8 @@ train_every = 4
 # overrides
 
 if __name__ == '__main__':
-    if os.path.exists(f"graphs/graph_data/{run_id}.json"):
-        with open(f"graphs/graph_data/{run_id}.json", "r") as read_file:
+    if os.path.exists(f"graph_data/retraining/{run_id}.json"):
+        with open(f"graph_data/retraining/{run_id}.json", "r") as read_file:
             graph_data = json.loads(read_file.read())
     else:
         graph_data = {}
@@ -66,9 +63,5 @@ if __name__ == '__main__':
                         print(f"{epoch}/{RETRAIN_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
                         current_graph_data.append((epoch + (resume if resume else 0), train_loss, test_loss))
 
-                        with open(f"graphs/graph_data/{run_id}.json", "w") as write_file:
+                        with open(f"graph_data/retraining/{run_id}.json", "w") as write_file:
                             write_file.write(json.dumps(graph_data))
-
-                        if test_loss - train_loss > 0.003 and train_loss < 0.017:
-                            print("Aborting due to overfit")
-                            break

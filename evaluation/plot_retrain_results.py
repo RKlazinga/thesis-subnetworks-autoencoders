@@ -20,21 +20,20 @@ def plot_single(data, color, label=None, offset=0, **kwargs):
         y_min = [min(y) for y in ys]
         y_max = [max(y) for y in ys]
         plt.plot(xs, y_avgs, color=color, label=label, **kwargs)
-        print(color)
         plt.fill_between(xs, y_min, y_max, color=color, alpha=0.2)
     else:
         raise TypeError("Unknown data format")
 
 
 def plot_acc_over_time_multiple_drawings(run_id, ratio):
-    graph_data_file = f"graphs/graph_data/{run_id}.json"
+    graph_data_file = f"graph_data/retraining/{run_id}.json"
 
     cmap = cm.get_cmap("plasma")
     with open(graph_data_file, "r") as read_file:
         graph_data: Dict = json.loads(read_file.read())
 
         # plot the various pruned runs of this ratio
-        relevant_keys = [x for x in graph_data.keys() if x.startswith(f"{ratio}-")][::3]
+        relevant_keys = [x for x in graph_data.keys() if x.startswith(f"{ratio}-")]
         for idx, key in enumerate(relevant_keys):
             label = f"Pruned, drawn from epoch {key.split('-')[1]}"
             color = cmap(idx / len(relevant_keys))
@@ -55,7 +54,7 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
         plt.ylabel("Test loss")
         plt.xlabel("Epoch")
         plt.legend(loc="lower left")
-        plt.savefig(f"graphs/{run_id}-{ratio}.png", bbox_inches="tight")
+        plt.savefig(f"figures/retraining/{run_id}-{ratio}.png", bbox_inches="tight")
         plt.show()
 
 

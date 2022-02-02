@@ -44,4 +44,4 @@ if __name__ == '__main__':
                                           param_epoch=RETRAIN_RESUME_EPOCH).to(device)
         networks.append((run_id, net))
 
-    retrain_tagged_networks(networks, f"graphs/graph_data/{group_run_id}-{ratio}.json")
+    retrain_tagged_networks(networks, f"graph_data/group_retraining/{group_run_id}-{ratio}.json")

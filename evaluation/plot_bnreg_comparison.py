@@ -1,5 +1,4 @@
 import json
-from typing import Dict
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
@@ -9,8 +8,8 @@ from utils.get_run_id import last_group
 plt.rcParams["font.family"] = "serif"
 
 
-def plot_acc_over_time(run_id, ratio):
-    graph_data_file = f"graphs/graph_data/{run_id}-{ratio}.json"
+def plot(run_id, ratio):
+    graph_data_file = f"graph_data/retraining/{run_id}-{ratio}.json"
 
     cmap = cm.get_cmap("plasma")
 
@@ -33,4 +32,4 @@ if __name__ == '__main__':
     change_working_dir()
     _group_id = last_group()
 
-    plot_acc_over_time(_group_id, 0.7)
+    plot(_group_id, 0.7)

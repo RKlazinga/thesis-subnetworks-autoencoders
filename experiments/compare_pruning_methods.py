@@ -66,4 +66,4 @@ if __name__ == '__main__':
         ]
         return networks
 
-    retrain_with_shots(get_networks, _draw_epoch, f"graphs/graph_data/prune_compare-{run_id}-{ratio}.json")
+    retrain_with_shots(get_networks, _draw_epoch, f"graph_data/retraining/prune_compare-{run_id}-{ratio}.json")

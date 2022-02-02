@@ -66,4 +66,3 @@ if __name__ == '__main__':
         return networks
 
     retrain_with_shots(get_networks, f"graph_data/retraining/random_mask-{run_id}-{ratio}.json", shots=5)
-    # retrain_tagged_networks(networks, f"graphs/graph_data/random_mask-{run_id}-{ratio}.json")
