@@ -9,7 +9,7 @@ from utils.get_run_id import last_run
 plt.rcParams["font.family"] = "serif"
 
 
-def plot_acc_over_time_with_without_reinit(run_id, ratio):
+def plot(run_id, ratio):
     graph_data_file = f"graph_data/retraining/random_mask-{run_id}-{ratio}.json"
 
     cmap = cm.get_cmap("plasma")
@@ -62,4 +62,4 @@ if __name__ == '__main__':
     # _run_id = "[6, 4, 6]-bbbac9959"
     _run_id = last_run()
 
-    plot_acc_over_time_with_without_reinit(_run_id, 0.5)
+    plot(_run_id, 0.5)

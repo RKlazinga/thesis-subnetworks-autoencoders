@@ -4,6 +4,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
 from utils.file import change_working_dir, get_topology_of_run, get_params_of_run
+from utils.get_run_id import last_run
 from utils.misc import get_device
 
 plt.rcParams["font.family"] = "serif"
@@ -57,15 +58,7 @@ def histogram_of_weights(run_id, epoch):
 if __name__ == '__main__':
 
     change_working_dir()
-    # run_id = last_run()
+    _run_id = last_run()
 
     # _run_id = "[6, 4, 6]-fe4bc8144"
-    _epoch = 16
-    histogram_of_weights("bnreg0-[6, 4, 6]-b3d0a0d4c", _epoch)
-    histogram_of_weights("bnreg1e-05-[6, 4, 6]-c26d30e2a", _epoch)
-    histogram_of_weights("bnreg3e-05-[6, 4, 6]-f727f2158", _epoch)
-    histogram_of_weights("bnreg0.0001-[6, 4, 6]-9e2153967", _epoch)
-    histogram_of_weights("bnreg0.0003-[6, 4, 6]-9c4ba659e", _epoch)
-    histogram_of_weights("bnreg0.001-[6, 4, 6]-eed07da1d", _epoch)
-    # histogram_of_weights(_run_id, 4)
-    # histogram_of_weights(_run_id, 16)
+    histogram_of_weights(_run_id, 12)

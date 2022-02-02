@@ -3,14 +3,15 @@ import torch
 from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
 from procedures.in_place_pruning import prune_model
-from procedures.retrain import retrain_tagged_networks, retrain_with_shots
-from utils.file import get_topology_of_run, get_params_of_run
+from procedures.retrain import retrain_with_shots
 from datasets.get_loaders import get_loaders
+from settings.retrain_settings import RETRAIN_EPOCHS
 from utils.get_run_id import last_run
 from utils.misc import get_device
 
 run_id = last_run()
 ratio = 0.5
+shots = 1
 draw_epoch = 12
 draw_sub_epoch = 4
 mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
@@ -19,12 +20,12 @@ device = get_device()
 if __name__ == '__main__':
     train_loader, test_loader = get_loaders()
 
-    def get_networks():
+    print(f"ETA: {15*2*RETRAIN_EPOCHS*shots/60} minutes")
 
+    def get_networks():
         # unpruned = ConvAE.init_from_checkpoint(run_id, None, None, None).to(device)
 
         ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=None).to(device)
-
         # ticket_eb = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=draw_epoch).to(device)
 
         # ticket_resume = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=1).to(device)
@@ -65,4 +66,5 @@ if __name__ == '__main__':
         ]
         return networks
 
-    retrain_with_shots(get_networks, f"graph_data/retraining/random_mask-{run_id}-{ratio}.json", shots=5)
+    retrain_with_shots(get_networks, f"graph_data/retraining/random_mask-{run_id}-{ratio}.json", shots=shots)
+
