@@ -12,12 +12,18 @@ def plot_single(data, color, label=None, offset=0, **kwargs):
     if isinstance(data, list):
         xs = [x[0]+offset for x in data]
         ys = [x[2] for x in data]
+        plt.plot(xs, ys, color=color, label=label, **kwargs)
     elif isinstance(data, dict):
         xs = [int(x)+offset for x in data.keys()]
         ys = [x[1] for x in data.values()]
+        y_avgs = [sum(y)/len(y) for y in ys]
+        y_min = [min(y) for y in ys]
+        y_max = [max(y) for y in ys]
+        plt.plot(xs, y_avgs, color=color, label=label, **kwargs)
+        print(color)
+        plt.fill_between(xs, y_min, y_max, color=color, alpha=0.2)
     else:
         raise TypeError("Unknown data format")
-    plt.plot(xs, ys, color=color, label=label, **kwargs)
 
 
 def plot_acc_over_time_multiple_drawings(run_id, ratio):

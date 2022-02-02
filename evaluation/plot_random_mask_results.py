@@ -10,7 +10,7 @@ plt.rcParams["font.family"] = "serif"
 
 
 def plot_acc_over_time_with_without_reinit(run_id, ratio):
-    graph_data_file = f"graphs/graph_data/random_mask-{run_id}-{ratio}.json"
+    graph_data_file = f"graph_data/retraining/random_mask-{run_id}-{ratio}.json"
 
     cmap = cm.get_cmap("plasma")
     # colors = {
@@ -22,6 +22,7 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
         "unpruned": "grey",
         # "original_ticket": cmap(0),
         "original_ticket": cmap(0.25),
+        "original_ticket_eb": cmap(0.25),
         # "reset_ticket": cmap(.4),
         "random_ticket": cmap(.7),
         # "random_ticket_resume": cmap(.85),
@@ -30,17 +31,25 @@ def plot_acc_over_time_with_without_reinit(run_id, ratio):
     with open(graph_data_file, "r") as read_file:
         graph_data: Dict = json.loads(read_file.read())
 
+        if any([key not in colors for key in graph_data.keys()]):
+            print("Auto-generating colourmap")
+            colors = {key: cmap(i/len(graph_data)) for i, key in enumerate(graph_data.keys())}
+
         for key, data in graph_data.items():
             if key not in colors:
                 print(f"WARNING: {key} not in defined colourmap")
                 continue
+
+            if "eb" in key:
+                continue
             label = key.replace("_", " ").title()
-            plot_single(data, colors[key], label, offset=int("Resume" in label))
+            plot_single(data, colors[key], label)
 
         plt.title("Validating the importance of initialisation\n"
                   f"({round(100*(1-ratio))}% of channels pruned)")
         plt.ylabel("Test loss")
         plt.xlabel("Epoch")
+        plt.grid(True, linestyle="dashed")
 
         plt.gca().set_ylim([0.015, 0.025])
         plt.legend()
