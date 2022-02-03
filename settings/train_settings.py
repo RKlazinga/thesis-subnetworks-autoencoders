@@ -9,7 +9,7 @@ if ds == DatasetOption.FASHION_MNIST:
     SPARSITY_PENALTY = 1e-4
     BATCH_SIZE = 32
     LR = 1e-4 * (BATCH_SIZE ** 0.5)
-    TOPOLOGY = [6, 4, 2]
+    TOPOLOGY = [6, 4, 6]
     DRAW_EPOCHS = 20
 elif ds == DatasetOption.SYNTHETIC_FLAT:
     # FF

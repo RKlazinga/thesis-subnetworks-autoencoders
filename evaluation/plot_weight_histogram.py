@@ -59,6 +59,6 @@ if __name__ == '__main__':
 
     change_working_dir()
     _run_id = last_group()
-    
+
     histogram_of_weights(_run_id+"/0.0001", 12)
     histogram_of_weights(_run_id+"/1e-05", 12)

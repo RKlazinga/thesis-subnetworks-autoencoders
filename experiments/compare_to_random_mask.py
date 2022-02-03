@@ -10,14 +10,14 @@ from utils.get_run_id import last_run
 from utils.misc import get_device
 
 run_id = last_run()
-ratio = 0.5
-shots = 1
-draw_epoch = 12
+ratios = [0.9, 0.7, 0.5, 0.3]
+shots = 3
+draw_epoch = 8
 draw_sub_epoch = 4
-mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
 device = get_device()
 
-if __name__ == '__main__':
+
+def run(ratio):
     train_loader, test_loader = get_loaders()
 
     print(f"ETA: {15*2*RETRAIN_EPOCHS*shots/60} minutes")
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     def get_networks():
         # unpruned = ConvAE.init_from_checkpoint(run_id, None, None, None).to(device)
 
-        ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=None).to(device)
+        ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=1).to(device)
         # ticket_eb = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=draw_epoch).to(device)
 
         # ticket_resume = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=1).to(device)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         # mask_to_png(ticket_masks, caption="Expanded mask", show=True, save=False)
         # mask_to_png(random_masks, caption="Random mask with same ratio per layer", show=True, save=False)
 
-        random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=None)
+        random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=1)
         prune_model(random_ticket, random_masks)
 
         # random_ticket_eb = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch)
@@ -68,3 +68,7 @@ if __name__ == '__main__':
 
     retrain_with_shots(get_networks, f"graph_data/retraining/random_mask-{run_id}-{ratio}.json", shots=shots)
 
+
+if __name__ == '__main__':
+    for r in ratios:
+        run(r)
