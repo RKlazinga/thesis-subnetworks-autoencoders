@@ -4,7 +4,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
 from utils.file import change_working_dir, get_topology_of_run, get_params_of_run
-from utils.get_run_id import last_run
+from utils.get_run_id import last_run, last_group
 from utils.misc import get_device
 
 plt.rcParams["font.family"] = "serif"
@@ -50,7 +50,7 @@ def histogram_of_weights(run_id, epoch):
     plt.ylabel('Cumulative Density')
     plt.title('Histogram of BatchNorm weight parameters')
     plt.grid(True, linestyle="dashed")
-    plt.savefig(f"figures/weight_histogram/{run_id}-E{epoch}.png")
+    plt.savefig(f"figures/weight_histogram/{run_id.replace('/', '_')}-E{epoch}.png")
 
     plt.show()
 
@@ -58,7 +58,7 @@ def histogram_of_weights(run_id, epoch):
 if __name__ == '__main__':
 
     change_working_dir()
-    _run_id = last_run()
-
-    # _run_id = "[6, 4, 6]-fe4bc8144"
-    histogram_of_weights(_run_id, 12)
+    _run_id = last_group()
+    
+    histogram_of_weights(_run_id+"/0.0001", 12)
+    histogram_of_weights(_run_id+"/1e-05", 12)
