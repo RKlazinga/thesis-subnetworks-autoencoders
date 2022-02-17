@@ -31,7 +31,7 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
     for epoch in range(1, DRAW_EPOCHS + 1):
         def prune_snapshot(iteration: int, epoch=epoch):
             for r in PRUNE_RATIOS:
-                torch.save(list(channel_mask_func(net, r).values()), f"{folder}/keep-{r}-epoch-{epoch}-{iteration}.pth")
+                torch.save(list(channel_mask_func(net, r).values()), f"{folder}/prune-{r}-epoch-{epoch}-{iteration}.pth")
 
         train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
         test_loss = test(net, criterion, test_loader, device)

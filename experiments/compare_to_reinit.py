@@ -11,7 +11,7 @@ run_id = last_run()
 ratio = 0.5
 draw_epoch = 9
 draw_sub_epoch = 4
-mask = f"runs/{run_id}/keep-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
+mask = f"runs/{run_id}/prune-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
 device = get_device()
 
 if __name__ == '__main__':

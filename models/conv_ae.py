@@ -83,7 +83,7 @@ class ConvAE(nn.Module):
             network.load_state_dict(get_params_of_run(run_id, param_epoch))
         else:
             if from_disk:
-                mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
+                mask_file = f"runs/{run_id}/prune-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
                 masks = torch.load(mask_file)
             else:
                 network.load_state_dict(get_params_of_run(run_id, epoch))

@@ -32,4 +32,4 @@ if __name__ == '__main__':
     change_working_dir()
     _group_id = last_group()
 
-    plot(_group_id, 0.7)
+    plot(_group_id, 0.3)

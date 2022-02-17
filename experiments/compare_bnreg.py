@@ -16,7 +16,7 @@ if __name__ == '__main__':
     change_working_dir()
     draw_epoch = 8
     draw_sub_epoch = 4
-    ratio = 0.7
+    ratio = 0.3
     device = get_device()
     group_run_id = "BNREG_GROUP-" + generate_random_str()
 

@@ -46,7 +46,7 @@ def plot(run_id, ratio):
             plot_single(data, colors[key], label)
 
         plt.title("Validating the importance of initialisation\n"
-                  f"({round(100*(1-ratio))}% of channels pruned)")
+                  f"({round(100*ratio)}% of channels pruned)")
         plt.ylabel("Test loss")
         plt.xlabel("Epoch")
         plt.grid(True, linestyle="dashed")

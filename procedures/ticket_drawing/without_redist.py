@@ -14,7 +14,7 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=PRUNE_LIMIT):
     Draw a critical subnetwork from a given trained network using (global) channel pruning.
 
     :param network: The trained network to draw from
-    :param fraction: The fraction of channels to KEEP after pruning
+    :param fraction: The fraction of channels to remove during pruning
     :param per_layer_limit: Do not prune a single layer beyond this limit.
                             Set equal to fraction to apply the pruning per-layer
     :return: A mask for each BatchNorm layer
@@ -23,7 +23,7 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=PRUNE_LIMIT):
         m: None for m in network.modules() if isinstance(m, _BatchNorm)
     }
 
-    assert fraction >= per_layer_limit
+    assert fraction <= per_layer_limit
 
     if len(bn_masks) > 0:
         total_channels = 0
@@ -53,10 +53,10 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=PRUNE_LIMIT):
             idx += bn_size
 
         # based on the fraction, find the global weight threshold below which we will prune
-        # since the sort is ascending, we find the threshold at (1-[the fraction to keep])
+        # since the sort is ascending, we find the threshold at [the fraction to remove]
         weights_sorted = torch.sort(all_weights).values
 
-        threshold = weights_sorted[int(total_channels * (1 - fraction))]
+        threshold = weights_sorted[int(total_channels * fraction)]
 
         for idx, bn in enumerate(bn_masks.keys()):
             bn_size = bn.weight.data.shape[0]

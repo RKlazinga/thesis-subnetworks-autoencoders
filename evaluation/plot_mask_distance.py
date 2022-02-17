@@ -21,10 +21,10 @@ ROW_SIZE = 2
 
 fig, axs = plt.subplots(FIG_COUNT // ROW_SIZE, ROW_SIZE)
 fig.tight_layout()
-PRUNE_RATIOS.sort()
+PRUNE_RATIOS.sort(reverse=True)
 
 for idx_r, r in enumerate(PRUNE_RATIOS):
-    ratio_files = [f for f in files if f.startswith(f"keep-{r}-")]
+    ratio_files = [f for f in files if f.startswith(f"prune-{r}-")]
 
     def get_epoch_and_iter(x: str):
         x = x.removesuffix(".pth")

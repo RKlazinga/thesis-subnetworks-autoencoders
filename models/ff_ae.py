@@ -59,7 +59,7 @@ class FeedforwardAE(nn.Module):
         network.load_state_dict(get_params_of_run(run_id, param_epoch))
 
         if ratio is not None:
-            mask_file = f"runs/{run_id}/keep-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
+            mask_file = f"runs/{run_id}/prune-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
             masks = torch.load(mask_file)
             prune_model(network, masks)
 

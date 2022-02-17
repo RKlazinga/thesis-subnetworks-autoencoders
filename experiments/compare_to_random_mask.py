@@ -10,7 +10,7 @@ from utils.get_run_id import last_run
 from utils.misc import get_device
 
 run_id = last_run()
-ratios = [0.9, 0.7, 0.5, 0.3]
+ratios = [0.1, 0.3, 0.5, 0.7]
 shots = 3
 draw_epoch = 8
 draw_sub_epoch = 4

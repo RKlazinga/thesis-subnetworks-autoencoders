@@ -50,7 +50,7 @@ def plot_acc_over_time_multiple_drawings(run_id, ratio):
         plot_single(unpruned_data, "grey", "Unpruned", linewidth=2)
 
         plt.title("Training of lottery tickets vs unpruned network\n"
-                  f"({round(100*(1-ratio))}% of channels pruned)")
+                  f"({round(100*ratio)}% of channels pruned)")
         plt.ylabel("Test loss")
         plt.xlabel("Epoch")
         plt.legend(loc="lower left")

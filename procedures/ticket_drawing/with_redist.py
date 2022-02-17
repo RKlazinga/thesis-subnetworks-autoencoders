@@ -13,7 +13,7 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
     Pruning is applied layer-by-layer.
 
     :param network: The trained network to draw from
-    :param fraction: The fraction of channels to KEEP after pruning
+    :param fraction: The fraction of channels to remove during pruning
     :param redist_function: How to redistribute the weight of a pruned channel
     :return: A mask for each BatchNorm layer
     """
@@ -57,7 +57,7 @@ def find_channel_mask_redist(network, fraction, redist_function="weightsim"):
         idx += bn_size
 
     # until we reach the desired pruning ratio, remove one channel at a time and redistribute its weight proportionally
-    desired_prune_count = int(total_channels * (1 - fraction))
+    desired_prune_count = int(total_channels * fraction)
 
     for i in range(desired_prune_count):
         # find the smallest weight

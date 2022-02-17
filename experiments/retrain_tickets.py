@@ -42,7 +42,7 @@ if __name__ == '__main__':
     print()
 
     for ratio in [None] + PRUNE_RATIOS:
-        masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"keep-{ratio}-")]
+        masks = [x for x in os.listdir(checkpoint_folder) if x.startswith(f"prune-{ratio}-")]
         for draw_epoch in range(1, DRAW_EPOCHS + 1, skip_epochs):
             for sub_epoch in range(1, DRAW_PER_EPOCH + 1):
                 if ratio is None and (draw_epoch != 1 or sub_epoch != train_every):
