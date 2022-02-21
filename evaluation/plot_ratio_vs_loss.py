@@ -48,7 +48,8 @@ def plot(run_id, baseline=None):
     colors = {
         "unpruned": "grey",
         "original_ticket": cmap(0.25),
-        "random_ticket": cmap(.75),
+        "random_ticket": cmap(.5),
+        "utterly_random": cmap(.75),
     }
 
     xmin = 1e9
@@ -79,4 +80,4 @@ def plot(run_id, baseline=None):
 
 if __name__ == '__main__':
     change_working_dir()
-    plot("random_mask-"+last_run(), baseline=0.0168)
+    plot("utterly_random_mask-"+last_run())#, baseline=0.0168)

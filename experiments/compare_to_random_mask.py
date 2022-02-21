@@ -1,3 +1,5 @@
+import random
+
 import torch
 
 from evaluation.pruning_vis import mask_to_png
@@ -17,6 +19,16 @@ draw_sub_epoch = 4
 device = get_device()
 
 
+def verify_ratio_approx_correct(desired_ratio, mask):
+    numer = 0
+    denom = 0
+    for m in mask:
+        numer += torch.count_nonzero(m)
+        denom += torch.numel(m)
+    print(f"Desired: {desired_ratio} Actual: {numer/denom}")
+    # assert abs(numer/denom - desired_ratio) < 0.01
+
+
 def run(ratio):
     train_loader, test_loader = get_loaders()
 
@@ -25,13 +37,8 @@ def run(ratio):
     def get_networks():
         # unpruned = ConvAE.init_from_checkpoint(run_id, None, None, None).to(device)
 
-        ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=1).to(device)
+        ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=None).to(device)
         # ticket_eb = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=draw_epoch).to(device)
-
-        # ticket_resume = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=1).to(device)
-
-        # ticket_reset = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=1).to(device)
-        # ticket_reset.reset_weights()
 
         # get ticket mask and extract ratio per layer
         ticket_masks = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch).get_mask_of_current_network_state(ratio)
@@ -46,27 +53,47 @@ def run(ratio):
         # mask_to_png(ticket_masks, caption="Expanded mask", show=True, save=False)
         # mask_to_png(random_masks, caption="Random mask with same ratio per layer", show=True, save=False)
 
-        random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=1)
+        random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=None)
         prune_model(random_ticket, random_masks)
 
-        # random_ticket_eb = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch)
-        # prune_model(random_ticket_eb, random_masks)
-        # random_ticket_resume = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=1)
-        # prune_model(random_ticket_resume, random_masks)
+        utterly_random_masks = []
+        t_sizes = [torch.numel(t) for t in ticket_masks]
+        total = sum(t_sizes)
+        protected = sum([t if t <= 6 else 0 for t in t_sizes])
+        desired_zeroes = total * (1 - ratio)
+        # practical_ratio = (total * ratio - protected) / (total - protected)
+        # print(f"Desired ratio {ratio} but {protected} protected, so ratio is {practical_ratio}")
+        unprotected_seen = 0
+        for t in ticket_masks:
+            t_size = torch.numel(t)
+            if t_size <= 6:
+                utterly_random_masks.append(torch.ones(t_size))
+            else:
+                r = []
+                for _ in range(t_size):
+                    v = desired_zeroes / (total - protected - unprotected_seen)
+                    outcome = int(random.random() > v)
+                    if outcome == 0:
+                        desired_zeroes -= 1
+                    unprotected_seen += 1
+                    r.append(outcome)
+                utterly_random_masks.append(torch.tensor(r))
+
+        verify_ratio_approx_correct(ratio, utterly_random_masks)
+        # mask_to_png(ticket_masks, show=True, save=False)
+        # mask_to_png(utterly_random_masks, show=True, save=False)
+        utterly_random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=None)
+        prune_model(utterly_random_ticket, utterly_random_masks)
 
         networks = [
             ("original_ticket", ticket),
-            # ("original_ticket_eb", ticket_eb),
-            # ("original_ticket_resume", ticket_resume),
-            # ("reset_ticket", ticket_reset),
-            ("random_ticket", random_ticket.to(device)),
-            # ("random_ticket_eb", random_ticket_eb.to(device)),
-            # ("random_ticket_resume", random_ticket_resume.to(device)),
+            ("utterly_random", utterly_random_ticket.to(device)),
+            # ("random_ticket", random_ticket.to(device)),
             # ("unpruned", unpruned),
         ]
         return networks
 
-    retrain_with_shots(get_networks, f"graph_data/retraining/random_mask-{run_id}-{ratio}.json", shots=shots)
+    retrain_with_shots(get_networks, f"graph_data/retraining/utterly_random_mask-{run_id}-{ratio}.json", shots=shots)
 
 
 if __name__ == '__main__':
