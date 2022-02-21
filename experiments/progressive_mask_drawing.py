@@ -1,5 +1,4 @@
 import os
-import random
 import torch
 from torch.nn import MSELoss
 from torch.optim import Adam

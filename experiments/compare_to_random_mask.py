@@ -2,7 +2,6 @@ import random
 
 import torch
 
-from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
 from procedures.in_place_pruning import prune_model
 from procedures.retrain import retrain_with_shots
