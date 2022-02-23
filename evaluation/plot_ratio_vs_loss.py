@@ -39,7 +39,7 @@ def plot(run_id, baseline=None):
                     smallest_min = min(smallest_min, min(values[1]))
                     smallest_max = min(smallest_max, max(values[1]))
 
-                graph_data[line_name][0].append(1-ratio)
+                graph_data[line_name][0].append(ratio)
                 graph_data[line_name][1].append(as_percentage(smallest_avg))
                 graph_data[line_name][2].append(as_percentage(smallest_min))
                 graph_data[line_name][3].append(as_percentage(smallest_max))
@@ -75,9 +75,10 @@ def plot(run_id, baseline=None):
     plt.grid(True, linestyle="dashed")
     # plt.gca().set_xlim([0, 1])
 
+    plt.savefig(f"figures/validation/loss_v_ratio-{run_id}.png")
     plt.show()
 
 
 if __name__ == '__main__':
     change_working_dir()
-    plot("utterly_random_mask-"+last_run())#, baseline=0.0168)
+    plot("random_mask-"+last_run())#, baseline=0.0168)

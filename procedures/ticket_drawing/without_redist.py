@@ -43,7 +43,7 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=PRUNE_LIMIT):
             if per_layer_limit > 0:
                 # find the per_layer_limit most important weights in the layer, and set them to ~inf
                 layer_weights_sorted = torch.sort(abs_weight).values
-                cutoff_idx = min(bn_size-1, round(bn_size * (1 - per_layer_limit)))
+                cutoff_idx = min(bn_size-1, round(bn_size * per_layer_limit))
                 layer_threshold = layer_weights_sorted[cutoff_idx]
 
                 layer_mask = abs_weight.ge(layer_threshold)
@@ -65,7 +65,7 @@ def find_channel_mask_no_redist(network, fraction, per_layer_limit=PRUNE_LIMIT):
             if per_layer_limit > 0:
                 # find the per_layer_limit most important weights in the layer, and set them to ~inf
                 layer_weights_sorted = torch.sort(abs_weight).values
-                cutoff_idx = min(bn_size-1, round(bn_size * (1 - per_layer_limit)))
+                cutoff_idx = min(bn_size-1, round(bn_size * per_layer_limit))
                 layer_threshold = layer_weights_sorted[cutoff_idx]
 
                 layer_mask = abs_weight.ge(layer_threshold)
