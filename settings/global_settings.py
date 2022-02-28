@@ -1,3 +1,3 @@
 from datasets.dataset_options import DatasetOption
 
-ds = DatasetOption.FASHION_MNIST
+ds = DatasetOption.SYNTHETIC_FLAT

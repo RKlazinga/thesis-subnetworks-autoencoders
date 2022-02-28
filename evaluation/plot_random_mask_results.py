@@ -59,7 +59,14 @@ def plot(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    # _run_id = "[6, 4, 6]-bbbac9959"
-    _run_id = last_run()
+    # _run_id = last_run()
 
+    _run_id = "[6, 4, 6]-c3c25aa69"
+    # plot(_run_id, 0.9)
+    # plot(_run_id, 0.7)
+    plot(_run_id, 0.5)
+
+    _run_id = "[6, 4, 6]-746325f33"
+    # plot(_run_id, 0.1)
+    # plot(_run_id, 0.3)
     plot(_run_id, 0.5)

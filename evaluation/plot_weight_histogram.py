@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt, cm
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
+from settings.train_settings import NETWORK
 from utils.file import change_working_dir, get_topology_of_run, get_params_of_run
 from utils.get_run_id import last_run, last_group
 from utils.misc import get_device
@@ -12,10 +13,11 @@ plt.rcParams["font.family"] = "serif"
 
 def histogram_of_weights(run_id, epoch):
     device = get_device()
-    net = ConvAE(*get_topology_of_run(run_id)).to(device)
+    net = NETWORK(*get_topology_of_run(run_id)).to(device)
     net.load_state_dict(get_params_of_run(run_id, epoch=epoch, device=device))
 
-    lim = 0.8
+    bincount = 40
+    lim = 1.6
 
     # get batchnorm layers
     bn = [x for x in net.modules() if isinstance(x, _BatchNorm)]
@@ -26,12 +28,13 @@ def histogram_of_weights(run_id, epoch):
         weights_per_bn[i] = [min(lim, x.item()) for x in weights_per_bn[i]]
     all_weights = []
     [all_weights.extend(x) for x in weights_per_bn]
+    print(f"Min: {min(all_weights)} Max: {max(all_weights)}")
 
     cmap = cm.get_cmap("inferno")
     colors = [cmap(i / len(weights_per_bn)) for i in range(len(weights_per_bn))]
 
     # the histogram of the data
-    bins = [(x * 0.02) for x in range(40)]
+    bins = [(x * lim/bincount) for x in range(bincount)]
 
     per_layer = False
 
@@ -58,7 +61,12 @@ def histogram_of_weights(run_id, epoch):
 if __name__ == '__main__':
 
     change_working_dir()
-    _run_id = last_group()
+    # _run_id = last_group()
+    #
+    # histogram_of_weights(_run_id+"/0.0001", 12)
+    # histogram_of_weights(_run_id+"/1e-05", 12)
 
-    histogram_of_weights(_run_id+"/0.0001", 12)
-    histogram_of_weights(_run_id+"/1e-05", 12)
+    _run_id = last_run()
+    histogram_of_weights(_run_id, 2)
+    histogram_of_weights(_run_id, 10)
+    histogram_of_weights(_run_id, 20)

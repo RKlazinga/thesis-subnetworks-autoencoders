@@ -25,5 +25,12 @@ def get_params_of_run(run_id, epoch=None, device=None):
     return torch.load(checkpoint_file, map_location=device)
 
 
+def get_epochs_of_run(run_id):
+    change_working_dir()
+    files = [x for x in os.listdir(f"runs/{run_id}") if "trained" in x]
+    files = [int(x.removesuffix(".pth").removeprefix("trained-")) for x in files]
+    return max(files)
+
+
 def change_working_dir():
     os.chdir(os.path.dirname(os.path.dirname(__file__)))

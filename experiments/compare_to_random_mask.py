@@ -29,9 +29,8 @@ def verify_ratio_approx_correct(desired_ratio, mask):
 
 
 def run(ratio):
-    train_loader, test_loader = get_loaders()
 
-    print(f"ETA: {15*2*RETRAIN_EPOCHS*shots/60} minutes")
+    print(f"Ratio: {ratio}, ETA: {15*2*RETRAIN_EPOCHS*shots/60} minutes")
 
     def get_networks():
         # unpruned = ConvAE.init_from_checkpoint(run_id, None, None, None).to(device)
@@ -55,44 +54,45 @@ def run(ratio):
         random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=None)
         prune_model(random_ticket, random_masks)
 
-        utterly_random_masks = []
-        t_sizes = [torch.numel(t) for t in ticket_masks]
-        total = sum(t_sizes)
-        protected = sum([t if t <= 6 else 0 for t in t_sizes])
-        desired_zeroes = total * (1 - ratio)
-        # practical_ratio = (total * ratio - protected) / (total - protected)
-        # print(f"Desired ratio {ratio} but {protected} protected, so ratio is {practical_ratio}")
-        unprotected_seen = 0
-        for t in ticket_masks:
-            t_size = torch.numel(t)
-            if t_size <= 6:
-                utterly_random_masks.append(torch.ones(t_size))
-            else:
-                r = []
-                for _ in range(t_size):
-                    v = desired_zeroes / (total - protected - unprotected_seen)
-                    outcome = int(random.random() > v)
-                    if outcome == 0:
-                        desired_zeroes -= 1
-                    unprotected_seen += 1
-                    r.append(outcome)
-                utterly_random_masks.append(torch.tensor(r))
-
-        verify_ratio_approx_correct(ratio, utterly_random_masks)
+        # TODO bug in the utterly_random code?
+        # utterly_random_masks = []
+        # t_sizes = [torch.numel(t) for t in ticket_masks]
+        # total = sum(t_sizes)
+        # protected = sum([t if t <= 6 else 0 for t in t_sizes])
+        # desired_zeroes = total * (1 - ratio)
+        # # practical_ratio = (total * ratio - protected) / (total - protected)
+        # # print(f"Desired ratio {ratio} but {protected} protected, so ratio is {practical_ratio}")
+        # unprotected_seen = 0
+        # for t in ticket_masks:
+        #     t_size = torch.numel(t)
+        #     if t_size <= 6:
+        #         utterly_random_masks.append(torch.ones(t_size))
+        #     else:
+        #         r = []
+        #         for _ in range(t_size):
+        #             v = desired_zeroes / (total - protected - unprotected_seen)
+        #             outcome = int(random.random() > v)
+        #             if outcome == 0:
+        #                 desired_zeroes -= 1
+        #             unprotected_seen += 1
+        #             r.append(outcome)
+        #         utterly_random_masks.append(torch.tensor(r))
+        #
+        # verify_ratio_approx_correct(ratio, utterly_random_masks)
         # mask_to_png(ticket_masks, show=True, save=False)
         # mask_to_png(utterly_random_masks, show=True, save=False)
-        utterly_random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=None)
-        prune_model(utterly_random_ticket, utterly_random_masks)
+        # utterly_random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=None)
+        # prune_model(utterly_random_ticket, utterly_random_masks)
 
         networks = [
             ("original_ticket", ticket),
-            ("utterly_random", utterly_random_ticket.to(device)),
-            # ("random_ticket", random_ticket.to(device)),
+            # ("utterly_random", utterly_random_ticket.to(device)),
+            ("random_ticket", random_ticket.to(device)),
             # ("unpruned", unpruned),
         ]
         return networks
 
-    retrain_with_shots(get_networks, f"graph_data/retraining/utterly_random_mask-{run_id}-{ratio}.json", shots=shots)
+    retrain_with_shots(get_networks, f"graph_data/retraining/random_mask-{run_id}-{ratio}.json", shots=shots)
 
 
 if __name__ == '__main__':

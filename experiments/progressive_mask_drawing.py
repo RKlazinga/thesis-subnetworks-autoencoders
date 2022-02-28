@@ -48,8 +48,10 @@ if __name__ == '__main__':
 
     change_working_dir()
 
+    unique_id = f"{TOPOLOGY}-" + unique_id
     if PRUNE_WITH_REDIST:
         unique_id = "prop_redist-" + unique_id
+    if ds == DatasetOption.SYNTHETIC_FLAT:
+        unique_id = "newflat-" + unique_id
 
-    unique_id = f"{TOPOLOGY}-" + unique_id
     train_and_draw_tickets(_network, unique_id)

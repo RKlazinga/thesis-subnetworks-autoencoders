@@ -68,9 +68,8 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
 
 if __name__ == '__main__':
     change_working_dir()
-    # mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0/prune-0.7-epoch-4-4.pth"), "No BN regularisation")
-    # mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0.0001/prune-0.7-epoch-4-4.pth"), "Reg=1e-4 (EB default)")
-    # mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0.001/prune-0.7-epoch-4-4.pth"), "Reg=1e-3")
-    # mask_to_png(torch.load(f"runs/BNREG_GROUP-374c90fa7/0.01/prune-0.7-epoch-4-4.pth"), "Reg=1e-2")
-    mask_to_png(torch.load(f"runs/{last_run()}/prune-0.5-epoch-15-4.pth"))
+    # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-8-4.pth"), caption=last_run(), show=True, save=False)
+    mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-1-1.pth"), caption="1-1", show=True, save=False)
+    # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-1-4.pth"), caption="1-4", show=True, save=False)
+    # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-4-4.pth"), caption="4-4", show=True, save=False)
 

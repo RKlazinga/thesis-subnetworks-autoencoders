@@ -5,6 +5,7 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import *
 
 from models.conv_ae import ConvAE
+from utils.file import change_working_dir
 
 
 class InferenceWorker(QThread):
@@ -63,7 +64,8 @@ class MainUI(QWidget):
 
 if __name__ == '__main__':
     model = ConvAE(6, 4, 6)
-    model.load_state_dict(torch.load("network.pth"))
+    change_working_dir()
+    model.load_state_dict(torch.load("runs/[6, 4, 6]-746325f33/trained-10.pth"))
 
     app = QApplication([])
     ui = MainUI()

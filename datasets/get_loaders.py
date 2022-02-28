@@ -21,8 +21,8 @@ def get_loaders(dataset=ds):
         train_set = Synthetic("train", dummy_gen, 100)
         test_set = Synthetic("test", dummy_gen, 10)
     elif dataset == DatasetOption.SYNTHETIC_FLAT:
-        train_set = SyntheticFlat("train", random_sine_gaussian, num=10000, keep_in_ram=True)
-        test_set = SyntheticFlat("test", random_sine_gaussian, num=1000, keep_in_ram=True)
+        train_set = SyntheticFlat("train", random_sine_gaussian, num=30000, keep_in_ram=True)
+        test_set = SyntheticFlat("test", random_sine_gaussian, num=3000, keep_in_ram=True)
     else:
         raise ValueError(f"Unknown dataset enum value: {dataset}")
 

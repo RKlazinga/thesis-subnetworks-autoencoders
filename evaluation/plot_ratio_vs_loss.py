@@ -82,3 +82,6 @@ def plot(run_id, baseline=None):
 if __name__ == '__main__':
     change_working_dir()
     plot("random_mask-"+last_run())#, baseline=0.0168)
+    # plot("random_mask-[6, 4, 6]-c3c25aa69")#, baseline=0.0168)
+    # plot("random_mask-[6, 4, 6]-746325f33")#, baseline=0.0168)
+    # plot("random_mask-[6, 4, 6]-c3c25aa69")#, baseline=0.0168)
