@@ -32,5 +32,18 @@ def get_epochs_of_run(run_id):
     return max(files)
 
 
+def get_all_current_settings():
+    change_working_dir()
+    settings_files = os.listdir("settings")
+    out = ""
+    for s in settings_files:
+        out += "=== " + s + "\n"
+        if os.path.isfile(f"settings/{s}") and "__"  not in s:
+            with open(f"settings/{s}", "r") as readfile:
+                out += readfile.read()
+        out += "\n\n"
+    return out
+
+
 def change_working_dir():
     os.chdir(os.path.dirname(os.path.dirname(__file__)))

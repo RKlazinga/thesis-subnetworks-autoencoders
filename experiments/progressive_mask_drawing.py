@@ -1,3 +1,4 @@
+import json
 import os
 import torch
 from torch.nn import MSELoss
@@ -9,7 +10,7 @@ from procedures.test import test
 from procedures.train import train
 from settings.train_settings import *
 from settings.prune_settings import *
-from utils.file import change_working_dir
+from utils.file import change_working_dir, get_all_current_settings
 from datasets.get_loaders import get_loaders
 from utils.misc import generate_random_str, get_device
 
@@ -25,7 +26,12 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
     print(f"RUN ID: {uid}")
     folder = f"{folder_root}/{uid}"
     os.makedirs(folder)
-    torch.save(net.state_dict(), folder + f"/starting_params-{TOPOLOGY}.pth")
+    # save initial parameters
+    torch.save(net.state_dict(), f"{folder}/starting_params-{TOPOLOGY}.pth")
+
+    # save all settings
+    with open(f"{folder}/settings.md", "w") as writefile:
+        writefile.write(get_all_current_settings())
 
     for epoch in range(1, DRAW_EPOCHS + 1):
         def prune_snapshot(iteration: int, epoch=epoch):
