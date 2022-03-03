@@ -6,6 +6,7 @@ from typing import Callable
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision.transforms import ToTensor
+from tqdm import tqdm
 
 from utils.file import change_working_dir
 
@@ -30,8 +31,7 @@ class Synthetic(Dataset):
         self.keep_in_ram = keep_in_ram
 
         if self.keep_in_ram:
-            print(f"Generating {self.num} tensors")
-            self.imgs = [generator() for _ in range(self.num)]
+            self.imgs = [generator() for _ in tqdm(range(self.num), desc="Generating tensors")]
         else:
             if regen and os.path.isdir(self.folder):
                 shutil.rmtree(self.folder)

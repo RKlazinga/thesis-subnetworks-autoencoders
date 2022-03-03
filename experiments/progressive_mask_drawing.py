@@ -58,6 +58,8 @@ if __name__ == '__main__':
     if PRUNE_WITH_REDIST:
         unique_id = "prop_redist-" + unique_id
     if ds == DatasetOption.SYNTHETIC_FLAT:
-        unique_id = "newflat-" + unique_id
+        unique_id = "threevar2-" + unique_id
+    if ds == DatasetOption.SYNTHETIC_IM:
+        unique_id = "synthim-" + unique_id
 
     train_and_draw_tickets(_network, unique_id)

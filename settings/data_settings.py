@@ -1,0 +1,8 @@
+# only applies to synthetic data
+NORMAL_STD_DEV = 0.5
+FLAT_DATAPOINTS = 16
+NUM_VARIABLES = 2
+
+
+TRAIN_SIZE = 20000
+TEST_SIZE = TRAIN_SIZE // 10

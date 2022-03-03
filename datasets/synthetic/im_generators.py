@@ -16,7 +16,7 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
         return a * math.sin(math.radians(r)) + 0.5
     # gaussian noise per pixel, centered on a sign function
     variables = [
-        r_float(0.4, 0.6),  # amplitude
+        r_float(0.2, 0.7),  # amplitude
         r_float(360),  # phase
         r_float(4, im_size-4),  # x offset
         r_float(30, 100),  # x frequency
@@ -26,7 +26,7 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
 
     mean = torch.tensor([sine(x, y, *variables) for x in range(im_size) for y in range(im_size)]).view((im_size, im_size))
     std = torch.full((im_size, im_size), std)
-    return torch.clamp(torch.normal(mean, std).float(), 0, 1)
+    return torch.clamp(torch.normal(mean, std).float(), 0, 1).view((1, im_size, im_size))
 
 
 if __name__ == '__main__':

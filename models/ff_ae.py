@@ -4,12 +4,13 @@ import torch
 from torch import nn
 
 from procedures.in_place_pruning import prune_model
+from settings.data_settings import FLAT_DATAPOINTS
 from utils.file import get_topology_of_run, get_params_of_run
 
 
 class FeedforwardAE(nn.Module):
 
-    IN_SIZE = 16
+    IN_SIZE = FLAT_DATAPOINTS
 
     def __init__(self, latent_size, hidden_layers, size_mult):
         super().__init__()
