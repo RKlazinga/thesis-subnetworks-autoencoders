@@ -6,7 +6,6 @@ from typing import Callable
 import torch
 from torch.utils.data import Dataset
 
-from datasets.im_generators import dummy_gen
 from utils.file import change_working_dir
 
 
