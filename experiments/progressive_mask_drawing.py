@@ -4,6 +4,7 @@ import torch
 from torch.nn import MSELoss
 from torch.optim import Adam
 
+from evaluation.eval import eval_network
 from procedures.ticket_drawing.with_redist import find_channel_mask_redist
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
 from procedures.test import test
@@ -40,6 +41,8 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
 
         train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
         test_loss = test(net, criterion, test_loader, device)
+
+        eval_network(net, next(iter(test_loader)), device)
 
         print(f"{epoch}/{DRAW_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
         torch.save(net.state_dict(), folder + f"/trained-{epoch}.pth")

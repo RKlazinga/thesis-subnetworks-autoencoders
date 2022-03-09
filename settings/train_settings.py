@@ -11,6 +11,7 @@ if ds == DatasetOption.FASHION_MNIST:
     NETWORK = ConvAE
     L2REG = 0
     SPARSITY_PENALTY = 1e-4
+    LATENT_SPARSITY_PENALTY = SPARSITY_PENALTY
     BATCH_SIZE = 64
     LR = 2e-4 * (BATCH_SIZE ** 0.5)
     # latent_size, hidden_layers, multiplier
@@ -22,6 +23,7 @@ elif ds == DatasetOption.SYNTHETIC_FLAT:
     NETWORK = FeedforwardAE
     L2REG = 0
     SPARSITY_PENALTY = 5e-2
+    LATENT_SPARSITY_PENALTY = SPARSITY_PENALTY
     BATCH_SIZE = 64
     LR = 2e-4 * (BATCH_SIZE ** 0.5)
     # latent_size, hidden_layers, multiplier
@@ -31,11 +33,12 @@ elif ds == DatasetOption.SYNTHETIC_IM:
     # CONV
     NETWORK = ConvAE
     L2REG = 0
-    SPARSITY_PENALTY = 1e-2
+    SPARSITY_PENALTY = 1e-3  # 5e-2
+    LATENT_SPARSITY_PENALTY = 1e-3  # 5e-2
     BATCH_SIZE = 64
     LR = 2e-4 * (BATCH_SIZE ** 0.5)
     # latent_size, hidden_layers, multiplier
-    TOPOLOGY = [8, 4, 6]
-    DRAW_EPOCHS = 30
+    TOPOLOGY = [1, 4, 6]
+    DRAW_EPOCHS = 20
 else:
     raise ValueError("Unknown DatasetOption", ds)

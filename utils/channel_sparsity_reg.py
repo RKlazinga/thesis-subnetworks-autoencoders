@@ -2,12 +2,13 @@
 # taken from https://github.com/RICE-EIC/Early-Bird-Tickets/blob/4a16ae0731edf288c48e000c1c2a51dc0433f4ef/main.py#L277
 # "additional subgradient descent on the sparsity-induced penalty term"
 import torch
-from torch.nn.modules.batchnorm import _BatchNorm
-from settings.train_settings import SPARSITY_PENALTY
+from torch.nn.modules.batchnorm import _BatchNorm, BatchNorm1d
+from settings.train_settings import SPARSITY_PENALTY, LATENT_SPARSITY_PENALTY
 
 
-def update_bn(model, sparsity_penalty=SPARSITY_PENALTY):
+def update_bn(model, sparsity_penalty=SPARSITY_PENALTY, latent_penalty=LATENT_SPARSITY_PENALTY):
     if sparsity_penalty > 0:
         for m in model.modules():
             if isinstance(m, _BatchNorm):
-                m.weight.grad.data.add_(sparsity_penalty*torch.sign(m.weight.data))  # L1
+                penalty = latent_penalty if isinstance(m, BatchNorm1d) else sparsity_penalty
+                m.weight.grad.data.add_(penalty*torch.sign(m.weight.data))  # L1

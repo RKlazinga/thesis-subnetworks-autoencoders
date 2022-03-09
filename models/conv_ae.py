@@ -30,15 +30,23 @@ class ConvAE(nn.Module):
             encoder_steps.append(ConvUnit(prev_step_size, h, 3, max_pool=True, bn=True, padding=1))
             prev_step_size = h
         encoder_steps.append(nn.Flatten())
-        encoder_steps.append(nn.Linear(prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2,
-                                       latent_size))
+
+        # add extra linear layer in-between
+        flatten_size = prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2
+        encoder_steps.append(nn.Linear(flatten_size, flatten_size // 2))
+        encoder_steps.append(nn.BatchNorm1d(flatten_size // 2))
+        encoder_steps.append(nn.ReLU())
+        encoder_steps.append(nn.Linear(flatten_size // 2, latent_size))
         encoder_steps.append(nn.BatchNorm1d(latent_size))
         encoder_steps.append(nn.ReLU())
         self.encoder = nn.Sequential(*encoder_steps)
 
         topology.reverse()
         decoder_steps = [
-            nn.Linear(latent_size, prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2),
+            nn.Linear(latent_size, flatten_size // 2),
+            nn.BatchNorm1d(flatten_size // 2),
+            nn.ReLU(),
+            nn.Linear(flatten_size // 2, flatten_size),
             nn.Unflatten(dim=1, unflattened_size=(prev_step_size,
                                                   calculate_im_size(self.IMAGE_SIZE, hidden_layers),
                                                   calculate_im_size(self.IMAGE_SIZE, hidden_layers))),

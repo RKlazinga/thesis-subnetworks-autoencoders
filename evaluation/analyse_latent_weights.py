@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from torch.nn import BatchNorm1d
 from torch.nn.modules.batchnorm import _BatchNorm
 
+from models.conv_ae import ConvAE
 from settings.data_settings import NORMAL_STD_DEV, FLAT_DATAPOINTS
 from settings.train_settings import NETWORK, SPARSITY_PENALTY
 from utils.file import get_topology_of_run, get_epochs_of_run
@@ -17,7 +18,7 @@ def analyse_at_epoch(run_id, epoch):
     for m in model.modules():
         if isinstance(m, _BatchNorm):
             counter += 1
-            if counter == hidden_count + 1:
+            if counter == hidden_count + 1 + int(NETWORK == ConvAE):
                 if isinstance(m, BatchNorm1d) and m.weight.data.shape[0] == latent_size:
                     return [x.item() for x in m.weight.data]
                 else:
@@ -37,7 +38,7 @@ def plot_analysis_over_time(run_id):
     plt.yscale("log")
 
     plt.ylabel("Weight of latent neuron", labelpad=5)
-    plt.gca().set_xlim([-1, 21])
+    plt.gca().set_xlim([-1, epochs + 1])
     plt.gca().xaxis.get_major_locator().set_params(integer=True)
     plt.xlabel("Epoch")
     plt.title(f"{run_id} {NORMAL_STD_DEV} {SPARSITY_PENALTY}")

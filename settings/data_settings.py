@@ -1,5 +1,5 @@
 # only applies to synthetic data
-NORMAL_STD_DEV = 0.5
+NORMAL_STD_DEV = 0.01
 FLAT_DATAPOINTS = 16
 NUM_VARIABLES = 2
 

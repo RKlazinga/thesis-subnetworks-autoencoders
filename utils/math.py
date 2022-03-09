@@ -8,3 +8,7 @@ def calculate_im_size(im_size, pooling):
     for i in range(pooling):
         im_size = math.ceil(im_size / 2)
     return int(im_size)
+
+
+if __name__ == '__main__':
+    print(calculate_im_size(28, 4))

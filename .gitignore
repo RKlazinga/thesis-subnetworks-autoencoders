@@ -1,5 +1,6 @@
 data/*
 runs/*
+graph_data/*
 figures/*
 !.keep
 **.pyc
