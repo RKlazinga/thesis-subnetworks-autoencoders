@@ -18,17 +18,16 @@ def analyse_at_epoch(run_id, epoch):
     for m in model.modules():
         if isinstance(m, _BatchNorm):
             counter += 1
-            if counter == hidden_count + 1 + int(NETWORK == ConvAE):
-                if isinstance(m, BatchNorm1d) and m.weight.data.shape[0] == latent_size:
-                    return [x.item() for x in m.weight.data]
-                else:
-                    print("Did not find latent layer at expected position")
+            if isinstance(m, BatchNorm1d) and m.weight.data.shape[0] == latent_size:
+                if counter in range(hidden_count + 1, hidden_count + len(model.linear_layers)):
+                    return m.weight.data.tolist(), m.running_mean.tolist(), m.running_var.tolist()
+                    # return [x.item() for x in m.weight.data]
+    raise ValueError("Could not find latent neurons")
 
 
 def plot_analysis_over_time(run_id):
-    print(get_epochs_of_run(run_id))
     epochs = get_epochs_of_run(run_id)
-    weights = [analyse_at_epoch(run_id, e) for e in range(1, epochs + 1)]
+    weights = [analyse_at_epoch(run_id, e)[0] for e in range(1, epochs + 1)]
     weights = list(zip(*weights))
 
     for w in weights:

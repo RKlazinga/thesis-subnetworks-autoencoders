@@ -14,8 +14,10 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
     def sine(x, y, fx=40, fy=40, a=0.5, p=0, bx=im_size//2, by=im_size//2):
         # circle
         # r = (((x-bx) * fx) ** 2 + ((y-by) * fy) ** 2) ** 0.5 + p
+        # horizontal
+        r = ((x-bx) * fx) + p
         # diagonal
-        r = ((x-bx) * fx + (y-by) * 0) + p
+        # r = ((x-bx) * fx + (y-by) * fy) + p
         # square
         # r = max((abs(x-bx)) * fx, (abs(y-by)) * fy) + p
         return a * math.sin(math.radians(r)) + 0.5
@@ -27,7 +29,7 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
         r_float(4, im_size-4),  # x offset
         r_float(4, im_size-4),  # y offset
     ][:num_variables]
-    # gaussian noise per pixel, centered on a sign function
+    # gaussian noise per pixel, centered on a sine function
 
     mean = torch.tensor([sine(x, y, *variables) for x in range(im_size) for y in range(im_size)]).view((im_size, im_size))
     std = torch.full((im_size, im_size), std)

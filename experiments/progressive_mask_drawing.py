@@ -2,6 +2,7 @@ import json
 import os
 import torch
 from torch.nn import MSELoss
+from torch.nn.modules.batchnorm import _BatchNorm
 from torch.optim import Adam
 
 from evaluation.eval import eval_network
@@ -40,9 +41,13 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
                 torch.save(list(channel_mask_func(net, r).values()), f"{folder}/prune-{r}-epoch-{epoch}-{iteration}.pth")
 
         train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
+
+        # disable running statistics
+        [setattr(m, "track_running_stats", False) for m in net.modules() if isinstance(m, _BatchNorm)]
         test_loss = test(net, criterion, test_loader, device)
 
-        eval_network(net, next(iter(test_loader)), device)
+        # eval_network(net, next(iter(test_loader)), device)
+        [setattr(m, "track_running_stats", True) for m in net.modules() if isinstance(m, _BatchNorm)]
 
         print(f"{epoch}/{DRAW_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
         torch.save(net.state_dict(), folder + f"/trained-{epoch}.pth")
