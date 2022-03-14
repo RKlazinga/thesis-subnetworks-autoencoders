@@ -5,6 +5,7 @@ from torch import nn
 
 from procedures.in_place_pruning import prune_model
 from settings.data_settings import FLAT_DATAPOINTS
+from settings.global_settings import RUN_FOLDER
 from utils.file import get_topology_of_run, get_params_of_run
 
 
@@ -57,7 +58,7 @@ class FeedforwardAE(nn.Module):
         network.load_state_dict(get_params_of_run(run_id, param_epoch))
 
         if ratio is not None:
-            mask_file = f"runs/{run_id}/prune-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
+            mask_file = f"{RUN_FOLDER}/{run_id}/prune-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
             masks = torch.load(mask_file)
             prune_model(network, masks)
 

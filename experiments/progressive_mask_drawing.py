@@ -15,12 +15,12 @@ from datasets.get_loaders import get_loaders
 from utils.misc import generate_random_str, get_device
 
 
-def train_and_draw_tickets(net, uid, folder_root="runs"):
+def train_and_draw_tickets(net, uid, folder_root=RUN_FOLDER, lr=LR):
     channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
     device = get_device()
 
     train_loader, test_loader = get_loaders()
-    optimiser = Adam(net.parameters(), lr=LR, weight_decay=L2REG)
+    optimiser = Adam(net.parameters(), lr=lr, weight_decay=L2REG)
     criterion = MSELoss()
 
     print(f"RUN ID: {uid}")
@@ -73,7 +73,7 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
 # TODO look at learning rate scheduling
 
 
-if __name__ == '__main__':
+def main(prefix=None):
     unique_id = generate_random_str()
     device = get_device()
     _network = NETWORK(*TOPOLOGY).to(device)
@@ -86,6 +86,13 @@ if __name__ == '__main__':
     if ds == DatasetOption.SYNTHETIC_FLAT:
         unique_id = "threevar2-" + unique_id
     if ds == DatasetOption.SYNTHETIC_IM:
-        unique_id = "synthim-" + unique_id
+        unique_id = "new_synthim-" + unique_id
+
+    if prefix is not None:
+        unique_id = prefix + unique_id
 
     train_and_draw_tickets(_network, unique_id)
+
+
+if __name__ == '__main__':
+    main()

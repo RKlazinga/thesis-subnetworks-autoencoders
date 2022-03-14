@@ -3,6 +3,7 @@ from typing import Union, List
 import matplotlib.pyplot as plt
 from torch.nn import BatchNorm1d
 from torch.nn.modules.batchnorm import _BatchNorm
+from tqdm import tqdm
 
 from settings.data_settings import NORMAL_STD_DEV
 from settings.train_settings import NETWORK, SPARSITY_PENALTY, LATENT_SPARSITY_PENALTY
@@ -46,7 +47,7 @@ def plot_analysis_over_time(run_id):
     plt.show()
 
 
-def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=1e-3):
+def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=1e-3, show=True):
     if isinstance(run_ids, str):
         run_ids = [run_ids]
 
@@ -68,11 +69,16 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=1e-3):
     plt.title(f"{run_id} std:{NORMAL_STD_DEV} reg:{SPARSITY_PENALTY} latent_reg:{LATENT_SPARSITY_PENALTY}")
 
     plt.tight_layout()
-    plt.show()
+    if show:
+        plt.show()
+    else:
+        return weights
 
 
 if __name__ == '__main__':
     _run_id = last_run()
 
     # plot_analysis_over_time(_run_id)
-    plot_latent_count_over_time(last_runs(3, 3))
+    # plot_analysis_over_time(last_run())
+    plot_latent_count_over_time(last_run())
+    # plot_latent_count_over_time(last_runs(3, 3))

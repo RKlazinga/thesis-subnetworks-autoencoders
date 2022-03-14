@@ -6,6 +6,7 @@ from torch.optim import Adam
 
 from procedures.test import test
 from procedures.train import train
+from settings.global_settings import RUN_FOLDER
 from settings.prune_settings import DRAW_PER_EPOCH, PRUNE_RATIOS
 from settings.retrain_settings import RETRAIN_EPOCHS, RETRAIN_LR, RETRAIN_RESUME_EPOCH, RETRAIN_L2REG
 from settings.train_settings import DRAW_EPOCHS, NETWORK
@@ -18,7 +19,7 @@ from utils.misc import get_device
 device = get_device()
 change_working_dir()
 run_id = last_run()
-checkpoint_folder = f"runs/{run_id}/masks"
+checkpoint_folder = f"{RUN_FOLDER}/{run_id}/masks"
 
 train_loader, test_loader = get_loaders()
 criterion = MSELoss()

@@ -20,7 +20,7 @@ if __name__ == '__main__':
     device = get_device()
     group_run_id = "BNREG_GROUP-" + generate_random_str()
 
-    base_folder = join("runs", group_run_id)
+    base_folder = join(RUN_FOLDER, group_run_id)
     if not isdir(base_folder):
         os.makedirs(base_folder)
 
