@@ -1,11 +1,9 @@
-import json
 import os
 import torch
 from torch.nn import MSELoss
-from torch.nn.modules.batchnorm import _BatchNorm, BatchNorm1d, BatchNorm2d
+from torch.nn.modules.batchnorm import _BatchNorm, BatchNorm1d
 from torch.optim import Adam
 
-from evaluation.eval import eval_network
 from procedures.ticket_drawing.with_redist import find_channel_mask_redist
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
 from procedures.test import test

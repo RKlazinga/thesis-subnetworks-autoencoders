@@ -18,7 +18,7 @@ from utils.misc import get_device
 device = get_device()
 change_working_dir()
 run_id = last_run()
-checkpoint_folder = f"runs/{run_id}/"
+checkpoint_folder = f"runs/{run_id}/masks"
 
 train_loader, test_loader = get_loaders()
 criterion = MSELoss()

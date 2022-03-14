@@ -14,7 +14,7 @@ change_working_dir()
 
 # run_id = "BNREG_GROUP-374c90fa7/0"
 run_id = last_run()
-files = os.listdir(f"runs/{run_id}")
+files = os.listdir(f"runs/{run_id}/masks")
 
 FIG_COUNT = 4
 ROW_SIZE = 2
