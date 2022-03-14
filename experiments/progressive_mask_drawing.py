@@ -2,7 +2,7 @@ import json
 import os
 import torch
 from torch.nn import MSELoss
-from torch.nn.modules.batchnorm import _BatchNorm
+from torch.nn.modules.batchnorm import _BatchNorm, BatchNorm1d, BatchNorm2d
 from torch.optim import Adam
 
 from evaluation.eval import eval_network
@@ -28,6 +28,7 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
     print(f"RUN ID: {uid}")
     folder = f"{folder_root}/{uid}"
     os.makedirs(folder)
+    os.makedirs(f"{folder}/masks")
     # save initial parameters
     torch.save(net.state_dict(), f"{folder}/starting_params-{TOPOLOGY}.pth")
 
@@ -38,16 +39,35 @@ def train_and_draw_tickets(net, uid, folder_root="runs"):
     for epoch in range(1, DRAW_EPOCHS + 1):
         def prune_snapshot(iteration: int, epoch=epoch):
             for r in PRUNE_RATIOS:
-                torch.save(list(channel_mask_func(net, r).values()), f"{folder}/prune-{r}-epoch-{epoch}-{iteration}.pth")
+                torch.save(list(channel_mask_func(net, r).values()), f"{folder}/masks/prune-{r}-epoch-{epoch}-{iteration}.pth")
 
         train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
 
+        for m in net.modules():
+            if isinstance(m, _BatchNorm):
+                if isinstance(m, BatchNorm1d) and m.weight.data.shape[0] == TOPOLOGY[0]:
+                    # set weights below a threshold to 0
+                    mask = m.weight.data < 2e-4
+                    m.weight.data[mask] = 0
+                    m.weight.grad.data[mask] = 0
+
         # disable running statistics
-        [setattr(m, "track_running_stats", False) for m in net.modules() if isinstance(m, _BatchNorm)]
+        stats = {}
+        for m in net.modules():
+            if isinstance(m, _BatchNorm):
+                m.track_running_stats = False
+                # stats[(m, "mean")] = m.running_mean
+                # m.running_mean = None
+                # stats[(m, "var")] = m.running_var
+                # m.running_var = None
         test_loss = test(net, criterion, test_loader, device)
 
         # eval_network(net, next(iter(test_loader)), device)
-        [setattr(m, "track_running_stats", True) for m in net.modules() if isinstance(m, _BatchNorm)]
+        for m in net.modules():
+            if isinstance(m, _BatchNorm):
+                m.track_running_stats = True
+                # m.running_mean = stats[(m, "mean")]
+                # m.running_var = stats[(m, "var")]
 
         print(f"{epoch}/{DRAW_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
         torch.save(net.state_dict(), folder + f"/trained-{epoch}.pth")

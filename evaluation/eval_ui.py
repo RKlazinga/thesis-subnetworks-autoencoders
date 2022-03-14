@@ -58,7 +58,7 @@ class MainUI(QWidget):
 
         self.img_label = QLabel()
         self.img_label.setFixedWidth(800)
-        self.img_label.setFixedHeight(500)
+        self.img_label.setBaseSize(800, 500)
         self.layout.addWidget(self.img_label, 0, 0, 1, len(latent_weight))
 
         self.sliders = []
@@ -84,9 +84,9 @@ class MainUI(QWidget):
         self.show()
 
     def new_inference(self):
-        new_value_vec = [float(s.value())/200 for s in self.sliders]
+        new_value_vec = [float(s.value())/50 for s in self.sliders]
         for s, l, w in zip(self.sliders, self.labels, self.weights):
-            l.setText(f"Value: {s.value()/200}\nWeight: {w}")
+            l.setText(f"Value: {s.value()/50}\nWeight: {w}")
         self.inference_worker.set_tup(new_value_vec)
         self.inference_worker.start()
 
@@ -96,9 +96,9 @@ class MainUI(QWidget):
 
 if __name__ == '__main__':
     change_working_dir()
-    # _run_id = last_run()
-    _run_id = "threevar-[8, 2, 1]-1b95d97e2"
-    epoch = 15
+    _run_id = last_run()
+    # _run_id = "threevar-[8, 2, 1]-1b95d97e2"
+    epoch = 20
 
     model = NETWORK.init_from_checkpoint(_run_id, None, None, param_epoch=epoch)
     model.eval()

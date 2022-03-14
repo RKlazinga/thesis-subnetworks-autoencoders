@@ -11,7 +11,11 @@ def update_bn(model, sparsity_penalty=SPARSITY_PENALTY, latent_penalty=LATENT_SP
         for m in model.modules():
             if isinstance(m, _BatchNorm):
                 if isinstance(m, BatchNorm1d) and m.weight.data.shape[0] == TOPOLOGY[0]:
-                    penalty = latent_penalty
+                    # set weights below a threshold to 0
+                    mask = m.weight.data < 1e-6
+
+                    m.weight.grad.data.add_(latent_penalty*torch.sign(m.weight.data))  # L1
+                    m.weight.data[mask] = 0
+                    m.weight.grad.data[mask] = 0
                 else:
-                    penalty = sparsity_penalty
-                m.weight.grad.data.add_(penalty*torch.sign(m.weight.data))  # L1
+                    m.weight.grad.data.add_(sparsity_penalty*torch.sign(m.weight.data))  # L1

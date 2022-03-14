@@ -15,16 +15,16 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
         # circle
         # r = (((x-bx) * fx) ** 2 + ((y-by) * fy) ** 2) ** 0.5 + p
         # horizontal
-        r = ((x-bx) * fx) + p
+        # r = ((x-bx) * fx) + p
         # diagonal
         # r = ((x-bx) * fx + (y-by) * fy) + p
         # square
-        # r = max((abs(x-bx)) * fx, (abs(y-by)) * fy) + p
+        r = max((abs(x-bx)) * fx, (abs(y-by)) * fy) + p
         return a * math.sin(math.radians(r)) + 0.5
     variables = [
         r_float(30, 100),  # x frequency
         r_float(30, 100),  # y frequency
-        r_float(0.2, 0.7),  # amplitude
+        r_float(0.1, 0.6),  # amplitude
         r_float(360),  # phase
         r_float(4, im_size-4),  # x offset
         r_float(4, im_size-4),  # y offset

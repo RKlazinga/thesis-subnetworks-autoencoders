@@ -32,8 +32,8 @@ class ConvAE(nn.Module):
         encoder_steps.append(nn.Flatten())
 
         flatten_size = prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2
-        self.linear_layers = [flatten_size, flatten_size // 4, flatten_size // 4, latent_size]
-        # self.linear_layers = [flatten_size, flatten_size // 2, latent_size]
+        # self.linear_layers = [flatten_size, flatten_size // 4, flatten_size // 4, latent_size]
+        self.linear_layers = [flatten_size, flatten_size, latent_size]
         # self.linear_layers = [flatten_size, latent_size]
 
         # add extra linear layer in-between
@@ -41,9 +41,6 @@ class ConvAE(nn.Module):
             encoder_steps.append(nn.Linear(a, b))
             encoder_steps.append(nn.BatchNorm1d(b))
             encoder_steps.append(nn.ReLU())
-        # encoder_steps.append(nn.Linear(flatten_size // 2, latent_size))
-        # encoder_steps.append(nn.BatchNorm1d(latent_size))
-        # encoder_steps.append(nn.ReLU())
         self.encoder = nn.Sequential(*encoder_steps)
 
         topology.reverse()
