@@ -1,4 +1,4 @@
 from datasets.dataset_options import DatasetOption
 
-ds = DatasetOption.SYNTHETIC_IM
+ds = DatasetOption.MNIST
 RUN_FOLDER = "runs"

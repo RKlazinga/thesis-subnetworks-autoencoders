@@ -1,8 +1,10 @@
+import json
 import os
+
 import torch
 from torch.nn import MSELoss
 from torch.nn.modules.batchnorm import _BatchNorm, BatchNorm1d
-from torch.optim import Adam
+from torch.optim import Adam, SGD
 
 from procedures.ticket_drawing.with_redist import find_channel_mask_redist
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
@@ -34,6 +36,9 @@ def train_and_draw_tickets(net, uid, folder_root=RUN_FOLDER, lr=LR):
     with open(f"{folder}/settings.md", "w") as writefile:
         writefile.write(get_all_current_settings())
 
+    loss_graph_data = []
+    loss_file = f"{folder}/loss_graph.json"
+
     for epoch in range(1, DRAW_EPOCHS + 1):
         def prune_snapshot(iteration: int, epoch=epoch):
             for r in PRUNE_RATIOS:
@@ -59,6 +64,11 @@ def train_and_draw_tickets(net, uid, folder_root=RUN_FOLDER, lr=LR):
                 # stats[(m, "var")] = m.running_var
                 # m.running_var = None
         test_loss = test(net, criterion, test_loader, device)
+
+        loss_graph_data.append((epoch, train_loss, test_loss))
+
+        with open(loss_file, "w") as write_file:
+            write_file.write(json.dumps(loss_graph_data))
 
         # eval_network(net, next(iter(test_loader)), device)
         for m in net.modules():
@@ -87,6 +97,8 @@ def main(prefix=None):
         unique_id = "threevar2-" + unique_id
     if ds == DatasetOption.SYNTHETIC_IM:
         unique_id = "new_synthim-" + unique_id
+    if ds == DatasetOption.SYNTHETIC_IM:
+        unique_id = "mnist-" + unique_id
 
     if prefix is not None:
         unique_id = prefix + unique_id

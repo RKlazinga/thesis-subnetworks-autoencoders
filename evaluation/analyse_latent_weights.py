@@ -28,11 +28,14 @@ def analyse_at_epoch(run_id, epoch):
 
 def plot_analysis_over_time(run_id):
     epochs = get_epochs_of_run(run_id)
-    weights = [analyse_at_epoch(run_id, e)[0] for e in range(1, epochs + 1)]
+    latent_count = get_topology_of_run(run_id)[0]
+    weights = [tuple([0.1 for _ in range(latent_count)])] + [analyse_at_epoch(run_id, e)[0] for e in range(1, epochs + 1)]
+    print(len(weights))
     weights = list(zip(*weights))
+    # print(weights)
 
     for w in weights:
-        plt.plot(range(1, epochs+1), w)
+        plt.plot(range(0, epochs+1), w)
 
     plt.grid(True, linestyle="dashed")
     plt.yscale("log")
@@ -55,17 +58,18 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=1e-3, sho
 
     for idx, run_id in enumerate(run_ids):
         epochs = get_epochs_of_run(run_id)
+        latent_count = get_topology_of_run(run_id)[0]
         weights = [analyse_at_epoch(run_id, e)[0] for e in range(1, epochs + 1)]
-        weights = [len([w2 for w2 in w if w2 > thresh]) + (idx - len(run_ids)//2)/20 for w in weights]
-        # weights = list(zip(*weights))
-        plt.plot(range(1, epochs+1), weights, label=run_id, alpha=1.0, linewidth=2, snap=True)
+        weights = [latent_count] + [len([w2 for w2 in w if w2 > thresh]) + (idx - len(run_ids)//2)/20 for w in weights]
+        plt.plot(range(0, epochs+1), weights, label=run_id, alpha=1.0, linewidth=2, snap=True)
 
     plt.ylabel("Number of active latent neurons", labelpad=5)
     plt.gca().set_xlim([-1, epochs + 1])
     plt.gca().set_ylim(bottom=-0.25)
     plt.gca().xaxis.get_major_locator().set_params(integer=True)
     plt.xlabel("Epoch")
-    plt.legend()
+    if len(run_ids) > 1:
+        plt.legend()
     plt.title(f"{run_id} std:{NORMAL_STD_DEV} reg:{SPARSITY_PENALTY} latent_reg:{LATENT_SPARSITY_PENALTY}")
 
     plt.tight_layout()
@@ -81,4 +85,4 @@ if __name__ == '__main__':
     # plot_analysis_over_time(_run_id)
     # plot_analysis_over_time(last_run())
     plot_latent_count_over_time(last_run())
-    # plot_latent_count_over_time(last_runs(3, 3))
+    # plot_latent_count_over_time(last_runs(count=3, offset=0))

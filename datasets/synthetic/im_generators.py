@@ -24,7 +24,7 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
     variables = [
         r_float(30, 100),  # x frequency
         r_float(30, 100),  # y frequency
-        r_float(0.1, 0.6),  # amplitude
+        r_float(0.4, 0.7),  # amplitude
         r_float(360),  # phase
         r_float(4, im_size-4),  # x offset
         r_float(4, im_size-4),  # y offset
@@ -37,4 +37,6 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
 
 
 if __name__ == '__main__':
-    ToPILImage()(sine_2d(0.01, 2)).show()
+    ToPILImage()(sine_2d(0.01, 4)).show()
+    ToPILImage()(sine_2d(0.01, 4)).show()
+    ToPILImage()(sine_2d(0.01, 4)).show()

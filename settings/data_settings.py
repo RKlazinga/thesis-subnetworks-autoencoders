@@ -1,7 +1,7 @@
 # only applies to synthetic data
 NORMAL_STD_DEV = 0.01
 FLAT_DATAPOINTS = 16
-NUM_VARIABLES = 2
+NUM_VARIABLES = 4
 
 
 TRAIN_SIZE = 20000

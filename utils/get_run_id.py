@@ -24,7 +24,6 @@ def _sort_runs_by_time():
 
 def last_runs(count, offset=0):
     runs = _sort_runs_by_time()
-    print(runs, runs[offset:count+offset])
     return runs[offset:count+offset]
 
 

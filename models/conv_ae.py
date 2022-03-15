@@ -12,7 +12,6 @@ from settings.prune_settings import PRUNE_WITH_REDIST
 from utils.conv_unit import ConvUnit, ConvTransposeUnit
 from utils.crop_module import Crop
 from utils.file import get_topology_of_run, get_params_of_run
-from utils.get_run_id import last_run
 from utils.math import calculate_im_size
 
 

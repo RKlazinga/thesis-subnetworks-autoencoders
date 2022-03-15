@@ -34,11 +34,22 @@ elif ds == DatasetOption.SYNTHETIC_IM:
     NETWORK = ConvAE
     L2REG = 0
     SPARSITY_PENALTY = 2e-4
-    LATENT_SPARSITY_PENALTY = 6e-2  # SPARSITY_PENALTY
+    LATENT_SPARSITY_PENALTY = 10e-2  # SPARSITY_PENALTY
     BATCH_SIZE = 64
-    LR = 4e-4 * (BATCH_SIZE ** 0.5)
+    LR = 2e-4 * (BATCH_SIZE ** 0.5)
     # latent_size, hidden_layers, multiplier
-    TOPOLOGY = [8, 5, 6]
+    TOPOLOGY = [12, 5, 6]
+    DRAW_EPOCHS = 30
+elif ds == DatasetOption.MNIST:
+    # CONV
+    NETWORK = ConvAE
+    L2REG = 0
+    SPARSITY_PENALTY = 2e-4
+    LATENT_SPARSITY_PENALTY = 5e-2  # SPARSITY_PENALTY
+    BATCH_SIZE = 64
+    LR = 2e-4 * (BATCH_SIZE ** 0.5)
+    # latent_size, hidden_layers, multiplier
+    TOPOLOGY = [12, 5, 6]
     DRAW_EPOCHS = 30
 else:
     raise ValueError("Unknown DatasetOption", ds)

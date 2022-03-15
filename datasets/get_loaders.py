@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from torchvision.datasets import FashionMNIST
+from torchvision.datasets import FashionMNIST, MNIST
 from torchvision.transforms import ToTensor
 
 from datasets.dataset_options import DatasetOption
@@ -24,6 +24,9 @@ def get_loaders(dataset=ds):
     elif dataset == DatasetOption.SYNTHETIC_FLAT:
         train_set = SyntheticFlat("train", random_sine_gaussian, num=TRAIN_SIZE, keep_in_ram=True)
         test_set = SyntheticFlat("test", random_sine_gaussian, num=TEST_SIZE, keep_in_ram=True)
+    elif dataset == DatasetOption.MNIST:
+        train_set = MNIST("data/", train=True, download=True, transform=ToTensor())
+        test_set = MNIST("data/", train=False, download=True, transform=ToTensor())
     else:
         raise ValueError(f"Unknown dataset enum value: {dataset}")
 
