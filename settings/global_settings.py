@@ -1,4 +1,4 @@
 from datasets.dataset_options import DatasetOption
 
-ds = DatasetOption.MNIST
-RUN_FOLDER = "runs"
+ds = DatasetOption.SYNTHETIC_IM
+RUN_FOLDER = "grid_search"

@@ -96,8 +96,8 @@ def main(prefix=None):
     if ds == DatasetOption.SYNTHETIC_FLAT:
         unique_id = "threevar2-" + unique_id
     if ds == DatasetOption.SYNTHETIC_IM:
-        unique_id = "new_synthim-" + unique_id
-    if ds == DatasetOption.SYNTHETIC_IM:
+        unique_id = "newer_synthim-" + unique_id
+    if ds == DatasetOption.MNIST:
         unique_id = "mnist-" + unique_id
 
     if prefix is not None:
