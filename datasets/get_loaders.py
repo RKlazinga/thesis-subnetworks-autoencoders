@@ -4,7 +4,7 @@ from torchvision.transforms import ToTensor
 
 from datasets.dataset_options import DatasetOption
 from datasets.synthetic.flat_generators import random_sine_gaussian
-from datasets.synthetic.im_generators import sine_2d
+from datasets.synthetic.im_generators import sine_2d, stacked_sine2d
 from datasets.synthetic.synthetic_flat import SyntheticFlat
 from datasets.synthetic.synthetic_im import Synthetic
 from settings.data_settings import TRAIN_SIZE, TEST_SIZE
@@ -19,8 +19,8 @@ def get_loaders(dataset=ds):
         train_set = FashionMNIST("data/", train=True, download=True, transform=ToTensor())
         test_set = FashionMNIST("data/", train=False, download=True, transform=ToTensor())
     elif dataset == DatasetOption.SYNTHETIC_IM:
-        train_set = Synthetic("train", sine_2d, num=TRAIN_SIZE, keep_in_ram=True)
-        test_set = Synthetic("test", sine_2d, num=TEST_SIZE, keep_in_ram=True)
+        train_set = Synthetic("train", stacked_sine2d, num=TRAIN_SIZE, keep_in_ram=True)
+        test_set = Synthetic("test", stacked_sine2d, num=TEST_SIZE, keep_in_ram=True)
     elif dataset == DatasetOption.SYNTHETIC_FLAT:
         train_set = SyntheticFlat("train", random_sine_gaussian, num=TRAIN_SIZE, keep_in_ram=True)
         test_set = SyntheticFlat("test", random_sine_gaussian, num=TEST_SIZE, keep_in_ram=True)

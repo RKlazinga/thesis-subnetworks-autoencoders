@@ -1,4 +1,5 @@
 data/*
+old_runs/*
 runs/*
 grid_search/*
 graph_data/*

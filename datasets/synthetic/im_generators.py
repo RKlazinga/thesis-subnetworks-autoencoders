@@ -5,7 +5,11 @@ from torchvision.transforms import ToPILImage
 
 from datasets.synthetic.common import r_float
 from models.conv_ae import ConvAE
-from settings.data_settings import NORMAL_STD_DEV, NUM_VARIABLES
+from settings.data_settings import NORMAL_STD_DEV, NUM_VARIABLES, CHANNEL_STACKING
+
+
+def stacked_sine2d():
+    return torch.concat([sine_2d() for _ in range(CHANNEL_STACKING)], dim=0)
 
 
 def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
@@ -37,6 +41,6 @@ def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
 
 
 if __name__ == '__main__':
-    ToPILImage()(sine_2d(0.01, 4)).show()
-    ToPILImage()(sine_2d(0.01, 4)).show()
-    ToPILImage()(sine_2d(0.01, 4)).show()
+    ToPILImage()(sine_2d(0.01, 6)).show()
+    ToPILImage()(sine_2d(0.01, 6)).show()
+    ToPILImage()(sine_2d(0.01, 6)).show()
