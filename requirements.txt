@@ -6,3 +6,4 @@ Pillow
 PyQt5
 tqdm
 torchsummary
+pyperclip
