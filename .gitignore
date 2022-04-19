@@ -4,5 +4,8 @@ runs/*
 grid_search/*
 graph_data/*
 figures/*
+export_fig/*
+saved_runs/*
+validation/*
 !.keep
 **.pyc
