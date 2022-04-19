@@ -4,13 +4,13 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from torchvision.transforms import ToPILImage
 
 from evaluation.analyse_latent_weights import analyse_at_epoch
-from settings.train_settings import NETWORK
+from settings.s import Settings
 from utils.file import change_working_dir, get_topology_of_run
 from utils.get_run_id import last_run
 
 
 def plot_latent_space_2d(run_id, epoch, domain=(0, 1), steps=16):
-    model = NETWORK.init_from_checkpoint(run_id, None, None, param_epoch=epoch)
+    model = Settings.NETWORK.init_from_checkpoint(run_id, None, None, param_epoch=epoch)
     topology = get_topology_of_run(run_id)
     model.eval()
 

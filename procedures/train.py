@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
+from settings.s import Settings
 from utils.channel_sparsity_reg import update_bn
-from settings.prune_settings import DRAW_PER_EPOCH
 
 
 def train(network, opt, criterion, train_loader, device, prune_snapshot_method=None):
@@ -12,7 +12,7 @@ def train(network, opt, criterion, train_loader, device, prune_snapshot_method=N
     train_count = len(train_loader)
     for idx, batch in enumerate(tqdm(train_loader)):
         if prune_snapshot_method:
-            if snapshot_counter / DRAW_PER_EPOCH <= (idx+1) / train_count:
+            if snapshot_counter / Settings.DRAW_PER_EPOCH <= (idx+1) / train_count:
                 prune_snapshot_method(snapshot_counter)
                 snapshot_counter += 1
         if isinstance(batch, list):

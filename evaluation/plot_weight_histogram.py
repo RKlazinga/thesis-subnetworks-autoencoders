@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt, cm
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
-from settings.train_settings import NETWORK
+from settings.s import Settings
 from utils.file import change_working_dir, get_topology_of_run, get_params_of_run
 from utils.get_run_id import last_run, last_group
 from utils.misc import get_device
@@ -13,7 +13,7 @@ plt.rcParams["font.family"] = "serif"
 
 def histogram_of_weights(run_id, epoch):
     device = get_device()
-    net = NETWORK(*get_topology_of_run(run_id)).to(device)
+    net = Settings.NETWORK(*get_topology_of_run(run_id)).to(device)
     net.load_state_dict(get_params_of_run(run_id, epoch=epoch, device=device))
 
     bincount = 40

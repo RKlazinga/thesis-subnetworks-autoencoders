@@ -11,7 +11,7 @@ from models.conv_ae import ConvAE
 from utils.ensure_correct_folder import change_working_dir
 from utils.training_setup import get_loaders
 
-from settings.global_settings import RUN_FOLDER
+from settings.s import Settings
 
 BATCH, CHANNELS, WIDTH, HEIGHT = 2, 2, 3, 3
 
@@ -93,7 +93,7 @@ def analyse_sim(sim, tensor):
 if __name__ == '__main__':
     change_working_dir()
     net = ConvAE(6, 4, 6)
-    net.load_state_dict(torch.load(f"{RUN_FOLDER}/ebf369d1b/trained-3.pth"))
+    net.load_state_dict(torch.load(f"{Settings.RUN_FOLDER}/ebf369d1b/trained-3.pth"))
     net.eval()
 
     layer_to_process = 3

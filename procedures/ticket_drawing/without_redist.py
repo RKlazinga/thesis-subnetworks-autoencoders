@@ -2,14 +2,15 @@ from typing import Dict
 
 import torch
 from torch.nn.modules.batchnorm import _BatchNorm
-from settings.prune_settings import PRUNE_LIMIT
+
+from settings.s import Settings
 
 
 def mask_dist(masks_a, masks_b):
     return [torch.sum(torch.abs(a-b)).item() for a, b in zip(masks_a, masks_b)]
 
 
-def find_channel_mask_no_redist(network, fraction, per_layer_limit=PRUNE_LIMIT):
+def find_channel_mask_no_redist(network, fraction, per_layer_limit=Settings.PRUNE_LIMIT):
     """
     Draw a critical subnetwork from a given trained network using (global) channel pruning.
 

@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from procedures.ticket_drawing.without_redist import mask_dist
-from settings.global_settings import RUN_FOLDER
-from settings.prune_settings import *
+from settings.s import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
 plt.rcParams["font.family"] = "serif"
@@ -15,7 +14,7 @@ plt.rcParams["font.family"] = "serif"
 change_working_dir()
 
 run_id = last_run()
-folder = f"{RUN_FOLDER}/{run_id}/masks"
+folder = f"{Settings.RUN_FOLDER}/{run_id}/masks"
 files = os.listdir(folder)
 
 FIG_COUNT = 4
@@ -23,16 +22,16 @@ ROW_SIZE = 2
 
 fig, axs = plt.subplots(FIG_COUNT // ROW_SIZE, ROW_SIZE)
 fig.tight_layout()
-PRUNE_RATIOS.sort(reverse=True)
+Settings.PRUNE_RATIOS.sort(reverse=True)
 
-for idx_r, r in enumerate(PRUNE_RATIOS):
+for idx_r, r in enumerate(Settings.PRUNE_RATIOS):
     ratio_files = [f for f in files if f.startswith(f"prune-{r}-")]
 
     def get_epoch_and_iter(x: str):
         x = x.removesuffix(".pth")
         epoch = int(x.split("-")[-2])
         iteration = int(x.split("-")[-1])
-        return epoch + iteration / DRAW_PER_EPOCH
+        return epoch + iteration / Settings.DRAW_PER_EPOCH
 
     ratio_files.sort(key=get_epoch_and_iter)
 
@@ -52,7 +51,7 @@ for idx_r, r in enumerate(PRUNE_RATIOS):
     ax = axs[idx_r // ROW_SIZE, idx_r % ROW_SIZE]
     ax.set_title(f"Ratio {r}")
 
-    xticklabels = [x//DRAW_PER_EPOCH if x % (DRAW_PER_EPOCH*2) == 0 else None for x in range(len(ratio_files))]
+    xticklabels = [x//Settings.DRAW_PER_EPOCH if x % (Settings.DRAW_PER_EPOCH*2) == 0 else None for x in range(len(ratio_files))]
     sns.heatmap(dists, ax=ax, square=True, xticklabels=xticklabels, yticklabels=False)
 
 plt.tight_layout()

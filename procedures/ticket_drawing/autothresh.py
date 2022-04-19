@@ -4,7 +4,7 @@ import torch
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from models.conv_ae import ConvAE
-from settings.global_settings import RUN_FOLDER
+from settings.s import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
 
@@ -39,7 +39,7 @@ def find_channel_mask_autothresh(network, thresh=0.1):
 if __name__ == '__main__':
     change_working_dir()
     net = ConvAE(6, 4, 6)
-    net.load_state_dict(torch.load(f"{RUN_FOLDER}/{last_run()}/trained-3.pth"))
+    net.load_state_dict(torch.load(f"{Settings.RUN_FOLDER}/{last_run()}/trained-3.pth"))
 
     masks = find_channel_mask_autothresh(net)
     remaining_channels = 0

@@ -6,15 +6,15 @@ from torchvision.transforms import ToPILImage
 
 from datasets.synthetic.common import r_float
 from models.conv_ae import ConvAE
-from settings.data_settings import NORMAL_STD_DEV, NUM_VARIABLES, CHANNEL_STACKING
+from settings.s import Settings
 from utils.file import change_working_dir
 
 
 def stacked_sine2d():
-    return torch.concat([sine_2d() for _ in range(CHANNEL_STACKING)], dim=0)
+    return torch.concat([sine_2d() for _ in range(Settings.CHANNEL_STACKING)], dim=0)
 
 
-def sine_2d(std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
+def sine_2d(std=Settings.NORMAL_STD_DEV, num_variables=Settings.NUM_VARIABLES):
     im_size = 28
 
     def sine(y, x, fx=40, fy=40, a=0.5, p=0, sx=0, sy=0, bx=im_size//2, by=im_size//2):

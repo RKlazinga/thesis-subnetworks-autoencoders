@@ -2,7 +2,7 @@ from torch import nn
 
 from models.conv_ae import ConvAE
 from procedures.retrain import retrain_tagged_networks
-from settings.global_settings import RUN_FOLDER
+from settings.s import Settings
 from utils.file import get_topology_of_run, get_params_of_run
 from datasets.get_loaders import get_loaders
 from utils.get_run_id import last_run
@@ -12,7 +12,7 @@ run_id = last_run()
 ratio = 0.5
 draw_epoch = 9
 draw_sub_epoch = 4
-mask = f"{RUN_FOLDER}/{run_id}/prune-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
+mask = f"{Settings.RUN_FOLDER}/{run_id}/prune-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
 device = get_device()
 
 if __name__ == '__main__':

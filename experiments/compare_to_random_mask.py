@@ -7,7 +7,7 @@ from models.conv_ae import ConvAE
 from procedures.in_place_pruning import prune_model
 from procedures.retrain import retrain_with_shots
 from datasets.get_loaders import get_loaders
-from settings.retrain_settings import RETRAIN_EPOCHS
+from settings.s import Settings
 from utils.get_run_id import last_run
 from utils.misc import get_device
 
@@ -31,7 +31,7 @@ def verify_ratio_approx_correct(desired_ratio, mask):
 
 def run(ratio):
 
-    print(f"Ratio: {ratio}, ETA: {15*2*RETRAIN_EPOCHS*shots/60} minutes")
+    print(f"Ratio: {ratio}, ETA: {15*2*Settings.RETRAIN_EPOCHS*shots/60} minutes")
 
     def get_networks():
         # unpruned = ConvAE.init_from_checkpoint(run_id, None, None, None).to(device)

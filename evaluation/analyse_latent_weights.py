@@ -12,9 +12,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from tqdm import tqdm
 
 # from evaluation.build_latex import figure_of_runs
-from settings.data_settings import NORMAL_STD_DEV
-from settings.global_settings import RUN_FOLDER
-from settings.train_settings import NETWORK, CONV_SPARSITY_PENALTY, LINEAR_SPARSITY_PENALTY, LATENT_SPARSITY_PENALTY
+from settings.s import Settings
 from utils.file import get_topology_of_run, get_epochs_of_run, change_working_dir
 from utils.get_run_id import last_run, last_runs, all_runs_matching
 
@@ -41,7 +39,7 @@ def find_latent_bn(model, topology=None, run_id=None):
 
 
 def analyse_all(run_id, epoch):
-    model = NETWORK.init_from_checkpoint(run_id, None, None, None, param_epoch=epoch)
+    model = Settings.NETWORK.init_from_checkpoint(run_id, None, None, None, param_epoch=epoch)
     weights = []
     for m in model.modules():
         if isinstance(m, _BatchNorm):
@@ -54,7 +52,7 @@ def analyse_all(run_id, epoch):
 
 
 def analyse_at_epoch(run_id, epoch):
-    model = NETWORK.init_from_checkpoint(run_id, None, None, None, param_epoch=epoch)
+    model = Settings.NETWORK.init_from_checkpoint(run_id, None, None, None, param_epoch=epoch)
     m = find_latent_bn(model, run_id=run_id)
     return torch.abs(m.weight.data).tolist(), m.bias.data.tolist(), m.running_mean.tolist(), m.running_var.tolist()
 
@@ -83,7 +81,7 @@ def plot_analysis_over_time(run_id):
     plt.tight_layout()
     plt.savefig(f"figures/latent_strengths/{run_id}.png")
 
-    plt.title(f"{run_id}\nstd:{NORMAL_STD_DEV} ({CONV_SPARSITY_PENALTY},{LINEAR_SPARSITY_PENALTY},{LATENT_SPARSITY_PENALTY})")
+    plt.title(f"{run_id}\nstd:{Settings.NORMAL_STD_DEV} ({Settings.CONV_SPARSITY_PENALTY},{Settings.LINEAR_SPARSITY_PENALTY},{Settings.LATENT_SPARSITY_PENALTY})")
 
     plt.tight_layout()
     plt.show()
@@ -116,7 +114,7 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, sho
         # weights = [latent_count] + [len([w2 for w2 in w if abs(w2) > thresh]) + (idx - len(run_ids)//2)/20 for w in weights]
 
         # get loss curve
-        with open(f"{RUN_FOLDER}/{run_id}/loss_graph.json", "r") as readfile:
+        with open(f"{Settings.RUN_FOLDER}/{run_id}/loss_graph.json", "r") as readfile:
             data = json.loads(readfile.read())
             xs = [d[0] for d in data]
             ys = [d[2] for d in data]
@@ -146,7 +144,7 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, sho
     plt.tight_layout()
     plt.savefig(f"figures/latent_count/{run_id}.png")
 
-    plt.title(f"{run_id}\nstd:{NORMAL_STD_DEV} ({CONV_SPARSITY_PENALTY},{LINEAR_SPARSITY_PENALTY},{LATENT_SPARSITY_PENALTY})")
+    plt.title(f"{run_id}\nstd:{Settings.NORMAL_STD_DEV} ({Settings.CONV_SPARSITY_PENALTY},{Settings.LINEAR_SPARSITY_PENALTY},{Settings.LATENT_SPARSITY_PENALTY})")
 
     plt.tight_layout()
     plt.show()

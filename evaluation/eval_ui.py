@@ -13,8 +13,7 @@ from datasets.dataset_options import DatasetOption
 from datasets.synthetic.flat_generators import random_sine_gaussian
 from evaluation.analyse_latent_weights import analyse_at_epoch
 from models.conv_ae import ConvAE
-from settings.global_settings import ds
-from settings.train_settings import NETWORK
+from settings.s import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
 
@@ -36,7 +35,7 @@ class InferenceWorker(QThread):
             tensor = torch.tensor([self.tup])
         decoded_tensor = model.decoder(tensor)[0]
 
-        if ds == DatasetOption.SYNTHETIC_FLAT:
+        if Settings.DS == DatasetOption.SYNTHETIC_FLAT:
             plt.clf()
             plt.plot(range(16), decoded_tensor.tolist())
             plt.savefig("tmp.png")
@@ -100,7 +99,7 @@ if __name__ == '__main__':
     # _run_id = "threevar-[8, 2, 1]-1b95d97e2"
     epoch = 20
 
-    model = NETWORK.init_from_checkpoint(_run_id, None, None, param_epoch=epoch)
+    model = Settings.NETWORK.init_from_checkpoint(_run_id, None, None, param_epoch=epoch)
     model.eval()
 
     # get an example encoding

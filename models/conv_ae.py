@@ -7,8 +7,7 @@ from evaluation.pruning_vis import mask_to_png
 from procedures.in_place_pruning import prune_model
 from procedures.ticket_drawing.with_redist import find_channel_mask_redist
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
-from settings.global_settings import RUN_FOLDER
-from settings.prune_settings import PRUNE_WITH_REDIST
+from settings.s import Settings
 from utils.conv_unit import ConvUnit, ConvTransposeUnit
 from utils.crop_module import Crop
 from utils.file import get_topology_of_run, get_params_of_run
@@ -84,7 +83,7 @@ class ConvAE(nn.Module):
         return self.decoder(x)
 
     def get_mask_of_current_network_state(self, ratio):
-        channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
+        channel_mask_func = find_channel_mask_redist if Settings.PRUNE_WITH_REDIST else find_channel_mask_no_redist
         return list(channel_mask_func(self, ratio).values())
 
     @staticmethod
@@ -96,7 +95,7 @@ class ConvAE(nn.Module):
             network.load_state_dict(get_params_of_run(run_id, param_epoch))
         else:
             if from_disk:
-                mask_file = f"{RUN_FOLDER}/{run_id}/prune-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
+                mask_file = f"{Settings.RUN_FOLDER}/{run_id}/prune-{ratio}-epoch-{epoch}-{sub_epoch}.pth"
                 masks = torch.load(mask_file)
             else:
                 network.load_state_dict(get_params_of_run(run_id, epoch))

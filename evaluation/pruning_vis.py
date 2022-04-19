@@ -3,7 +3,8 @@ from typing import Union
 import torch
 from PIL import ImageDraw, ImageFont, Image
 
-from settings.global_settings import RUN_FOLDER
+# from utils.file import change_working_dir
+from settings.s import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
 
@@ -79,7 +80,7 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
 if __name__ == '__main__':
     change_working_dir()
     # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-8-4.pth"), caption=last_run(), show=True, save=False)
-    mask_to_png(torch.load(f"{RUN_FOLDER}/{last_run()}/masks/prune-0.7-epoch-2-4.pth"), caption="12-4", show=True, save=False)
+    mask_to_png(torch.load(f"{Settings.RUN_FOLDER}/{last_run()}/masks/prune-0.7-epoch-2-4.pth"), caption="12-4", show=True, save=False)
     # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-1-4.pth"), caption="1-4", show=True, save=False)
     # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-4-4.pth"), caption="4-4", show=True, save=False)
 

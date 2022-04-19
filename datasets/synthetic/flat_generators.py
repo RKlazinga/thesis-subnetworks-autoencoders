@@ -3,10 +3,10 @@ import math
 import torch
 
 from datasets.synthetic.common import r_float
-from settings.data_settings import NORMAL_STD_DEV, FLAT_DATAPOINTS, NUM_VARIABLES
+from settings.s import Settings
 
 
-def random_sine_gaussian(size=FLAT_DATAPOINTS, std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
+def random_sine_gaussian(size=Settings.FLAT_DATAPOINTS, std=Settings.NORMAL_STD_DEV, num_variables=Settings.NUM_VARIABLES):
     def sine(x, a, b=0, c=0, d=22):
         return a * math.sin(math.radians((x - b) * d)) + c
     # gaussian noise per pixel, centered on a sign function
