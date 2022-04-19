@@ -2,14 +2,16 @@ import json
 import os
 
 import torch
-from torch.nn import MSELoss
-from torch.nn.modules.batchnorm import _BatchNorm, BatchNorm1d
-from torch.optim import Adam, SGD
+from torch.nn import MSELoss, L1Loss
+from torch.nn.modules.batchnorm import _BatchNorm
+from torch.optim import Adam
 
+from evaluation.analyse_latent_weights import find_latent_bn
 from procedures.ticket_drawing.with_redist import find_channel_mask_redist
 from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
 from procedures.test import test
 from procedures.train import train
+from settings.data_settings import NUM_VARIABLES
 from settings.train_settings import *
 from settings.prune_settings import *
 from utils.file import change_working_dir, get_all_current_settings
@@ -17,20 +19,23 @@ from datasets.get_loaders import get_loaders
 from utils.misc import generate_random_str, get_device
 
 
-def train_and_draw_tickets(net, uid, folder_root=RUN_FOLDER, lr=LR):
+def train_and_draw_tickets(net, uid, folder_root=RUN_FOLDER, lr=LR, topology=TOPOLOGY):
     channel_mask_func = find_channel_mask_redist if PRUNE_WITH_REDIST else find_channel_mask_no_redist
     device = get_device()
 
     train_loader, test_loader = get_loaders()
-    optimiser = Adam(net.parameters(), lr=lr, weight_decay=L2REG)
+
+    # TODO consider split learning rate
+    optimiser = Adam(net.parameters(), lr=lr)
     criterion = MSELoss()
 
     print(f"RUN ID: {uid}")
     folder = f"{folder_root}/{uid}"
     os.makedirs(folder)
     os.makedirs(f"{folder}/masks")
+
     # save initial parameters
-    torch.save(net.state_dict(), f"{folder}/starting_params-{TOPOLOGY}.pth")
+    torch.save(net.state_dict(), f"{folder}/starting_params-{topology}.pth")
 
     # save all settings
     with open(f"{folder}/settings.md", "w") as writefile:
@@ -46,23 +51,10 @@ def train_and_draw_tickets(net, uid, folder_root=RUN_FOLDER, lr=LR):
 
         train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
 
-        for m in net.modules():
-            if isinstance(m, _BatchNorm):
-                if isinstance(m, BatchNorm1d) and m.weight.data.shape[0] == TOPOLOGY[0]:
-                    # set weights below a threshold to 0
-                    mask = m.weight.data < 2e-4
-                    m.weight.data[mask] = 0
-                    m.weight.grad.data[mask] = 0
-
         # disable running statistics
-        stats = {}
         for m in net.modules():
             if isinstance(m, _BatchNorm):
                 m.track_running_stats = False
-                # stats[(m, "mean")] = m.running_mean
-                # m.running_mean = None
-                # stats[(m, "var")] = m.running_var
-                # m.running_var = None
         test_loss = test(net, criterion, test_loader, device)
 
         loss_graph_data.append((epoch, train_loss, test_loss))
@@ -74,36 +66,33 @@ def train_and_draw_tickets(net, uid, folder_root=RUN_FOLDER, lr=LR):
         for m in net.modules():
             if isinstance(m, _BatchNorm):
                 m.track_running_stats = True
-                # m.running_mean = stats[(m, "mean")]
-                # m.running_var = stats[(m, "var")]
 
         print(f"{epoch}/{DRAW_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
         torch.save(net.state_dict(), folder + f"/trained-{epoch}.pth")
 
-# TODO look at learning rate scheduling
 
-
-def main(prefix=None):
+def main(prefix=None, topology=TOPOLOGY):
     unique_id = generate_random_str()
-    device = get_device()
-    _network = NETWORK(*TOPOLOGY).to(device)
 
     change_working_dir()
 
-    unique_id = f"{TOPOLOGY}-" + unique_id
-    if PRUNE_WITH_REDIST:
-        unique_id = "prop_redist-" + unique_id
+    unique_id = f"{topology}-" + unique_id
     if ds == DatasetOption.SYNTHETIC_FLAT:
-        unique_id = "threevar2-" + unique_id
+        unique_id = f"flat{NUM_VARIABLES}-" + unique_id
     if ds == DatasetOption.SYNTHETIC_IM:
-        unique_id = "newer_synthim-" + unique_id
+        unique_id = f"clean_synthim{NUM_VARIABLES}-" + unique_id
     if ds == DatasetOption.MNIST:
         unique_id = "mnist-" + unique_id
+    if ds == DatasetOption.CIFAR10:
+        unique_id = "cifar-" + unique_id
 
     if prefix is not None:
         unique_id = prefix + unique_id
 
-    train_and_draw_tickets(_network, unique_id)
+    device = get_device()
+    _network = NETWORK(*topology).to(device)
+
+    train_and_draw_tickets(_network, unique_id, topology=topology)
 
 
 if __name__ == '__main__':

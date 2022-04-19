@@ -3,6 +3,7 @@ import os
 import torch
 import seaborn as sns
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 from procedures.ticket_drawing.without_redist import mask_dist
 from settings.global_settings import RUN_FOLDER
@@ -37,7 +38,7 @@ for idx_r, r in enumerate(PRUNE_RATIOS):
 
     dists = torch.zeros((len(ratio_files), len(ratio_files)), dtype=torch.float)
 
-    for idx_a, a in enumerate(ratio_files):
+    for idx_a, a in tqdm(enumerate(ratio_files)):
         a = torch.load(f"{folder}/{a}", map_location=torch.device('cpu'))
         for idx_b, b in enumerate(ratio_files):
             if idx_b > idx_a:

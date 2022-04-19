@@ -37,7 +37,7 @@ class FeedforwardAE(nn.Module):
             decoder_steps.append(nn.Linear(topology[i], topology[i+1]))
             if i < len(topology) - 2:
                 decoder_steps.append(nn.BatchNorm1d(topology[i+1]))
-            decoder_steps.append(nn.ReLU())
+                decoder_steps.append(nn.ReLU())
         self.decoder = nn.Sequential(*decoder_steps)
 
         # Initialise weights

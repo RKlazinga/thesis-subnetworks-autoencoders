@@ -1,4 +1,4 @@
 from datasets.dataset_options import DatasetOption
 
-ds = DatasetOption.SYNTHETIC_IM
-RUN_FOLDER = "grid_search"
+ds = DatasetOption.SYNTHETIC_FLAT
+RUN_FOLDER = "runs"

@@ -1,6 +1,5 @@
 from tqdm import tqdm
 
-from settings.train_settings import SPARSITY_PENALTY, TOPOLOGY
 from utils.channel_sparsity_reg import update_bn
 from settings.prune_settings import DRAW_PER_EPOCH
 

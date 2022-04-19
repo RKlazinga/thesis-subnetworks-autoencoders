@@ -7,13 +7,13 @@ from settings.data_settings import NORMAL_STD_DEV, FLAT_DATAPOINTS, NUM_VARIABLE
 
 
 def random_sine_gaussian(size=FLAT_DATAPOINTS, std=NORMAL_STD_DEV, num_variables=NUM_VARIABLES):
-    def sine(x, a, b=0, c=5, d=22):
+    def sine(x, a, b=0, c=0, d=22):
         return a * math.sin(math.radians((x - b) * d)) + c
     # gaussian noise per pixel, centered on a sign function
     variables = [
-        r_float(1, 5),  # amplitude
+        r_float(0.1, 1),  # amplitude
         r_float(16),  # phase
-        r_float(5, 10),  # bias
+        r_float(0, 1),  # bias
         r_float(11, 33)  # frequency
     ][:num_variables]
 
