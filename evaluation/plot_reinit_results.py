@@ -13,11 +13,6 @@ def plot(run_id, ratio):
     graph_data_file = f"graph_data/retraining/reset-{run_id}-{ratio}.json"
 
     cmap = cm.get_cmap("plasma")
-    # colors = {
-    #     "pruned": cmap(0.8),
-    #     "pruned_reset": cmap(0.2),
-    #     "unpruned": "grey",
-    # }
     colors = {
         "unpruned": "grey",
         "pruned_no_resume": cmap(0),

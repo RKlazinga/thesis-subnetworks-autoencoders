@@ -29,7 +29,6 @@ def find_channel_mask(network, fraction, per_layer_limit=Settings.PRUNE_LIMIT):
     if len(bn_masks) > 0:
         total_channels = 0
         for bn in bn_masks.keys():
-            # print(bn.weight.data)
             total_channels += bn.weight.data.shape[0]
 
         # load all batch_norm weights into a single tensor

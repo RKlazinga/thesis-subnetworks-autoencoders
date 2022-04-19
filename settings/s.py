@@ -28,7 +28,6 @@ class Settings:
     # NETWORK:
     if DS == DatasetOption.CIFAR10:
         # CONV
-        # NETWORK = models.conv_ae.ConvAE
         L2REG = 0
         CONV_SPARSITY_PENALTY = 1e-4
         LINEAR_SPARSITY_PENALTY = CONV_SPARSITY_PENALTY
@@ -36,12 +35,10 @@ class Settings:
         BATCH_SIZE = 32
         LR = 2e-4 * (BATCH_SIZE ** 0.5)
         # latent_size, hidden_layers, multiplier
-        # TOPOLOGY = [3, 4, 3]
         TOPOLOGY = [10, 4, 6, 3, 32]
         DRAW_EPOCHS = 20
     elif DS == DatasetOption.FASHION_MNIST:
         # CONV
-        # NETWORK = models.conv_ae.ConvAE
         L2REG = 0
         CONV_SPARSITY_PENALTY = 1e-4
         LINEAR_SPARSITY_PENALTY = CONV_SPARSITY_PENALTY
@@ -49,12 +46,10 @@ class Settings:
         BATCH_SIZE = 64
         LR = 2e-4 * (BATCH_SIZE ** 0.5)
         # latent_size, hidden_layers, multiplier
-        # TOPOLOGY = [3, 4, 3]
         TOPOLOGY = [3, 4, 1]
         DRAW_EPOCHS = 20
     elif DS == DatasetOption.SYNTHETIC_FLAT:
         # FF
-        # NETWORK = models.ff_ae.FeedforwardAE
         L2REG = 0
         CONV_SPARSITY_PENALTY = 0
         LINEAR_SPARSITY_PENALTY = 1e-4
@@ -66,7 +61,6 @@ class Settings:
         DRAW_EPOCHS = 20
     elif DS == DatasetOption.SYNTHETIC_IM:
         # CONV
-        # NETWORK = models.conv_ae.ConvAE
         L2REG = 0
         CONV_SPARSITY_PENALTY = 1e-4
         LINEAR_SPARSITY_PENALTY = 1e-3
@@ -78,7 +72,6 @@ class Settings:
         DRAW_EPOCHS = 20
     elif DS == DatasetOption.MNIST:
         # CONV
-        # NETWORK = models.conv_ae.ConvAE
         L2REG = 0
         CONV_SPARSITY_PENALTY = 1e-4
         LINEAR_SPARSITY_PENALTY = 1e-3

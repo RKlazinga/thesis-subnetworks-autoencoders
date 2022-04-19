@@ -62,7 +62,4 @@ if __name__ == '__main__':
     change_working_dir()
     _run_id = last_run()
 
-    # plot_acc_over_time_multiple_drawings(_run_id, 0.7)
-    # plot_acc_over_time_multiple_drawings(_run_id, 0.7)
     plot_acc_over_time_multiple_drawings(_run_id, 0.1)
-    # plot_acc_over_time_multiple_drawings(_run_id, 0.3)

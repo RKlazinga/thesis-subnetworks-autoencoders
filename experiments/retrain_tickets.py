@@ -23,8 +23,6 @@ criterion = MSELoss()
 skip_epochs = 4
 train_every = 4
 
-# overrides
-
 if __name__ == '__main__':
     if os.path.exists(f"graph_data/retraining/{run_id}.json"):
         with open(f"graph_data/retraining/{run_id}.json", "r") as read_file:

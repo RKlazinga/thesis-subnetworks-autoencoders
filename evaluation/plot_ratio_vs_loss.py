@@ -60,9 +60,6 @@ def plot(run_id, baseline=None):
         plt.plot(line_data[0], line_data[1], color=colors[line_name], label=line_name.replace("_", " ").title())
         plt.fill_between(line_data[0], line_data[2], line_data[3], color=colors[line_name], alpha=0.2)
 
-    # if baseline:
-        # plt.hlines(0, xmin, xmax, color=colors["unpruned"], label="Unpruned", linestyles="dotted")
-
     plt.legend()
     plt.title("Validating the relevance of specific selected channels\n"
               f"compared to a random mask with equivalent pruning per layer")
@@ -82,6 +79,3 @@ def plot(run_id, baseline=None):
 if __name__ == '__main__':
     change_working_dir()
     plot("random_mask-"+last_run())#, baseline=0.0168)
-    # plot("random_mask-[6, 4, 6]-c3c25aa69")#, baseline=0.0168)
-    # plot("random_mask-[6, 4, 6]-746325f33")#, baseline=0.0168)
-    # plot("random_mask-[6, 4, 6]-c3c25aa69")#, baseline=0.0168)

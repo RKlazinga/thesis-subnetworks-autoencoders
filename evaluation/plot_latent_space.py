@@ -6,6 +6,7 @@ from torchvision.transforms import ToPILImage
 from evaluation.analyse_latent_weights import analyse_at_epoch
 from settings.s import Settings
 from utils.file import change_working_dir, get_topology_of_run
+from utils.get_run_id import last_run
 
 
 def plot_latent_space_2d(run_id, epoch, domain=(0, 1), steps=16):
@@ -45,8 +46,7 @@ def plot_latent_space_2d(run_id, epoch, domain=(0, 1), steps=16):
 
 if __name__ == '__main__':
     change_working_dir()
-    # _run_id = last_run()
-    _run_id = "[0.0001,0.005,0.006]-newer_synthim-[12, 5, 6]-9db5763c8"
+    _run_id = last_run()
     _epoch = 30
     plot_latent_space_2d(_run_id, _epoch)
 
