@@ -27,11 +27,14 @@ def last_runs(count, offset=0):
     return runs[offset:count+offset]
 
 
-def last_run():
-    return _sort_runs_by_time()[0]
+def last_run(offset=0):
+    return _sort_runs_by_time()[offset]
 
 
-def all_runs_matching(prefix):
+def all_runs_matching(prefix_or_term):
     change_working_dir()
     runs = [x for x in os.listdir(RUN_FOLDER) if os.path.isdir(os.path.join(RUN_FOLDER, x))]
-    return [x for x in runs if x.startswith(prefix)]
+    matches = [x for x in runs if x.startswith(prefix_or_term)]
+    if len(matches) > 0:
+        return matches
+    return [x for x in runs if prefix_or_term in x]

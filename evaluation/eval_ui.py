@@ -111,7 +111,7 @@ if __name__ == '__main__':
         if isinstance(m, _BatchNorm):
             m.track_running_stats = False
 
-    latent_weight, latent_mean, latent_var = analyse_at_epoch(_run_id, epoch)
+    latent_weight, latent_bias, latent_mean, latent_var = analyse_at_epoch(_run_id, epoch)
 
     app = QApplication([])
     ui = MainUI()

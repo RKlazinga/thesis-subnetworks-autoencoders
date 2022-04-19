@@ -18,7 +18,7 @@ def plot_latent_space_2d(run_id, epoch, domain=(0, 1), steps=16):
     for m in model.modules():
         if isinstance(m, _BatchNorm):
             m.track_running_stats = False
-    latent_weight, latent_mean, latent_var = analyse_at_epoch(run_id, epoch)
+    latent_weight, latent_bias, latent_mean, latent_var = analyse_at_epoch(run_id, epoch)
 
     thresh = 10**(-2.5)
     neurons = [i for i in range(len(latent_weight)) if latent_weight[i] > thresh]

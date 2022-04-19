@@ -17,9 +17,7 @@ from utils.math import calculate_im_size
 
 class ConvAE(nn.Module):
 
-    IMAGE_SIZE = 28
-
-    def __init__(self, latent_size, hidden_layers, size_mult, in_channels=1):
+    def __init__(self, latent_size, hidden_layers, size_mult, in_channels=1, image_size=28):
         super().__init__()
 
         topology = [in_channels] + [size_mult * 2**x for x in range(1, hidden_layers)]
@@ -31,10 +29,10 @@ class ConvAE(nn.Module):
             prev_step_size = h
         encoder_steps.append(nn.Flatten())
 
-        flatten_size = prev_step_size * calculate_im_size(self.IMAGE_SIZE, hidden_layers) ** 2
-        # self.linear_layers = [flatten_size, flatten_size // 4, flatten_size // 4, latent_size]
-        self.linear_layers = [flatten_size, flatten_size, latent_size]
-        # self.linear_layers = [flatten_size, latent_size]
+        flatten_size = prev_step_size * calculate_im_size(image_size, hidden_layers) ** 2
+        # self.linear_layers = [flatten_size, flatten_size // 2, flatten_size // 3, latent_size]
+        # self.linear_layers = [flatten_size, flatten_size, latent_size]
+        self.linear_layers = [flatten_size, latent_size]
 
         # add extra linear layer in-between
         for a, b in zip(self.linear_layers, self.linear_layers[1:]):
@@ -55,8 +53,8 @@ class ConvAE(nn.Module):
         decoder_steps.extend([
             nn.Linear(self.linear_layers[1], self.linear_layers[0]),
             nn.Unflatten(dim=1, unflattened_size=(prev_step_size,
-                                                  calculate_im_size(self.IMAGE_SIZE, hidden_layers),
-                                                  calculate_im_size(self.IMAGE_SIZE, hidden_layers))),
+                                                  calculate_im_size(image_size, hidden_layers),
+                                                  calculate_im_size(image_size, hidden_layers))),
             nn.BatchNorm2d(prev_step_size),
             nn.ReLU()
         ])
@@ -70,7 +68,7 @@ class ConvAE(nn.Module):
         decoder_steps.append(ConvUnit(prev_step_size, in_channels, 3, padding=1, activation=nn.Sigmoid, bn=False))
 
         # if the input image size was not a power of 2, the output will be too large. crop down to image size
-        decoder_steps.append(Crop(self.IMAGE_SIZE))
+        decoder_steps.append(Crop(image_size))
 
         self.decoder = nn.Sequential(*decoder_steps)
         self.reset_weights()

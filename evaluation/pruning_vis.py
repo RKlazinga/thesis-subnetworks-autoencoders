@@ -34,11 +34,20 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
     bg: Image.Image = Image.new("RGB", (im_width, im_height), color=(255, 255, 255))
     draw = ImageDraw.ImageDraw(bg)
 
+    on_count = 0
+    off_count = 0
+
     for bn_idx, bn_mask in enumerate(mask):
         for single_idx, single_mask in enumerate(bn_mask):
             x, y = get_square_coords(bn_idx, single_idx, im_height, bn_mask)
             draw.rectangle((x, y, x + CHANNEL_SIZE[0], y + CHANNEL_SIZE[1]),
                            fill=ON_CHANNEL if single_mask else OFF_CHANNEL)
+            if single_mask:
+                on_count += 1
+            else:
+                off_count += 1
+
+    print(f"{on_count} on, {off_count} off ({on_count + off_count} total)")
 
     if draw_conn:
         for bn_idx, bn_mask_left in enumerate(mask):
@@ -70,7 +79,7 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
 if __name__ == '__main__':
     change_working_dir()
     # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-8-4.pth"), caption=last_run(), show=True, save=False)
-    mask_to_png(torch.load(f"{RUN_FOLDER}/{last_run()}/prune-0.1-epoch-1-1.pth"), caption="1-1", show=True, save=False)
+    mask_to_png(torch.load(f"{RUN_FOLDER}/{last_run()}/masks/prune-0.7-epoch-2-4.pth"), caption="12-4", show=True, save=False)
     # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-1-4.pth"), caption="1-4", show=True, save=False)
     # mask_to_png(torch.load(f"runs/{last_run()}/prune-0.1-epoch-4-4.pth"), caption="4-4", show=True, save=False)
 

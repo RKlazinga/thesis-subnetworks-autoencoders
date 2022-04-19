@@ -48,8 +48,8 @@ def plot(run_id, baseline=None):
     colors = {
         "unpruned": "grey",
         "original_ticket": cmap(0.25),
-        "random_ticket": cmap(.5),
-        "utterly_random": cmap(.75),
+        "random_ticket": cmap(.75),
+        "utterly_random": cmap(.5),
     }
 
     xmin = 1e9

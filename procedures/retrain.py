@@ -1,4 +1,5 @@
 import json
+import os.path
 
 from torch.nn import MSELoss
 from torch.optim import Adam
@@ -34,7 +35,11 @@ def retrain_tagged_networks(networks, json_filename):
 
 
 def retrain_with_shots(get_networks, json_filename, shots=3):
-    graph_data = {}
+    if os.path.isfile(json_filename):
+        with open(json_filename, "r") as readfile:
+            graph_data = json.loads(readfile.read())
+    else:
+        graph_data = {}
     train_loader, test_loader = get_loaders()
     device = get_device()
 
