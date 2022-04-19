@@ -10,9 +10,7 @@ from matplotlib import pyplot as plt
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from datasets.dataset_options import DatasetOption
-from datasets.synthetic.flat_generators import random_sine_gaussian
 from evaluation.analyse_latent_weights import analyse_at_epoch
-from models.conv_ae import ConvAE
 from settings.s import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
@@ -96,14 +94,10 @@ class MainUI(QWidget):
 if __name__ == '__main__':
     change_working_dir()
     _run_id = last_run()
-    # _run_id = "threevar-[8, 2, 1]-1b95d97e2"
     epoch = 20
 
     model = Settings.NETWORK.init_from_checkpoint(_run_id, None, None, param_epoch=epoch)
     model.eval()
-
-    # get an example encoding
-    # print(model.encoder(random_sine_gaussian(std=0.01, num_variables=3).view((1, 16))))
 
     # disable running stats since we will be inputting weird values
     for m in model.modules():

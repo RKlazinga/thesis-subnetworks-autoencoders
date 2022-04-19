@@ -1,7 +1,4 @@
 import json
-import math
-import os
-import textwrap
 from statistics import NormalDist
 from typing import Union, List
 
@@ -9,12 +6,10 @@ import matplotlib.pyplot as plt
 import torch
 from torch.nn import BatchNorm1d
 from torch.nn.modules.batchnorm import _BatchNorm
-from tqdm import tqdm
 
-# from evaluation.build_latex import figure_of_runs
 from settings.s import Settings
-from utils.file import get_topology_of_run, get_epochs_of_run, change_working_dir
-from utils.get_run_id import last_run, last_runs, all_runs_matching
+from utils.file import get_topology_of_run, get_epochs_of_run
+from utils.get_run_id import last_run
 
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["font.size"] = 18

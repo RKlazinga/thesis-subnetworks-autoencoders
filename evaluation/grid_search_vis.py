@@ -18,7 +18,6 @@ if __name__ == '__main__':
         latent_s, lr = [float(x) for x in g.split("]")[0].removeprefix("[").split(",")]
         counts, losses = plot_latent_count_over_time(g, show=False)
         count, loss = counts[-1], losses[-1]
-        # res[f"non_latent_sparsity={str(sparsity).ljust(5)}"].append(c)
         count_res[f"latent_sparsity={str(latent_s).ljust(10)}"].append(count)
         loss_res[f"latent_sparsity={str(latent_s).ljust(10)}"].append(loss)
         count_res[f"learning rate={str(lr).ljust(11)}"].append(count)

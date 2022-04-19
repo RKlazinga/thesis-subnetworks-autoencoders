@@ -5,7 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from procedures.ticket_drawing.without_redist import mask_dist
+from procedures.ticket_drawing import mask_dist
 from settings.s import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run

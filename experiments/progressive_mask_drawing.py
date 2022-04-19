@@ -2,14 +2,12 @@ import json
 import os
 
 import torch
-from torch.nn import MSELoss, L1Loss
+from torch.nn import MSELoss
 from torch.nn.modules.batchnorm import _BatchNorm
 from torch.optim import Adam
 
 from datasets.dataset_options import DatasetOption
-from evaluation.analyse_latent_weights import find_latent_bn
-from procedures.ticket_drawing.with_redist import find_channel_mask_redist
-from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
+from procedures.ticket_drawing import find_channel_mask
 from procedures.test import test
 from procedures.train import train
 from settings.s import Settings
@@ -18,23 +16,22 @@ from datasets.get_loaders import get_loaders
 from utils.misc import generate_random_str, get_device
 
 
-def train_and_draw_tickets(net, uid, folder_root=Settings.RUN_FOLDER, lr=Settings.LR, topology=Settings.TOPOLOGY):
-    channel_mask_func = find_channel_mask_redist if Settings.PRUNE_WITH_REDIST else find_channel_mask_no_redist
+def train_and_draw_tickets(net, uid):
     device = get_device()
 
     train_loader, test_loader = get_loaders()
 
     # TODO consider split learning rate
-    optimiser = Adam(net.parameters(), lr=lr)
+    optimiser = Adam(net.parameters(), lr=Settings.LR)
     criterion = MSELoss()
 
     print(f"RUN ID: {uid}")
-    folder = f"{folder_root}/{uid}"
+    folder = f"{Settings.RUN_FOLDER}/{uid}"
     os.makedirs(folder)
     os.makedirs(f"{folder}/masks")
 
     # save initial parameters
-    torch.save(net.state_dict(), f"{folder}/starting_params-{topology}.pth")
+    torch.save(net.state_dict(), f"{folder}/starting_params-{Settings.TOPOLOGY}")
 
     # save all settings
     with open(f"{folder}/settings.md", "w") as writefile:
@@ -46,7 +43,7 @@ def train_and_draw_tickets(net, uid, folder_root=Settings.RUN_FOLDER, lr=Setting
     for epoch in range(1, Settings.DRAW_EPOCHS + 1):
         def prune_snapshot(iteration: int, epoch=epoch):
             for r in Settings.PRUNE_RATIOS:
-                torch.save(list(channel_mask_func(net, r).values()), f"{folder}/masks/prune-{r}-epoch-{epoch}-{iteration}.pth")
+                torch.save(list(find_channel_mask(net, r).values()), f"{folder}/masks/prune-{r}-epoch-{epoch}-{iteration}.pth")
 
         train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
 
@@ -70,12 +67,12 @@ def train_and_draw_tickets(net, uid, folder_root=Settings.RUN_FOLDER, lr=Setting
         torch.save(net.state_dict(), folder + f"/trained-{epoch}.pth")
 
 
-def main(prefix=None, topology=Settings.TOPOLOGY):
+def main(prefix=None):
     unique_id = generate_random_str()
 
     change_working_dir()
 
-    unique_id = f"{topology}-" + unique_id
+    unique_id = f"{Settings.TOPOLOGY}-" + unique_id
     if Settings.DS == DatasetOption.SYNTHETIC_FLAT:
         unique_id = f"flat{Settings.NUM_VARIABLES}-" + unique_id
     if Settings.DS == DatasetOption.SYNTHETIC_IM:
@@ -89,9 +86,9 @@ def main(prefix=None, topology=Settings.TOPOLOGY):
         unique_id = prefix + unique_id
 
     device = get_device()
-    _network = Settings.NETWORK(*topology).to(device)
+    _network = Settings.NETWORK(*Settings.TOPOLOGY).to(device)
 
-    train_and_draw_tickets(_network, unique_id, topology=topology)
+    train_and_draw_tickets(_network, unique_id)
 
 
 if __name__ == '__main__':

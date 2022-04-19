@@ -3,10 +3,8 @@ from typing import Union
 import torch
 from torch import nn
 
-from evaluation.pruning_vis import mask_to_png
 from procedures.in_place_pruning import prune_model
-from procedures.ticket_drawing.with_redist import find_channel_mask_redist
-from procedures.ticket_drawing.without_redist import find_channel_mask_no_redist
+from procedures.ticket_drawing import find_channel_mask
 from settings.s import Settings
 from utils.conv_unit import ConvUnit, ConvTransposeUnit
 from utils.crop_module import Crop
@@ -83,8 +81,7 @@ class ConvAE(nn.Module):
         return self.decoder(x)
 
     def get_mask_of_current_network_state(self, ratio):
-        channel_mask_func = find_channel_mask_redist if Settings.PRUNE_WITH_REDIST else find_channel_mask_no_redist
-        return list(channel_mask_func(self, ratio).values())
+        return list(find_channel_mask(self, ratio).values())
 
     @staticmethod
     def init_from_checkpoint(run_id, ratio: Union[float, None], epoch, sub_epoch=1, param_epoch=None, from_disk=False):

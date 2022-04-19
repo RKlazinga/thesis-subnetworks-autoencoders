@@ -6,7 +6,6 @@ from torchvision.transforms import ToPILImage
 from evaluation.analyse_latent_weights import analyse_at_epoch
 from settings.s import Settings
 from utils.file import change_working_dir, get_topology_of_run
-from utils.get_run_id import last_run
 
 
 def plot_latent_space_2d(run_id, epoch, domain=(0, 1), steps=16):

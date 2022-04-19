@@ -6,6 +6,7 @@ from matplotlib import cm
 from evaluation.plot_retrain_results import plot_single
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
+
 plt.rcParams["font.family"] = "serif"
 
 
@@ -13,19 +14,10 @@ def plot(run_id, ratio):
     graph_data_file = f"graph_data/retraining/random_mask-{run_id}-{ratio}.json"
 
     cmap = cm.get_cmap("plasma")
-    # colors = {
-    #     "pruned": cmap(0.8),
-    #     "pruned_reset": cmap(0.2),
-    #     "unpruned": "grey",
-    # }
     colors = {
         "unpruned": "grey",
-        # "original_ticket": cmap(0),
         "original_ticket": cmap(0.25),
-        "original_ticket_eb": cmap(0.25),
-        # "reset_ticket": cmap(.4),
         "random_ticket": cmap(.7),
-        # "random_ticket_resume": cmap(.85),
     }
 
     with open(graph_data_file, "r") as read_file:
@@ -59,14 +51,5 @@ def plot(run_id, ratio):
 
 if __name__ == '__main__':
     change_working_dir()
-    # _run_id = last_run()
-
-    _run_id = "[6, 4, 6]-c3c25aa69"
-    # plot(_run_id, 0.9)
-    # plot(_run_id, 0.7)
-    plot(_run_id, 0.5)
-
-    _run_id = "[6, 4, 6]-746325f33"
-    # plot(_run_id, 0.1)
-    # plot(_run_id, 0.3)
+    _run_id = last_run()
     plot(_run_id, 0.5)

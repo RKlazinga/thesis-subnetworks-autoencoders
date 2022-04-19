@@ -4,7 +4,7 @@ from torchvision.transforms import ToTensor
 
 from datasets.dataset_options import DatasetOption
 from datasets.synthetic.flat_generators import random_sine_gaussian
-from datasets.synthetic.im_generators import sine_2d, stacked_sine2d
+from datasets.synthetic.im_generators import stacked_sine2d
 from datasets.synthetic.synthetic_flat import SyntheticFlat
 from datasets.synthetic.synthetic_im import Synthetic
 from settings.s import Settings

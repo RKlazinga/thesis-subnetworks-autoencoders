@@ -5,7 +5,6 @@ from PIL import Image, ImageFont, ImageDraw
 from torchvision.transforms import ToPILImage
 
 from datasets.synthetic.common import r_float
-from models.conv_ae import ConvAE
 from settings.s import Settings
 from utils.file import change_working_dir
 
@@ -63,9 +62,3 @@ if __name__ == '__main__':
         draw.text(((textsize[0] - w) // 2, rim + d*(size + spacing[1]) + textsize[1] // 2), text=text, font=font, fill=255)
     change_working_dir()
     bg.save("figures/synth_2d_ex.png")
-    # bg.show()
-    # ToPILImage()(sine_2d(0.01, 2)).show()
-    # ToPILImage()(sine_2d(0.01, 3)).show()
-    # ToPILImage()(sine_2d(0.01, 3)).show()
-    # ToPILImage()(sine_2d(0.01, 4)).show()
-    # ToPILImage()(sine_2d(0.01, 4)).show()

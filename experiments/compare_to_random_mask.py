@@ -2,11 +2,9 @@ import random
 
 import torch
 
-from evaluation.pruning_vis import mask_to_png
 from models.conv_ae import ConvAE
 from procedures.in_place_pruning import prune_model
 from procedures.retrain import retrain_with_shots
-from datasets.get_loaders import get_loaders
 from settings.s import Settings
 from utils.get_run_id import last_run
 from utils.misc import get_device
