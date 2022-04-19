@@ -2,9 +2,10 @@ from tqdm import tqdm
 
 from settings.s import Settings
 from utils.channel_sparsity_reg import update_bn
+from utils.misc import dev
 
 
-def train(network, opt, criterion, train_loader, device, prune_snapshot_method=None):
+def train(network, opt, criterion, train_loader, prune_snapshot_method=None):
     train_loss = 0
     network.train()
 
@@ -17,7 +18,7 @@ def train(network, opt, criterion, train_loader, device, prune_snapshot_method=N
                 snapshot_counter += 1
         if isinstance(batch, list):
             batch = batch[0]
-        img = batch.to(device)
+        img = batch.to(dev())
         target = img.clone()
 
         opt.zero_grad()

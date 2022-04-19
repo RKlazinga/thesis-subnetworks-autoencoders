@@ -10,9 +10,9 @@ from settings.s import Settings
 from utils.file import change_working_dir
 from datasets.get_loaders import get_loaders
 from utils.get_run_id import last_run
-from utils.misc import get_device
+from utils.misc import dev
 
-device = get_device()
+
 change_working_dir()
 run_id = last_run()
 checkpoint_folder = f"{Settings.RUN_FOLDER}/{run_id}/masks"
@@ -48,12 +48,12 @@ if __name__ == '__main__':
                     graph_data[f"{ratio}-{draw_epoch}-{sub_epoch}"] = current_graph_data
                     resume = Settings.RETRAIN_RESUME_EPOCH if ratio is not None else None
                     network = Settings.NETWORK.init_from_checkpoint(run_id, ratio, draw_epoch, sub_epoch,
-                                                           param_epoch=resume).to(device)
+                                                           param_epoch=resume).to(dev())
                     optimiser = Adam(network.parameters(), lr=Settings.RETRAIN_LR, weight_decay=Settings.RETRAIN_L2REG)
 
                     for epoch in range(Settings.RETRAIN_EPOCHS):
-                        train_loss = train(network, optimiser, criterion, train_loader, device)
-                        test_loss = test(network, criterion, test_loader, device)
+                        train_loss = train(network, optimiser, criterion, train_loader)
+                        test_loss = test(network, criterion, test_loader)
 
                         print(f"{epoch}/{Settings.RETRAIN_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
                         current_graph_data.append((epoch + (resume if resume else 0), train_loss, test_loss))

@@ -3,7 +3,7 @@ import os
 import torch.cuda
 
 from settings.s import Settings
-from utils.misc import get_device
+from utils.misc import dev
 
 
 def get_topology_of_run(run_id):
@@ -16,7 +16,7 @@ def get_topology_of_run(run_id):
 
 def get_params_of_run(run_id, epoch=None, device=None):
     if device is None:
-        device = get_device()
+        device = dev()
 
     if epoch is None:
         checkpoint_file = [x for x in os.listdir(f"{Settings.RUN_FOLDER}/{run_id}") if x.startswith("starting_params-")][0]

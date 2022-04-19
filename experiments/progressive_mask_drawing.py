@@ -13,12 +13,10 @@ from procedures.train import train
 from settings.s import Settings
 from utils.file import change_working_dir, get_all_current_settings
 from datasets.get_loaders import get_loaders
-from utils.misc import generate_random_str, get_device
+from utils.misc import generate_random_str, dev
 
 
 def train_and_draw_tickets(net, uid):
-    device = get_device()
-
     train_loader, test_loader = get_loaders()
 
     # TODO consider split learning rate
@@ -45,13 +43,13 @@ def train_and_draw_tickets(net, uid):
             for r in Settings.PRUNE_RATIOS:
                 torch.save(list(find_channel_mask(net, r).values()), f"{folder}/masks/prune-{r}-epoch-{epoch}-{iteration}.pth")
 
-        train_loss = train(net, optimiser, criterion, train_loader, device, prune_snapshot_method=prune_snapshot)
+        train_loss = train(net, optimiser, criterion, train_loader, prune_snapshot_method=prune_snapshot)
 
         # disable running statistics
         for m in net.modules():
             if isinstance(m, _BatchNorm):
                 m.track_running_stats = False
-        test_loss = test(net, criterion, test_loader, device)
+        test_loss = test(net, criterion, test_loader)
 
         loss_graph_data.append((epoch, train_loss, test_loss))
 
@@ -85,8 +83,7 @@ def main(prefix=None):
     if prefix is not None:
         unique_id = prefix + unique_id
 
-    device = get_device()
-    _network = Settings.NETWORK(*Settings.TOPOLOGY).to(device)
+    _network = Settings.NETWORK(*Settings.TOPOLOGY).to(dev())
 
     train_and_draw_tickets(_network, unique_id)
 

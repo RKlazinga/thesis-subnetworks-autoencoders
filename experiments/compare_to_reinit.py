@@ -6,14 +6,14 @@ from settings.s import Settings
 from utils.file import get_topology_of_run, get_params_of_run
 from datasets.get_loaders import get_loaders
 from utils.get_run_id import last_run
-from utils.misc import get_device
+from utils.misc import dev
 
 run_id = last_run()
 ratio = 0.5
 draw_epoch = 9
 draw_sub_epoch = 4
 mask = f"{Settings.RUN_FOLDER}/{run_id}/prune-{ratio}-epoch-{draw_epoch}-{draw_sub_epoch}.pth"
-device = get_device()
+device = dev()
 
 if __name__ == '__main__':
     train_loader, test_loader = get_loaders()

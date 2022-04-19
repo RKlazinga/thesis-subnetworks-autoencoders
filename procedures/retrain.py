@@ -8,11 +8,10 @@ from datasets.get_loaders import get_loaders
 from procedures.test import test
 from procedures.train import train
 from settings.s import Settings
-from utils.misc import get_device
+from utils.misc import dev
 
 
 def retrain_tagged_networks(networks, json_filename):
-    device = get_device()
     graph_data = {}
     train_loader, test_loader = get_loaders()
 
@@ -24,8 +23,8 @@ def retrain_tagged_networks(networks, json_filename):
         criterion = MSELoss()
 
         for epoch in range(Settings.RETRAIN_EPOCHS):
-            train_loss = train(net, optimiser, criterion, train_loader, device)
-            test_loss = test(net, criterion, test_loader, device)
+            train_loss = train(net, optimiser, criterion, train_loader)
+            test_loss = test(net, criterion, test_loader)
 
             print(train_loss, test_loss)
             current_graph_data.append((epoch, train_loss, test_loss))
@@ -41,13 +40,12 @@ def retrain_with_shots(get_networks, json_filename, shots=3):
     else:
         graph_data = {}
     train_loader, test_loader = get_loaders()
-    device = get_device()
 
     # multiple shots
     for shot in range(shots):
         nets = get_networks()
         for net_tag, net in nets:
-            net.to(device)
+            net.to(dev())
             print(f"Shot {shot+1}/{shots}, retraining: {net_tag}")
             if net_tag not in graph_data:
                 current_graph_data = {}
@@ -58,8 +56,8 @@ def retrain_with_shots(get_networks, json_filename, shots=3):
             criterion = MSELoss()
 
             for epoch in range(Settings.RETRAIN_EPOCHS):
-                train_loss = train(net, optimiser, criterion, train_loader, device)
-                test_loss = test(net, criterion, test_loader, device)
+                train_loss = train(net, optimiser, criterion, train_loader)
+                test_loss = test(net, criterion, test_loader)
 
                 print(f"{epoch}/{Settings.RETRAIN_EPOCHS}: {train_loss}, {test_loss}")
                 if epoch not in current_graph_data:

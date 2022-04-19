@@ -7,14 +7,13 @@ from procedures.in_place_pruning import prune_model
 from procedures.retrain import retrain_with_shots
 from settings.s import Settings
 from utils.get_run_id import last_run
-from utils.misc import get_device
+from utils.misc import dev
 
 run_id = last_run()
 ratios = [0.1, 0.3, 0.5, 0.7]
 shots = 1
 draw_epoch = 12
 draw_sub_epoch = 4
-device = get_device()
 
 
 def verify_ratio_approx_correct(desired_ratio, mask):
@@ -34,7 +33,7 @@ def run(ratio):
     def get_networks():
         # unpruned = ConvAE.init_from_checkpoint(run_id, None, None, None).to(device)
 
-        ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=None).to(device)
+        ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=None).to(dev())
         # ticket_eb = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=draw_epoch).to(device)
 
         # get ticket mask and extract ratio per layer
@@ -44,7 +43,7 @@ def run(ratio):
             nonzero = torch.count_nonzero(t)
             r = torch.tensor([1 for _ in range(nonzero)] + [0 for _ in range(t.nelement() - nonzero)])
             r_idx = torch.randperm(torch.numel(r))
-            r = r[r_idx].to(device)
+            r = r[r_idx].to(dev())
             random_masks.append(r)
         # mask_to_png(torch.load(mask_file), caption="Original mask", show=True, save=False)
         # mask_to_png(ticket_masks, caption="Expanded mask", show=True, save=False)
@@ -78,7 +77,7 @@ def run(ratio):
 
         networks = [
             # ("original_ticket", ticket),
-            ("utterly_random", utterly_random_ticket.to(device)),
+            ("utterly_random", utterly_random_ticket.to(dev())),
             # ("random_ticket", random_ticket.to(device)),
             # ("unpruned", unpruned),
         ]

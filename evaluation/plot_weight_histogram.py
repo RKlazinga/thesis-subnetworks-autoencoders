@@ -5,13 +5,13 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from settings.s import Settings
 from utils.file import change_working_dir, get_topology_of_run, get_params_of_run
 from utils.get_run_id import last_run
-from utils.misc import get_device
+from utils.misc import dev
 
 plt.rcParams["font.family"] = "serif"
 
 
 def histogram_of_weights(run_id, epoch):
-    device = get_device()
+    device = dev()
     net = Settings.NETWORK(*get_topology_of_run(run_id)).to(device)
     net.load_state_dict(get_params_of_run(run_id, epoch=epoch, device=device))
 
