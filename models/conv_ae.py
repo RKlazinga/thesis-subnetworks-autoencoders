@@ -5,7 +5,7 @@ from torch import nn
 
 from procedures.in_place_pruning import prune_model
 from procedures.ticket_drawing import find_channel_mask
-from settings.s import Settings
+from settings import Settings
 from utils.conv_unit import ConvUnit, ConvTransposeUnit
 from utils.crop_module import Crop
 from utils.file import get_topology_of_run, get_params_of_run
@@ -28,8 +28,8 @@ class ConvAE(nn.Module):
 
         flatten_size = prev_step_size * calculate_im_size(image_size, hidden_layers) ** 2
         # self.linear_layers = [flatten_size, flatten_size // 2, flatten_size // 3, latent_size]
-        # self.linear_layers = [flatten_size, flatten_size, latent_size]
-        self.linear_layers = [flatten_size, latent_size]
+        self.linear_layers = [flatten_size, flatten_size // 2, latent_size]
+        # self.linear_layers = [flatten_size, latent_size]
 
         # add extra linear layer in-between
         for a, b in zip(self.linear_layers, self.linear_layers[1:]):
@@ -62,7 +62,7 @@ class ConvAE(nn.Module):
             prev_step_size = h
 
         # resolve checkerboarding with normal convolution
-        decoder_steps.append(ConvUnit(prev_step_size, in_channels, 3, padding=1, activation=nn.Sigmoid, bn=False))
+        decoder_steps.append(ConvUnit(prev_step_size, in_channels, 3, padding=1, activation=None, bn=False))
 
         # if the input image size was not a power of 2, the output will be too large. crop down to image size
         decoder_steps.append(Crop(image_size))
