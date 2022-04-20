@@ -2,7 +2,7 @@ from torch import nn
 
 from models.conv_ae import ConvAE
 from procedures.retrain import retrain_tagged_networks
-from settings.s import Settings
+from settings import Settings
 from utils.file import get_topology_of_run, get_params_of_run
 from datasets.get_loaders import get_loaders
 from utils.get_run_id import last_run

@@ -2,7 +2,7 @@ import torch
 from matplotlib import pyplot as plt, cm
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir, get_topology_of_run, get_params_of_run
 from utils.get_run_id import last_run
 from utils.misc import dev

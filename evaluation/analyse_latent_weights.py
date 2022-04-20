@@ -7,7 +7,7 @@ import torch
 from torch.nn import BatchNorm1d
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from settings.s import Settings
+from settings import Settings
 from utils.file import get_topology_of_run, get_epochs_of_run
 from utils.get_run_id import last_run
 
@@ -55,7 +55,7 @@ def analyse_at_epoch(run_id, epoch):
 def plot_analysis_over_time(run_id):
     epochs = get_epochs_of_run(run_id)
     latent_count = get_topology_of_run(run_id)[0]
-    weights = [tuple([0.1 for _ in range(latent_count)])] + [analyse_at_epoch(run_id, e)[0] for e in range(1, epochs + 1)]
+    weights = [tuple([1 for _ in range(latent_count)])] + [analyse_at_epoch(run_id, e)[0] for e in range(1, epochs + 1)]
     weights = list(zip(*weights))
 
     upper_lim = 1e-1
@@ -63,7 +63,6 @@ def plot_analysis_over_time(run_id):
         plt.plot(range(0, epochs+1), w, linewidth=LINE_W)
         upper_lim = max(upper_lim, max(w))
 
-    print(upper_lim)
     plt.grid(True, linestyle="dashed")
     plt.yscale("log")
 
@@ -146,14 +145,9 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, sho
 
 
 if __name__ == '__main__':
-    # plot_analysis_over_time(_run_id)
-    # plot_latent_count_over_time(_run_id)
-
-    for i in range(8):
-        r = last_run(i)
-        # plot_analysis_over_time(r)
-        # plot_latent_count_over_time(r)
-    runs = sorted([last_run(i) for i in range(8)])
+    _run_id = last_run()
+    plot_analysis_over_time(_run_id)
+    plot_latent_count_over_time(_run_id)
     # figure_of_runs(runs, plot_type="s", label="starter", captioner=lambda x: f"$\lambda={x[1:].split(']')[0]}$")
 
 

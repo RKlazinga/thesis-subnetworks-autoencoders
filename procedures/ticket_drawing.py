@@ -3,7 +3,7 @@ from typing import Dict
 import torch
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from settings.s import Settings
+from settings import Settings
 
 
 def mask_dist(masks_a, masks_b):

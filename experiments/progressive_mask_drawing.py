@@ -10,8 +10,8 @@ from datasets.dataset_options import DatasetOption
 from procedures.ticket_drawing import find_channel_mask
 from procedures.test import test
 from procedures.train import train
-from settings.s import Settings
-from utils.file import change_working_dir, get_all_current_settings
+from settings import Settings
+from utils.file import change_working_dir
 from datasets.get_loaders import get_loaders
 from utils.misc import generate_random_str, dev
 
@@ -29,11 +29,10 @@ def train_and_draw_tickets(net, uid):
     os.makedirs(f"{folder}/masks")
 
     # save initial parameters
-    torch.save(net.state_dict(), f"{folder}/starting_params-{Settings.TOPOLOGY}")
+    torch.save(net.state_dict(), f"{folder}/starting_params-{Settings.TOPOLOGY}.pth")
 
     # save all settings
-    with open(f"{folder}/settings.md", "w") as writefile:
-        writefile.write(get_all_current_settings())
+    Settings.to_disk(folder)
 
     loss_graph_data = []
     loss_file = f"{folder}/loss_graph.json"
@@ -74,7 +73,7 @@ def main(prefix=None):
     if Settings.DS == DatasetOption.SYNTHETIC_FLAT:
         unique_id = f"flat{Settings.NUM_VARIABLES}-" + unique_id
     if Settings.DS == DatasetOption.SYNTHETIC_IM:
-        unique_id = f"clean_synthim{Settings.NUM_VARIABLES}-" + unique_id
+        unique_id = f"synthim_{Settings.NUM_VARIABLES}var-" + unique_id
     if Settings.DS == DatasetOption.MNIST:
         unique_id = "mnist-" + unique_id
     if Settings.DS == DatasetOption.CIFAR10:

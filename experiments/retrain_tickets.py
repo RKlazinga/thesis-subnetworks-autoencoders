@@ -6,7 +6,7 @@ from torch.optim import Adam
 
 from procedures.test import test
 from procedures.train import train
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir
 from datasets.get_loaders import get_loaders
 from utils.get_run_id import last_run

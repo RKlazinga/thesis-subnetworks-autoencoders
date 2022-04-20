@@ -11,7 +11,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 
 from datasets.dataset_options import DatasetOption
 from evaluation.analyse_latent_weights import analyse_at_epoch
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
 

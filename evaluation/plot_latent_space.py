@@ -4,7 +4,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from torchvision.transforms import ToPILImage
 
 from evaluation.analyse_latent_weights import analyse_at_epoch
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir, get_topology_of_run
 from utils.get_run_id import last_run
 

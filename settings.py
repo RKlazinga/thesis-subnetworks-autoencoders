@@ -6,7 +6,7 @@ from datasets.dataset_options import DatasetOption
 
 class Settings:
     # GLOBAL
-    DS = DatasetOption.SYNTHETIC_FLAT
+    DS = DatasetOption.SYNTHETIC_IM
     RUN_FOLDER = "runs"
 
     # DATA
@@ -23,6 +23,10 @@ class Settings:
     PRUNE_RATIOS = [0.1, 0.3, 0.5, 0.7]
     PRUNE_LIMIT = 0.8
     PRUNE_WITH_REDIST = False
+
+    MAX_LOSS = 0.12
+    MIN_LOSS = 0
+    REG_MULTIPLIER = 1
 
     # TRAIN
     # NETWORK:
@@ -63,12 +67,12 @@ class Settings:
         # CONV
         L2REG = 0
         CONV_SPARSITY_PENALTY = 1e-4
-        LINEAR_SPARSITY_PENALTY = 1e-3
-        LATENT_SPARSITY_PENALTY = 20e-2
+        LINEAR_SPARSITY_PENALTY = 1e-2
+        LATENT_SPARSITY_PENALTY = 1e-1
         BATCH_SIZE = 64
-        LR = 1e-3 * (BATCH_SIZE ** 0.5)
-        # latent_size, hidden_layers, multiplier
-        TOPOLOGY = [20, 5, 6, CHANNEL_STACKING]
+        LR = 1e-2
+        # latent_size, conv_layers, multiplier
+        TOPOLOGY = [8, 5, 6, CHANNEL_STACKING]
         DRAW_EPOCHS = 20
     elif DS == DatasetOption.MNIST:
         # CONV
@@ -97,8 +101,23 @@ class Settings:
         RETRAIN_L2REG = 0  # 1e-4
         RETRAIN_RESUME_EPOCH = 1
         RETRAIN_EPOCHS = 15
-    else:
-        raise ValueError("Unknown DatasetOption for retrain settings", DS)
+
+    @classmethod
+    def serialise(cls):
+        state = {var: getattr(cls, var) for var in dir(cls) if not var.startswith("__")
+                 and var.isupper() and var not in ["NETWORK"]}
+        return pickle.dumps(state)
+
+    @classmethod
+    def deserialise(cls, state: bytes):
+        state = pickle.loads(state)
+        for var, value in state.items():
+            setattr(cls, var, value)
+
+    @classmethod
+    def reset(cls):
+        if hasattr(cls, "_DEFAULT"):
+            cls.deserialise(cls._DEFAULT)
 
     @classmethod
     @property
@@ -111,14 +130,14 @@ class Settings:
 
     @classmethod
     def to_disk(cls, folder):
-        state = {var: getattr(cls, var) for var in dir(cls) if not var.startswith("__") and var.isupper()}
-        os.path.join(folder, "settings.json")
-        print(pickle.dumps(state))
+        with open(os.path.join(folder, "settings.bin"), "wb") as writefile:
+            writefile.write(cls.serialise())
 
     @classmethod
-    def from_disk(cls):
-        pass
+    def from_disk(cls, folder):
+        with open(os.path.join(folder, "settings.bin", "rb")) as readfile:
+            cls.deserialise(readfile.read())
 
 
-if __name__ == '__main__':
-    print(Settings.to_disk(""))
+if not hasattr(Settings, "__DEFAULT"):
+    Settings._DEFAULT = Settings.serialise()

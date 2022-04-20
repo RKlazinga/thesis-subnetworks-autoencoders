@@ -4,7 +4,7 @@ import torch
 from torch import nn
 
 from procedures.in_place_pruning import prune_model
-from settings.s import Settings
+from settings import Settings
 from utils.file import get_topology_of_run, get_params_of_run
 
 

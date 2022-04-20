@@ -3,7 +3,7 @@ from typing import Union
 import torch
 from PIL import ImageDraw, ImageFont, Image
 
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir
 from utils.get_run_id import last_run
 

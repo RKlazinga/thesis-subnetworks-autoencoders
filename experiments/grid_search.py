@@ -1,5 +1,5 @@
 from experiments.progressive_mask_drawing import main
-from settings.s import Settings
+from settings import Settings
 
 SHOTS = 2
 conv_sparsity = 1e-4

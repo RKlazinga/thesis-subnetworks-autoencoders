@@ -5,7 +5,7 @@ import torch
 from experiments.progressive_mask_drawing import train_and_draw_tickets
 from models.conv_ae import ConvAE
 from procedures.retrain import retrain_tagged_networks
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir
 from utils.misc import generate_random_str, dev
 from os.path import *

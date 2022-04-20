@@ -5,7 +5,7 @@ import torch
 from models.conv_ae import ConvAE
 from procedures.in_place_pruning import prune_model
 from procedures.retrain import retrain_with_shots
-from settings.s import Settings
+from settings import Settings
 from utils.get_run_id import last_run
 from utils.misc import dev
 

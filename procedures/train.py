@@ -1,6 +1,6 @@
 from tqdm import tqdm
 
-from settings.s import Settings
+from settings import Settings
 from utils.channel_sparsity_reg import update_bn
 from utils.misc import dev
 
@@ -25,6 +25,9 @@ def train(network, opt, criterion, train_loader, prune_snapshot_method=None):
         reconstruction = network(img)
 
         single_loss = criterion(reconstruction, target)
+        # multiply regularisation based on currently achieved loss
+        # scalar = (single_loss.item() - Settings.MIN_LOSS) / (Settings.MAX_LOSS - Settings.MIN_LOSS)
+        # Settings.REG_MULTIPLIER = max(0.01, 1 - scalar)
         train_loss += single_loss.item()
 
         single_loss.backward()

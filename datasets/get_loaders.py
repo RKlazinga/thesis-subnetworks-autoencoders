@@ -7,7 +7,7 @@ from datasets.synthetic.flat_generators import random_sine_gaussian
 from datasets.synthetic.im_generators import stacked_sine2d
 from datasets.synthetic.synthetic_flat import SyntheticFlat
 from datasets.synthetic.synthetic_im import Synthetic
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir
 
 

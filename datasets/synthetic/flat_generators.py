@@ -3,7 +3,7 @@ import math
 import torch
 
 from datasets.synthetic.common import r_float
-from settings.s import Settings
+from settings import Settings
 
 
 def random_sine_gaussian(size=Settings.FLAT_DATAPOINTS, std=Settings.NORMAL_STD_DEV, num_variables=Settings.NUM_VARIABLES):

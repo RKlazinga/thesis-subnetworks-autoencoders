@@ -5,7 +5,7 @@ from PIL import Image, ImageFont, ImageDraw
 from torchvision.transforms import ToPILImage
 
 from datasets.synthetic.common import r_float
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir
 
 

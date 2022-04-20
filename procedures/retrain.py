@@ -7,7 +7,7 @@ from torch.optim import Adam
 from datasets.get_loaders import get_loaders
 from procedures.test import test
 from procedures.train import train
-from settings.s import Settings
+from settings import Settings
 from utils.misc import dev
 
 

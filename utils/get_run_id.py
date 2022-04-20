@@ -1,6 +1,6 @@
 import os
 
-from settings.s import Settings
+from settings import Settings
 from utils.file import change_working_dir
 
 
