@@ -3,6 +3,7 @@ import os
 import shutil
 import textwrap
 import pyperclip
+from tqdm import tqdm
 
 from evaluation.analyse_latent_weights import plot_latent_count_over_time
 from utils.file import change_working_dir
@@ -47,6 +48,7 @@ def table_of_grid_search(match_term=None):
                     print(f" & {count}", end="")
             print(" \\\\")
 
+
 def table_of_grid_search_one_col(match_term=None):
     dims = [1, 2, 3, 4]
     lat = 8
@@ -64,6 +66,7 @@ def table_of_grid_search_one_col(match_term=None):
                 print(f" & {count}", end="")
         print(" \\\\")
 
+
 def table_of_grid_search_one_col_flipped(match_term=None):
     dims = [1, 2, 3, 4]
     lat = 8
@@ -77,6 +80,7 @@ def table_of_grid_search_one_col_flipped(match_term=None):
                     runs = [x for x in runs if match_term in x]
                 if observed_shots is None:
                     observed_shots = len(runs)
+                    # print("SHOTS:", observed_shots)
 
                 assert len(runs) in [observed_shots, 0]
                 if len(runs) == 0:
@@ -96,6 +100,62 @@ def table_of_grid_search_one_col_flipped(match_term=None):
                         count = f"\\textit{{{count}}}"
                 print(f" & {count}", end="")
         print(" \\\\")
+
+
+def table_of_count_freqs(match_term=None):
+    dims = [1, 2, 3, 4]
+    lat = 8
+    observed_shots = None
+    cols = []
+    # print(f"\multirow{{1}}{{*}}{{$10^{{{round(math.log10(latent_sparsity))}}}$}}", end="")
+    for d in dims:
+        zero_count = 0
+        one_count = 0
+        high_count = 0
+        for latent_sparsity in tqdm([1e-3, 1e-2, 1e-1, 1]):
+            for linear_sparsity in [1e-3, 1e-2, 1e-1]:
+        # for latent_sparsity, linear_sparsity in tqdm(zip(, )):
+                runs = all_runs_matching(f"[{lat}-{d}-{latent_sparsity}-{linear_sparsity}]-")
+                if match_term:
+                    runs = [x for x in runs if match_term in x]
+                if observed_shots is None:
+                    observed_shots = len(runs)
+                    print("SHOTS:", observed_shots)
+                assert len(runs) in [observed_shots, 0]
+                if len(runs) == 0:
+                    count = -1
+                else:
+                    # get the result for each shot, then take the median
+                    assert observed_shots % 2 == 1, "Shot count must be odd to find median"
+                    for r in runs:
+                        single_count = plot_latent_count_over_time(r, show=False)[0][-1]
+                        if single_count == 0:
+                            zero_count += 1
+                        elif single_count == 1:
+                            one_count += 1
+                        else:
+                            high_count += 1
+                # print(f" & {count}", end="")
+        cols.append((zero_count, one_count, high_count))
+
+    print(cols)
+    # lows, highs = zip(*cols)
+    print("0", end="")
+    for z, o, h in cols:
+        print(" & ", end="")
+        print(f"{round(z/(z+o+h)*100)}\\%", end="")
+    print(" \\\\")
+    print("1", end="")
+    for z, o, h in cols:
+        print(" & ", end="")
+        print(f"{round(o/(z+o+h)*100)}\\%", end="")
+    print(" \\\\")
+    print("2+", end="")
+    for z, o, h in cols:
+        print(" & ", end="")
+        print(f"{round(h/(z+o+h)*100)}\\%", end="")
+    print(" \\\\")
+
 
 
 def figure_of_runs(run_ids, plot_type="c", label="", captioner=None, max_row_width=4, max_fig_width=1/3):
@@ -165,4 +225,5 @@ def figure_of_runs(run_ids, plot_type="c", label="", captioner=None, max_row_wid
 
 
 if __name__ == '__main__':
-    table_of_grid_search_one_col_flipped("switch")
+    # table_of_count_freqs("basic")
+    table_of_grid_search_one_col_flipped("multi-lower")
