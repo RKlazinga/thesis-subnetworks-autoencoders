@@ -25,7 +25,7 @@ SUBFIG = textwrap.dedent(r"""\begin{subfigure}[b]{WIDTH\textwidth}
 """)
 
 
-def table_of_grid_search():
+def table_of_grid_search(match_term=None):
     dims = [1, 2, 3, 4]
     lats = [8, 16]
     for d in [1, 2, 3, 4]:
@@ -38,6 +38,8 @@ def table_of_grid_search():
             for latent_sparsity in [1e-3, 1e-2, 1e-1, 1]:
                 for linear_sparsity in [1e-3, 1e-2, 1e-1]:
                     runs = all_runs_matching(f"[{l}-{d}-{latent_sparsity}-{linear_sparsity}]-")
+                    if match_term:
+                        runs = [x for x in runs if match_term in x]
                     assert len(runs) == 1
                     count = plot_latent_count_over_time(runs[0], show=False)[0][-1]
                     if count == d:
@@ -45,7 +47,7 @@ def table_of_grid_search():
                     print(f" & {count}", end="")
             print(" \\\\")
 
-def table_of_grid_search_one_col():
+def table_of_grid_search_one_col(match_term=None):
     dims = [1, 2, 3, 4]
     lat = 8
     for d in dims:
@@ -53,6 +55,8 @@ def table_of_grid_search_one_col():
         for latent_sparsity in [1e-3, 1e-2, 1e-1, 1]:
             for linear_sparsity in [1e-3, 1e-2, 1e-1]:
                 runs = all_runs_matching(f"[{lat}-{d}-{latent_sparsity}-{linear_sparsity}]-")
+                if match_term:
+                    runs = [x for x in runs if match_term in x]
                 assert len(runs) == 1
                 count = plot_latent_count_over_time(runs[0], show=False)[0][-1]
                 if count == d:
@@ -60,7 +64,7 @@ def table_of_grid_search_one_col():
                 print(f" & {count}", end="")
         print(" \\\\")
 
-def table_of_grid_search_one_col_flipped():
+def table_of_grid_search_one_col_flipped(match_term=None):
     dims = [1, 2, 3, 4]
     lat = 8
     observed_shots = None
@@ -69,23 +73,27 @@ def table_of_grid_search_one_col_flipped():
         for d in dims:
             for linear_sparsity in [1e-3, 1e-2, 1e-1]:
                 runs = all_runs_matching(f"[{lat}-{d}-{latent_sparsity}-{linear_sparsity}]-")
+                if match_term:
+                    runs = [x for x in runs if match_term in x]
                 if observed_shots is None:
                     observed_shots = len(runs)
 
-                assert len(runs) == observed_shots
-
-                # get the result for each shot, then take the median
-                assert observed_shots % 2 == 1, "Shot count must be odd to find median"
-                counts = []
-                for r in runs:
-                    single_count = plot_latent_count_over_time(r, show=False)[0][-1]
-                    counts.append(single_count)
-                count = sorted(counts)[observed_shots//2]
-                # count = ",".join(map(str,sorted(counts)))
-                if int(count[2]) == d:
-                    count = f"\\textbf{{{count}}}"
-                if len(set(counts)) > 1:
-                    count = f"\\textit{{{count}}}"
+                assert len(runs) in [observed_shots, 0]
+                if len(runs) == 0:
+                    count = -1
+                else:
+                    # get the result for each shot, then take the median
+                    assert observed_shots % 2 == 1, "Shot count must be odd to find median"
+                    counts = []
+                    for r in runs:
+                        single_count = plot_latent_count_over_time(r, show=False)[0][-1]
+                        counts.append(single_count)
+                    count = sorted(counts)[observed_shots//2]
+                    # count = ",".join(map(str,sorted(counts)))
+                    if count == d:
+                        count = f"\\textbf{{{count}}}"
+                    if len(set(counts)) > 1:
+                        count = f"\\textit{{{count}}}"
                 print(f" & {count}", end="")
         print(" \\\\")
 
@@ -157,4 +165,4 @@ def figure_of_runs(run_ids, plot_type="c", label="", captioner=None, max_row_wid
 
 
 if __name__ == '__main__':
-    table_of_grid_search_one_col_flipped()
+    table_of_grid_search_one_col_flipped("switch")
