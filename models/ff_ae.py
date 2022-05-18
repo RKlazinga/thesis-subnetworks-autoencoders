@@ -10,17 +10,15 @@ from utils.file import get_topology_of_run, get_params_of_run
 
 class FeedforwardAE(nn.Module):
 
-    IN_SIZE = Settings.FLAT_DATAPOINTS
-
     def __init__(self, latent_size, hidden_layers, size_mult):
         super().__init__()
 
         # linearly interpolate between input size and latent size
-        topology = [self.IN_SIZE]
+        topology = [Settings.FLAT_DATAPOINTS]
         for x in range(hidden_layers):
             interp = (x+1) / (hidden_layers + 1)
 
-            topology.append(round(size_mult * (1-interp) * self.IN_SIZE + interp * latent_size))
+            topology.append(round(size_mult * (1-interp) * max(16, Settings.FLAT_DATAPOINTS) + interp * latent_size))
         topology.append(latent_size)
 
         encoder_steps = []

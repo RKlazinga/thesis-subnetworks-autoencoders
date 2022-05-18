@@ -11,8 +11,6 @@ plt.rcParams["font.family"] = "serif"
 def plot(run_id, ratio):
     graph_data_file = f"graph_data/retraining/{run_id}-{ratio}.json"
 
-    cmap = cm.get_cmap("plasma")
-
     with open(graph_data_file, "r") as read_file:
         graph_data = json.loads(read_file.read())
         graph_data = sorted(list(graph_data.items()), key=lambda x: float(x[0]))

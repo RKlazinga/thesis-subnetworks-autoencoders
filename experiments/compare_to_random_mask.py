@@ -23,18 +23,13 @@ def verify_ratio_approx_correct(desired_ratio, mask):
         numer += torch.count_nonzero(m)
         denom += torch.numel(m)
     print(f"Desired: {desired_ratio} Actual: {1 - (numer/denom)}")
-    # assert abs(numer/denom - desired_ratio) < 0.01
 
 
 def run(ratio):
-
     print(f"Ratio: {ratio}, ETA: {15*2*Settings.RETRAIN_EPOCHS*shots/60} minutes")
 
     def get_networks():
-        # unpruned = ConvAE.init_from_checkpoint(run_id, None, None, None).to(device)
-
         ticket = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=None).to(dev())
-        # ticket_eb = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=draw_epoch).to(device)
 
         # get ticket mask and extract ratio per layer
         ticket_masks = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=draw_epoch).get_mask_of_current_network_state(ratio)
@@ -48,6 +43,9 @@ def run(ratio):
         # mask_to_png(torch.load(mask_file), caption="Original mask", show=True, save=False)
         # mask_to_png(ticket_masks, caption="Expanded mask", show=True, save=False)
         # mask_to_png(random_masks, caption="Random mask with same ratio per layer", show=True, save=False)
+
+        same_mask_random_weights = ConvAE.init_from_checkpoint(run_id, ratio, draw_epoch, draw_sub_epoch, param_epoch=None).to(dev())
+        same_mask_random_weights.reset_weights()
 
         random_ticket = ConvAE.init_from_checkpoint(run_id, None, None, None, param_epoch=None)
         prune_model(random_ticket, random_masks)
@@ -76,10 +74,10 @@ def run(ratio):
         prune_model(utterly_random_ticket, utterly_random_masks)
 
         networks = [
-            # ("original_ticket", ticket),
-            ("utterly_random", utterly_random_ticket.to(dev())),
-            # ("random_ticket", random_ticket.to(device)),
-            # ("unpruned", unpruned),
+            ("original_ticket", ticket),
+            ("reinitialised", same_mask_random_weights),
+            ("random_ticket", random_ticket.to(dev())),
+            # ("utterly_random", utterly_random_ticket.to(dev())),
         ]
         return networks
 

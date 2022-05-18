@@ -27,9 +27,7 @@ class ConvAE(nn.Module):
         encoder_steps.append(nn.Flatten())
 
         flatten_size = prev_step_size * calculate_im_size(image_size, hidden_layers) ** 2
-        # self.linear_layers = [flatten_size, flatten_size // 2, flatten_size // 3, latent_size]
         self.linear_layers = [flatten_size, flatten_size // 2, latent_size]
-        # self.linear_layers = [flatten_size, latent_size]
 
         # add extra linear layer in-between
         for a, b in zip(self.linear_layers, self.linear_layers[1:]):

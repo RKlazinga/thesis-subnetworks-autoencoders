@@ -5,6 +5,9 @@ from torch.nn.modules.conv import _ConvTransposeNd, _ConvNd
 
 
 def prune_model(model, masks):
+    """
+    Structurally prune a model given a list of binary masks.
+    """
     mask_idx = -1
     in_mask = None
     out_mask = None
@@ -61,12 +64,7 @@ def prune_model(model, masks):
 
 def prune_parameter(module, parameter_name, mask, axis=0):
     """
-    Prune a single parameter Tensor within a module
-    :param module:
-    :param parameter_name:
-    :param mask:
-    :param axis:
-    :return:
+    Prune a single parameter Tensor within a module.
     """
     param = getattr(module, parameter_name)
     if param is not None:

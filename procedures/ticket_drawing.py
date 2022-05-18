@@ -75,27 +75,3 @@ def find_channel_mask(network, fraction, per_layer_limit=Settings.PRUNE_LIMIT):
             bn_masks[bn] = mask
 
     return bn_masks
-
-
-# if __name__ == '__main__':
-#     # test conv
-#     # change_working_dir()
-#     # net = ConvAE(6, 4, 6)
-#     # net.load_state_dict(torch.load("runs/[6, 4, 6]-fe4bc8144/trained-6.pth"))
-#     # _masks = list(find_channel_mask_no_redist(net, 0.01).values())
-#     # prune_model(net, _masks)
-#     # torchsummary.summary(net, (1, 28, 28))
-#
-#     # test ff
-#     net = NETWORK(*TOPOLOGY)
-#     print(last_run())
-#     net.load_state_dict(torch.load(f"runs/{last_run()}/trained-15.pth"))
-#
-#     _masks = list(find_channel_mask_no_redist(net, 0.9, 0.01).values())
-#     # _masks2 = list(find_channel_mask_no_redist(net, 0.8, 0.01).values())
-#     print(sum([torch.count_nonzero(m).item() for m in _masks]) / sum([torch.numel(m) for m in _masks]))
-#     # mask_to_png(_masks)
-#     # mask_to_png(_masks2)
-#     # prune_model(net, _masks2)
-#     # torchsummary.summary(net, (16,))
-

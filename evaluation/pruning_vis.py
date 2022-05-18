@@ -78,4 +78,5 @@ def mask_to_png(mask: Union[str, list[torch.Tensor]], caption=None, draw_conn=Fa
 
 if __name__ == '__main__':
     change_working_dir()
-    mask_to_png(torch.load(f"{Settings.RUN_FOLDER}/{last_run()}/masks/prune-0.7-epoch-2-4.pth"), caption="12-4", show=True, save=False)
+    mask_to_png(torch.load(f"{Settings.RUN_FOLDER}/{last_run()}/masks/prune-0.7-epoch-2-4.pth"),
+                caption="epoch 2 prune 0.7", show=True, save=False)

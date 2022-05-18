@@ -49,16 +49,16 @@ def plot(run_id, baseline=None):
         "unpruned": "grey",
         "original_ticket": cmap(0.25),
         "random_ticket": cmap(.75),
-        "utterly_random": cmap(.5),
     }
 
     xmin = 1e9
     xmax = -1e9
     for line_name, line_data in graph_data.items():
-        xmin = min(xmin, *line_data[0])
-        xmax = max(xmax, *line_data[0])
-        plt.plot(line_data[0], line_data[1], color=colors[line_name], label=line_name.replace("_", " ").title())
-        plt.fill_between(line_data[0], line_data[2], line_data[3], color=colors[line_name], alpha=0.2)
+        if line_name in colors:
+            xmin = min(xmin, *line_data[0])
+            xmax = max(xmax, *line_data[0])
+            plt.plot(line_data[0], line_data[1], color=colors[line_name], label=line_name.replace("_", " ").title())
+            plt.fill_between(line_data[0], line_data[2], line_data[3], color=colors[line_name], alpha=0.2)
 
     plt.legend()
     plt.title("Validating the relevance of specific selected channels\n"
@@ -78,4 +78,5 @@ def plot(run_id, baseline=None):
 
 if __name__ == '__main__':
     change_working_dir()
-    plot("random_mask-"+last_run())#, baseline=0.0168)
+    run = last_run()
+    plot("random_mask-"+run)

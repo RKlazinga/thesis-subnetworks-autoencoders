@@ -11,31 +11,26 @@ from settings import Settings
 from utils.file import change_working_dir
 
 
-def get_loaders(dataset=Settings.DS):
+def get_loaders():
     change_working_dir()
-    if dataset == DatasetOption.CIFAR10:
-        import ssl
-        ssl._create_default_https_context = ssl._create_unverified_context
-        train_set = CIFAR10("data/", train=True, download=True, transform=ToTensor())
-        test_set = CIFAR10("data/", train=False, download=True, transform=ToTensor())
-    elif dataset == DatasetOption.FASHION_MNIST:
+    if Settings.DS == DatasetOption.FASHION_MNIST:
         train_set = FashionMNIST("data/", train=True, download=True, transform=ToTensor())
         test_set = FashionMNIST("data/", train=False, download=True, transform=ToTensor())
-    elif dataset == DatasetOption.SYNTHETIC_IM:
+    elif Settings.DS == DatasetOption.SYNTHETIC_IM:
         train_set = Synthetic("train", stacked_sine2d, num=Settings.TRAIN_SIZE, keep_in_ram=True)
         test_set = Synthetic("test", stacked_sine2d, num=Settings.TEST_SIZE, keep_in_ram=True)
-    elif dataset == DatasetOption.SYNTHETIC_FLAT:
+    elif Settings.DS == DatasetOption.SYNTHETIC_FLAT:
         train_set = SyntheticFlat("train", random_sine_gaussian, num=Settings.TRAIN_SIZE, keep_in_ram=True)
         test_set = SyntheticFlat("test", random_sine_gaussian, num=Settings.TEST_SIZE, keep_in_ram=True)
-    elif dataset == DatasetOption.MNIST:
+    elif Settings.DS == DatasetOption.MNIST:
         train_set = MNIST("data/", train=True, download=True, transform=ToTensor())
         test_set = MNIST("data/", train=False, download=True, transform=ToTensor())
     else:
-        raise ValueError(f"Unknown dataset enum value: {dataset}")
+        raise ValueError(f"Unknown dataset enum value: {Settings.DS}")
 
     train_loader = DataLoader(train_set, batch_size=Settings.BATCH_SIZE, shuffle=True,
-                              num_workers=2 if dataset == DatasetOption.FASHION_MNIST else 0)
+                              num_workers=2 if Settings.DS == DatasetOption.FASHION_MNIST else 0)
     test_loader = DataLoader(test_set, batch_size=Settings.BATCH_SIZE, shuffle=True,
-                             num_workers=0 if dataset == DatasetOption.FASHION_MNIST else 0)
+                             num_workers=0 if Settings.DS == DatasetOption.FASHION_MNIST else 0)
 
     return train_loader, test_loader

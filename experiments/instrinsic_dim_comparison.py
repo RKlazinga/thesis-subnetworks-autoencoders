@@ -1,18 +1,12 @@
 from enum import Enum
 
-import numpy as np
 import skdim
 import torch
-from torch.utils.data import DataLoader
-from tqdm import tqdm
 
 from datasets.dataset_options import DatasetOption
-from datasets.synthetic.flat_generators import random_sine_gaussian
 from datasets.synthetic.synthetic_flat import SyntheticFlat
-from datasets.synthetic.synthetic_im import Synthetic
-from evaluation.analyse_latent_weights import analyse_at_epoch, plot_latent_count_over_time
+from evaluation.analyse_latent_weights import plot_latent_count_over_time
 from experiments.progressive_mask_drawing import train_and_draw_tickets
-from models.ff_ae import FeedforwardAE
 from settings import Settings
 from utils.misc import dev, generate_random_str
 
@@ -60,8 +54,6 @@ def our_id_est(benchmark: Benchmarks):
 
     # get our id estimate
     return plot_latent_count_over_time(run_id, show=False)[0][-1], combined_data
-    # weights = analyse_at_epoch(run_id, Settings.DRAW_EPOCHS)[0]
-    # return len([w for w in weights if abs(w) > 2e-4]), combined_data
 
 
 if __name__ == '__main__':

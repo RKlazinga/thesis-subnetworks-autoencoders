@@ -8,7 +8,7 @@ def eval_network(net, im, device):
     with torch.no_grad():
         if isinstance(im, list):
             im = im[0]
-        out = net(im.to(device))
+        out = torch.clamp(net(im.to(device)), 0, 1)
     combined = Image.new("L", (56, 56))
     combined.paste(ToPILImage()(im[0]), (0, 0))
     combined.paste(ToPILImage()(out[0]), (28, 0))

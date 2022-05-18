@@ -7,6 +7,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from torch.optim import Adam
 
 from datasets.dataset_options import DatasetOption
+from evaluation.eval import eval_network
 from procedures.ticket_drawing import find_channel_mask
 from procedures.test import test
 from procedures.train import train
@@ -17,9 +18,16 @@ from utils.misc import generate_random_str, dev
 
 
 def train_and_draw_tickets(net, uid):
+    """
+    Perform a standard training experiment. The given network is trained on a dataset while regularisation is applied.
+    Various characteristics of the network are stored in a unique folder.
+
+    :param net: The network to train
+    :param uid: A unique ID that determines the name of the folder in which the network information is stored
+    :return: The dataset on which the network was trained
+    """
     train_loader, test_loader = get_loaders()
 
-    # TODO consider split learning rate
     optimiser = Adam(net.parameters(), lr=Settings.LR)
     criterion = MSELoss()
 
@@ -44,7 +52,7 @@ def train_and_draw_tickets(net, uid):
 
         train_loss = train(net, optimiser, criterion, train_loader, prune_snapshot_method=prune_snapshot)
 
-        # disable running statistics
+        # disable running statistics during testing and evaluation
         for m in net.modules():
             if isinstance(m, _BatchNorm):
                 m.track_running_stats = False
@@ -55,13 +63,16 @@ def train_and_draw_tickets(net, uid):
         with open(loss_file, "w") as write_file:
             write_file.write(json.dumps(loss_graph_data))
 
-        # eval_network(net, next(iter(test_loader)), device)
+        # uncomment to visually show the encoding output, only works with image data
+        # eval_network(net, next(iter(test_loader)), dev())
         for m in net.modules():
             if isinstance(m, _BatchNorm):
                 m.track_running_stats = True
 
         print(f"{epoch}/{Settings.DRAW_EPOCHS}: {round(train_loss, 8)} & {round(test_loss, 8)}")
         torch.save(net.state_dict(), folder + f"/trained-{epoch}.pth")
+
+    return train_loader.dataset
 
 
 def main(prefix=None):
@@ -74,10 +85,6 @@ def main(prefix=None):
         unique_id = f"flat{Settings.NUM_VARIABLES}-" + unique_id
     if Settings.DS == DatasetOption.SYNTHETIC_IM:
         unique_id = f"synthim_{Settings.NUM_VARIABLES}var-" + unique_id
-    if Settings.DS == DatasetOption.MNIST:
-        unique_id = "mnist-" + unique_id
-    if Settings.DS == DatasetOption.CIFAR10:
-        unique_id = "cifar-" + unique_id
 
     if prefix is not None:
         unique_id = prefix + unique_id

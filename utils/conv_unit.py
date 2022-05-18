@@ -44,7 +44,8 @@ class ConvTransposeUnit(nn.Module):
         if bn:
             self.steps.append(BatchNorm2d(out_channels))
 
-        self.steps.append(activation())
+        if activation:
+            self.steps.append(activation())
 
         if max_pool:
             self.steps.append(nn.MaxPool2d(2, ceil_mode=True))

@@ -1,5 +1,4 @@
 import json
-import math
 import os
 from typing import Union, Tuple, Iterable
 
@@ -13,8 +12,7 @@ from torchvision.transforms import ToPILImage
 from datasets.synthetic.im_generators import sine
 from evaluation.analyse_latent_weights import analyse_at_epoch
 from settings import Settings
-from utils.file import change_working_dir, get_topology_of_run
-from utils.get_run_id import last_run
+from utils.file import change_working_dir
 
 plt.rcParams["font.family"] = "serif"
 
@@ -74,9 +72,15 @@ def latent_scatterplot(run_id, generator, epoch, domains, step=12, imgs_on_point
                     prev_y = iy
                 for ix, iy, ny, im in bigims:
                     plt.gca().add_artist(AnnotationBbox(OffsetImage(im, zoom=1.25), (ix, iy), frameon=True))
+        plt.xlabel("Horizontal Frequency of Image")
+        plt.ylabel("Latent Value")
         plt.grid(True, linestyle="dashed")
         plt.tight_layout()
-        plt.show()
+        change_working_dir()
+        fname = f"latent_scatter_{len(neurons)}"
+        if imgs_on_points:
+            fname += "_withims"
+        plt.savefig(f"figures/{fname}.png")
 
 
 def plot_latent_space_2d(run_id, epoch, domain: Union[Tuple, Iterable[Tuple]] = (-3, 3), steps=12):
@@ -129,25 +133,18 @@ def plot_latent_space_2d(run_id, epoch, domain: Union[Tuple, Iterable[Tuple]] = 
 
 if __name__ == '__main__':
     change_working_dir()
-    Settings.RUN_FOLDER = "runs"
     _epoch = 20
 
     # 1D good weather
     _run_id = "[8-1-0.001-0.001]-basic-synthim_1var-[8, 5, 12, 1]-e136e51ef"
     # plot_latent_space_2d(_run_id, _epoch, domain=(-0.5, 10), steps=12)
-    latent_scatterplot(_run_id, sine, _epoch, [(30, 100)], 30, imgs_on_points=True)
+    # latent_scatterplot(_run_id, sine, _epoch, [(30, 100)], 30, imgs_on_points=False)
+    # latent_scatterplot(_run_id, sine, _epoch, [(30, 100)], 30, imgs_on_points=True)
 
     # 1D bad weather (2 dims)
     _run_id = "[8-1-0.001-0.01]-basic-synthim_1var-[8, 5, 12, 1]-eafdda5d6"
     # plot_latent_space_2d(_run_id, _epoch, domain=(-4, 8), steps=12)
     # latent_scatterplot(_run_id, sine, _epoch, [[30, 100]], 30)
-
-
-    # _run_id = "[8-1-1-0.001]-multi-trainingwheels-synthim_1var-[8, 5, 12, 1]-b2a00ea8e"
-    # _run_id = "[8-1-0.001-0.1]-multi-trainingwheels-synthim_1var-[8, 5, 12, 1]-5964e544a"
-    # _run_id = "[8-2-0.1-0.1]-multi-trainingwheels-synthim_2var-[8, 5, 12, 1]-43d37aa8f"
-    # _run_id = "[8-2-0.001-0.001]-multi-trainingwheels-synthim_2var-[8, 5, 12, 1]-abb156989"
-    # plot_latent_space_2d(_run_id, _epoch)
 
 
 

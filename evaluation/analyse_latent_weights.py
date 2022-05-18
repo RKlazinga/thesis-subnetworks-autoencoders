@@ -8,8 +8,8 @@ from torch.nn import BatchNorm1d
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from settings import Settings
-from utils.file import get_topology_of_run, get_epochs_of_run
-from utils.get_run_id import last_run
+from utils.file import get_topology_of_run, get_epochs_of_run, change_working_dir
+from utils.get_run_id import last_run, last_runs
 
 plt.rcParams["font.family"] = "serif"
 plt.rcParams["font.size"] = 18
@@ -17,6 +17,9 @@ LINE_W = 2
 
 
 def find_latent_bn(model, topology=None, run_id=None):
+    """
+    Find the latent layer BatchNorm operator.
+    """
     assert topology or run_id, "Either topology settings or run ID needs to be passed"
     if topology:
         latent_size, hidden_count = topology[:2]
@@ -33,26 +36,23 @@ def find_latent_bn(model, topology=None, run_id=None):
     raise ValueError("Could not find latent neurons")
 
 
-def analyse_all(run_id, epoch):
-    model = Settings.NETWORK.init_from_checkpoint(run_id, None, None, None, param_epoch=epoch)
-    weights = []
-    for m in model.modules():
-        if isinstance(m, _BatchNorm):
-            weights.append((m, m.weight.data.tolist()))
-
-    thresh = 2e-4
-    for m, w in weights:
-        zeros = len([0 for w2 in w if abs(w2) < thresh])
-        print(f"{m.__class__.__name__} {len(w)-zeros}/{len(w)} remaining ({(1 - round(zeros / len(w), 3)) * 100}%)")
-
-
 def analyse_at_epoch(run_id, epoch):
+    """
+    Get all BatchNorm information of all layers for a specific run and epoch.
+
+    :return: The absolute weights, the bias, the running mean and the running variance
+    """
+    change_working_dir()
+    Settings.from_disk(f"{Settings.RUN_FOLDER}/{run_id}")
     model = Settings.NETWORK.init_from_checkpoint(run_id, None, None, None, param_epoch=epoch)
     m = find_latent_bn(model, run_id=run_id)
     return torch.abs(m.weight.data).tolist(), m.bias.data.tolist(), m.running_mean.tolist(), m.running_var.tolist()
 
 
-def plot_analysis_over_time(run_id):
+def plot_weights_over_time(run_id):
+    """
+    Show the absolute weight of each latent neuron as a separate graph, plotted over time.
+    """
     epochs = get_epochs_of_run(run_id)
     latent_count = get_topology_of_run(run_id)[0]
     weights = [tuple([1 for _ in range(latent_count)])] + [analyse_at_epoch(run_id, e)[0] for e in range(1, epochs + 1)]
@@ -80,8 +80,13 @@ def plot_analysis_over_time(run_id):
     plt.tight_layout()
     plt.show()
 
+    Settings.reset()
+
 
 def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, show=True):
+    """
+    Show the number of latent neurons active over time, as well as the loss.
+    """
     if isinstance(run_ids, str):
         run_ids = [run_ids]
 
@@ -94,6 +99,8 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, sho
         epochs = get_epochs_of_run(run_id)
         latent_count = get_topology_of_run(run_id)[0]
 
+        Settings.from_disk(f"{Settings.RUN_FOLDER}/{run_id}")
+
         # get latent weights
         weights_biases = [analyse_at_epoch(run_id, e)[:2] for e in range(1, epochs + 1)]
         active_weight_count = [latent_count]
@@ -101,11 +108,11 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, sho
             active_weight_count.append(0)
             for w2, b2 in zip(w, b):
                 if abs(w2) > thresh:
+                    # account for the fact that ReLU is applied after the BN layer:
+                    # a negative bias may put the entire distribution under the cut-off part of ReLU!
                     dist = (NormalDist() * w2) + b2
                     if 1 - dist.cdf(0) > 0.01:
                         active_weight_count[-1] += 1
-
-        # weights = [latent_count] + [len([w2 for w2 in w if abs(w2) > thresh]) + (idx - len(run_ids)//2)/20 for w in weights]
 
         # get loss curve
         with open(f"{Settings.RUN_FOLDER}/{run_id}/loss_graph.json", "r") as readfile:
@@ -115,22 +122,24 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, sho
 
         # plot both
         if show:
-            ax1.plot(range(0, epochs+1), active_weight_count, label="Active latent neurons", alpha=1.0, linewidth=2, snap=True)
+            ax1.axhline(y=Settings.NUM_VARIABLES, linestyle="--", alpha=0.5)
+            ax1.plot(range(0, epochs+1), active_weight_count, label="Latent neurons", alpha=1.0, linewidth=2, snap=True)
             ax2.plot(xs, ys, color="red", label="Loss")
+
         # or return them
         else:
+            Settings.reset()
             return active_weight_count, ys
 
     ax1.yaxis.get_major_locator().set_params(integer=True)
     ax1.set_ylabel("Number of active latent neurons", labelpad=5)
     ax1.set_xlim([-1, epochs + 1])
-    ax1.set_ylim(bottom=-0.25)
-    ax2.set_ylim(bottom=0)
+    ax1.set_ylim(bottom=-0.25, top=Settings.TOPOLOGY[0]+0.25)
+    ax2.set_ylim(bottom=0, top=0.149)
     ax2.set_ylabel("Loss")
     ax1.xaxis.get_major_locator().set_params(integer=True)
 
     ax1.set_xlabel("Epoch")
-    # if len(run_ids) > 1:
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
     plt.legend(h1+h2, l1+l2, loc='upper right')
@@ -139,32 +148,10 @@ def plot_latent_count_over_time(run_ids: Union[str, List[str]], thresh=2e-4, sho
     plt.savefig(f"figures/latent_count/{run_id}.png")
 
     plt.title(f"{run_id}\nstd:{Settings.NORMAL_STD_DEV} ({Settings.CONV_SPARSITY_PENALTY},{Settings.LINEAR_SPARSITY_PENALTY},{Settings.LATENT_SPARSITY_PENALTY})")
-
+    Settings.reset()
     plt.tight_layout()
     plt.show()
 
 
 if __name__ == '__main__':
-    _run_id = last_run()
-    plot_analysis_over_time(_run_id)
-    plot_latent_count_over_time(_run_id)
-    # figure_of_runs(runs, plot_type="s", label="starter", captioner=lambda x: f"$\lambda={x[1:].split(']')[0]}$")
-
-
-    # mult, bias = analyse_at_epoch(last_runs(1, 3)[0], 15)[:2]
-    # for i, (m, b) in enumerate(zip(mult, bias)):
-    #     if m == 0:
-    #         print(f"{i}) ZERO")
-    #     else:
-    #         dist = (NormalDist() * m) + b
-    #         print(f"{i}) weight {abs(m) > 2e-4} nonclipped {math.ceil(1 - dist.cdf(0) - 1e-3)}")
-    # print(torch.log10(torch.abs(torch.Tensor(analyse_at_epoch(_run_id, 14)[0]))))
-    # analyse_all(_run_id, 5)
-    # analyse_all(_run_id, 26)
-    # print()
-    # analyse_all(_run_id, 20)
-
-    # plot_latent_count_over_time(_run_id)
-    # plot_latent_count_over_time(all_runs_matching("threevar2")[0])
-    # analyse_all(all_runs_matching("e2d4")[0], 20)
-    # plot_latent_count_over_time(last_runs(count=3, offset=0))
+    plot_latent_count_over_time(last_run())
